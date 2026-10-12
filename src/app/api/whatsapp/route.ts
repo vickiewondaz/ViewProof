@@ -1,14 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { verifyWebhookSignature } from "@/lib/whatsapp";
 
 type WaText = { from?: string; text?: { body?: string } };
 
-// POST inbound — handles CANCEL (buyer cancels latest active booking from
-// that sender), HELP/YES (log only). Signature verification TODO with
-// WHATSAPP_APP_SECRET when production number is attached.
+// POST inbound — signature-verified (WHATSAPP_APP_SECRET from Meta dashboard).
+// Unsigned or forged requests are dropped before parsing: nobody can fake a
+// CANCEL and kill bookings. Handles CANCEL; HELP/YES logged only.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  // Verify on the RAW body — parse only after the signature checks out.
+  const raw = await req.text().catch(() => "");
+  const secret = process.env.WHATSAPP_APP_SECRET;
+  if (secret) {
+    const ok = await verifyWebhookSignature(raw, req.headers.get("x-hub-signature-256"), secret);
+    if (!ok) return NextResponse.json({ ok: false }, { status: 401 });
+  } else {
+    console.warn("[whatsapp] WHATSAPP_APP_SECRET unset — accepting unsigned inbound (dev only)");
+  }
+  let body: { entry?: { changes?: { value?: { messages?: WaText[] } }[] }[] };
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return NextResponse.json({ ok: true, ignored: true });
+  }
   const entry = body?.entry?.[0]?.changes?.[0]?.value;
   const msg: WaText | undefined = entry?.messages?.[0];
 

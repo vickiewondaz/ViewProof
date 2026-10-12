@@ -141,3 +141,17 @@ export function fmtDateTime(d: Date): string {
     minute: "2-digit",
   });
 }
+
+// Meta signs every webhook POST: X-Hub-Signature-256: sha256=<hmac(body)>.
+// Verify BEFORE parsing — unsigned requests are dropped, never processed.
+export async function verifyWebhookSignature(
+  rawBody: string,
+  signature: string | null,
+  appSecret: string
+): Promise<boolean> {
+  if (!signature || !signature.startsWith("sha256=")) return false;
+  const { createHmac, timingSafeEqual } = await import("crypto");
+  const expected = createHmac("sha256", appSecret).update(rawBody, "utf8").digest();
+  const got = Buffer.from(signature.slice(7), "hex");
+  return expected.length === got.length && timingSafeEqual(expected, got);
+}
