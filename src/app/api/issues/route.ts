@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { getStaffUser, agencyScope } from "@/lib/session";
+import { rateLimit, clientKey } from "@/lib/ratelimit";
 
 const Categories = [
   "unavailable",
@@ -25,6 +26,8 @@ const Create = z.object({
 // POST /api/issues — public (buyer link). Never auto-accuses; sets
 // NeedsReview on listing where apt; timestamped audit; human triage later.
 export async function POST(req: Request) {
+  if (!rateLimit(`issues:${clientKey(req)}`, 20))
+    return NextResponse.json({ ok: false, error: "Too many reports — try later" }, { status: 429 });
   const parsed = Create.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success)
     return NextResponse.json({ ok: false, errors: parsed.error.flatten() }, { status: 400 });

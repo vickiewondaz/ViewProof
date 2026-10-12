@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { generateOtp } from "@/lib/otp";
 import { sendWhatsApp } from "@/lib/whatsapp";
+import { rateLimit, clientKey } from "@/lib/ratelimit";
 
 const Prequal = z.object({
   budgetBand: z.string().max(60).optional(),
@@ -22,6 +23,8 @@ const BookingInput = z.object({
 // POST /api/bookings — public, rate-limited upstream. Creates Requested,
 // locks slot capacity in a transaction, mints OTP, sends booking_confirm.
 export async function POST(req: Request) {
+  if (!rateLimit(`bookings:${clientKey(req)}`, 20))
+    return NextResponse.json({ ok: false, error: "Too many requests — try later" }, { status: 429 });
   const parsed = BookingInput.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success)
     return NextResponse.json({ ok: false, errors: parsed.error.flatten() }, { status: 400 });
