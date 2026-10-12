@@ -67,7 +67,7 @@ export type LlmConfig = {
 export function configFromEnv(env: NodeJS.ProcessEnv = process.env): LlmConfig {
   return {
     geminiKey: env.GEMINI_API_KEY || undefined,
-    geminiModel: env.AI_GUIDE_GEMINI_MODEL || "gemini-2.0-flash",
+    geminiModel: env.AI_GUIDE_GEMINI_MODEL || "gemini-3.8-flash",
     openrouterKey: env.OPENROUTER_API_KEY || undefined,
     openrouterModel: env.AI_GUIDE_OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
     siteUrl: env.SITE_URL || undefined,
@@ -87,7 +87,7 @@ export async function llmGuide(
       const text = await chat(
         GEMINI_URL,
         { Authorization: `Bearer ${cfg.geminiKey}` },
-        cfg.geminiModel ?? "gemini-2.0-flash",
+        cfg.geminiModel ?? "gemini-3.8-flash",
         system,
         question
       );
