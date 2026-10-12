@@ -30,7 +30,7 @@ export default function OnboardPage() {
     else setMsg(j.error ?? "Couldn't create — try again.");
   };
 
-  if (me === null) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Checking…</p></main>;
+  if (me === null) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Checking who you are…</p></main>;
   if (!me) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Sign in first, then come back here.</p><a href="/login" className="mt-3 block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white">Sign in</a></main>;
   if (me.agencyId) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">You already have an agency 🎉</p><a href="/dashboard" className="mt-3 block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white">Open dashboard</a></main>;
 

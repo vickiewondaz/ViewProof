@@ -18,6 +18,7 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [done, setDone] = useState<Booking[]>([]);
   const [msg, setMsg] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const [closePrice, setClosePrice] = useState<Record<string, string>>({});
 
   const load = async () => {
@@ -27,6 +28,7 @@ export default function BookingsPage() {
     ]);
     if (r.ok) setBookings(r.bookings);
     else setMsg("Sign in as owner to see bookings.");
+    setLoaded(true);
     if (h.ok) setDone(h.bookings);
   };
   useEffect(() => {
@@ -135,7 +137,8 @@ export default function BookingsPage() {
           );
         })}
       </div>
-      {!bookings.length && (
+      {!loaded && <p className="mt-6 text-center text-[16px]">Checking the diary…</p>}
+      {loaded && !bookings.length && (
         <p className="mt-6 text-center text-[16px]">Nothing upcoming — share a Viewing Card and bookings land here.</p>
       )}
 

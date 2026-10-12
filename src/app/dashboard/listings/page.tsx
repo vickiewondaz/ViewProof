@@ -28,6 +28,7 @@ export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [msg, setMsg] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [csv, setCsv] = useState("");
@@ -47,6 +48,7 @@ export default function ListingsPage() {
     ]);
     if (l.ok) setListings(l.listings);
     else setMsg("Sign in as owner to manage listings.");
+    setLoaded(true);
     if (a.ok) setAgents(a.agents.filter((x: Agent) => x.active));
   };
   useEffect(() => {
@@ -413,7 +415,8 @@ export default function ListingsPage() {
           </article>
         ))}
       </div>
-      {!listings.length && (
+      {!loaded && <p className="mt-6 text-center text-[16px]">Fetching your places…</p>}
+      {loaded && !listings.length && (
         <p className="mt-6 text-center text-[16px]">No listings yet — tap “+ Add a place” to start. Your first 5 cards are free.</p>
       )}
     </main>

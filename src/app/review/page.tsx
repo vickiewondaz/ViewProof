@@ -7,12 +7,14 @@ type Issue = { id: string; category: string; detail?: string | null; status: str
 export default function ReviewPage() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [msg, setMsg] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   const load = async () => {
     const res = await fetch("/api/issues");
     const j = await res.json().catch(() => ({}));
     if (j.ok) setIssues(j.issues);
     else setMsg("Sign in as owner/reviewer to triage.");
+    setLoaded(true);
   };
   useEffect(() => {
     load();
@@ -38,7 +40,7 @@ export default function ReviewPage() {
       {msg && <p className="mt-3 text-[16px]">{msg}</p>}
       <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {issues.map((i) => (
-          <div key={i.id} className="glass rounded-2xl p-4 text-sm">
+          <div key={i.id} className="glass rounded-2xl p-4 text-[16px]">
             <p className="font-semibold">{i.category} · {i.status}</p>
             <p className="mt-1 text-[16px]">{i.detail || "No detail."}</p>
             <p className="mt-1 text-[14px] text-slate-500">{new Date(i.createdAt).toLocaleString()}</p>
@@ -49,7 +51,8 @@ export default function ReviewPage() {
             </div>
           </div>
         ))}
-        {!issues.length && <p className="text-sm">Queue empty. 🎉</p>}
+        {!loaded && <p className="text-[16px]">Fetching the queue…</p>}
+        {loaded && !issues.length && !msg && <p className="text-[16px]">Queue empty. Everything calm 🎉</p>}
       </div>
     </main>
   );

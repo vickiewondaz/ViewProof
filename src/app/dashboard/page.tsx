@@ -40,21 +40,21 @@ export default function DashboardPage() {
         )}
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
-          <p className="text-sm">
+          <p className="text-[16px]">
             {Object.entries(s.listings.byStatus).map(([k, v]) => `${k}: ${v}`).join(" · ")}
           </p>
           <a href="/dashboard/listings" className="mt-2 inline-block rounded-xl bg-sand-100 px-4 py-3 text-[16px] font-semibold">
             Manage listings →
           </a>
           {s.listings.staleLive > 0 && (
-            <p className="mt-1 rounded-xl bg-coral-100 p-2 text-sm">
+            <p className="mt-1 rounded-xl bg-coral-100 p-2 text-[16px]">
               ⚠ {s.listings.staleLive} active look stale — reconfirm to unpause booking.
             </p>
           )}
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Today&apos;s viewings</h2>
-          <p className="text-sm">
+          <p className="text-[16px]">
             {Object.entries(s.bookingsToday).map(([k, v]) => `${k}: ${v}`).join(" · ") || "No activity yet."}
           </p>
           <a href="/dashboard/bookings" className="glass-soft mt-2 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
@@ -65,14 +65,14 @@ export default function DashboardPage() {
           <h2 className="text-base font-semibold">Agent scorecard</h2>
           <div className="mt-2 grid gap-2">
             {s.scorecard.map((a) => (
-              <div key={a.id} className="rounded-xl bg-sand-100 px-3 py-2 text-sm">
+              <div key={a.id} className="rounded-xl bg-sand-100 px-3 py-2 text-[16px]">
                 <span className="font-semibold">{a.name}</span>
                 {" · "}{a.attended}/{a.assigned} attended ({a.attendedPct}%)
                 {" · "}{a.noShows} no-shows · {a.mismatches} mismatches
                 {!a.active && " · inactive"}
               </div>
             ))}
-            {!s.scorecard.length && <p className="text-sm">No agents yet.</p>}
+            {!s.scorecard.length && <p className="text-[16px]">No agents yet.</p>}
           </div>
           <a href="/dashboard/team" className="glass-soft mt-3 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
             Manage team →
@@ -80,7 +80,7 @@ export default function DashboardPage() {
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Issues inbox · {s.openIssues} open</h2>
-          <a href="/review" className="text-sm text-sky-500">Open triage queue →</a>
+          <a href="/review" className="text-[16px] text-sky-500">Open triage queue →</a>
         </section>
       </div>
     </main>

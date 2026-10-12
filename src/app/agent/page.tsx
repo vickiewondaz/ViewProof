@@ -18,6 +18,7 @@ export default function AgentPage() {
   const [pushState, setPushState] = useState("");
   const [today, setToday] = useState<DayBooking[]>([]);
   const [dayMsg, setDayMsg] = useState("");
+  const [dayLoaded, setDayLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/api/bookings?day=today")
@@ -30,6 +31,7 @@ export default function AgentPage() {
         } else {
           setDayMsg("Sign in + link your roster spot to see today's viewings here.");
         }
+        setDayLoaded(true);
       })
       .catch(() => null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,7 +51,7 @@ export default function AgentPage() {
     } else if (j.ok) {
       setMsg(`Recorded: ${j.booking?.status ?? action}.`);
     } else {
-      setMsg(j.error ?? "Failed — check booking ID and code.");
+      setMsg(j.error ?? "Hmm, that didn't work — double-check the booking ID and the 6 numbers, then try again.");
     }
   };
 
@@ -90,7 +92,10 @@ export default function AgentPage() {
           </div>
         </>
       )}
-      {today.length === 0 && dayMsg && (
+      {!dayLoaded && (
+        <p className="mt-4 rounded-xl bg-sand-100 p-3 text-center text-[16px]">Checking today&apos;s diary…</p>
+      )}
+      {today.length === 0 && dayLoaded && dayMsg && (
         <p className="mt-4 rounded-xl bg-sand-100 p-3 text-center text-[16px]">{dayMsg}</p>
       )}
 

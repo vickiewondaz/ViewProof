@@ -9,11 +9,13 @@ export default function TeamPage() {
   const [msg, setMsg] = useState("");
   const [f, setF] = useState({ fullName: "", publicName: "", phone: "" });
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const load = async () => {
     const r = await fetch("/api/agents").then((x) => x.json()).catch(() => ({}));
     if (r.ok) setAgents(r.agents);
     else setMsg("Sign in as owner to manage the team.");
+    setLoaded(true);
   };
   useEffect(() => {
     load();
@@ -75,7 +77,8 @@ export default function TeamPage() {
           </div>
         ))}
       </div>
-      {!agents.length && <p className="mt-6 text-center text-[16px]">Nobody yet — add your first host above.</p>}
+      {!loaded && <p className="mt-6 text-center text-[16px]">Gathering the team…</p>}
+      {loaded && !agents.length && <p className="mt-6 text-center text-[16px]">Nobody yet — add your first host above.</p>}
     </main>
   );
 }
