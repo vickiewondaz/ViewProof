@@ -44,6 +44,20 @@ enum IssueStatus {
   Dismissed
 }
 
+enum EvidenceKind {
+  mandate
+  photo
+  letter
+  receipt
+  other
+}
+
+enum EvidenceStatus {
+  Pending
+  Accepted
+  Rejected
+}
+
 model Agency {
   id                  String    @id @default(cuid())
   name                String
@@ -95,6 +109,7 @@ model Listing {
   slots           Slot[]
   bookings        Booking[]
   issues          Issue[]
+  evidenceDocs  EvidenceDoc[]
 
   @@index([agencyId, status])
   @@index([slug])
@@ -163,6 +178,28 @@ model AuditLog {
   at       DateTime @default(now())
 
   @@index([entity, entityId])
+}
+
+// Scanned / pictured documents as *submitted evidence only* — never proof.
+// Buyer sees label + date only; reviewer sees thumbnail. Bytes auto-expire;
+// audit keeps who/when without bytes. OCR extracts to draft, human approves.
+model EvidenceDoc {
+  id         String         @id @default(cuid())
+  listingId  String
+  listing    Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  kind       EvidenceKind   @default(photo)
+  imageUrl   String
+  hash       String
+  takenAt    DateTime?
+  uploadedBy String
+  status     EvidenceStatus @default(Pending)
+  ocrText    String?        @db.Text
+  ocrConfidence Float?
+  createdAt  DateTime       @default(now())
+  reviewedAt DateTime?
+
+  @@index([listingId, status])
+  @@index([hash])
 }
 
 model WaMessage {
