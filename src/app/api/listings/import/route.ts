@@ -4,34 +4,9 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { getStaffUser } from "@/lib/session";
 import { ListingTypeEnum, slugify } from "@/lib/listings";
+import { parseCsv } from "@/lib/csv";
 
-// Minimal CSV parser (handles quoted commas). Columns:
-// title,type,area,price,currency,agentPhone,imageUrl,photographedAt
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let cur = [""];
-  let q = false;
-  const pushRow = () => {
-    rows.push(cur);
-    cur = [""];
-  };
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) {
-      if (c === '"') {
-        if (text[i + 1] === '"') {
-          cur[cur.length - 1] += '"';
-          i++;
-        } else q = false;
-      } else cur[cur.length - 1] += c;
-    } else if (c === '"') q = true;
-    else if (c === ",") cur.push("");
-    else if (c === "\n") pushRow();
-    else if (c !== "\r") cur[cur.length - 1] += c;
-  }
-  if (cur.length > 1 || cur[0] !== "") pushRow();
-  return rows.map((r) => r.map((v) => v.trim()));
-}
+// Columns: title,type,area,price,currency,agentPhone,imageUrl,photographedAt
 
 const Row = z.object({
   title: z.string().min(3),
