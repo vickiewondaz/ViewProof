@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import CancelButton from "./cancel-button";
+import { HelpFooter, OfflineNote } from "@/components/human";
 
 async function getPass(id: string) {
   const h = await headers();
@@ -19,41 +20,46 @@ export default async function ViewingPassPage({ params }: { params: { id: string
   if (!pass)
     return (
       <main className="mx-auto max-w-md px-4 py-10">
-        <h1 className="text-[26px] font-bold">Pass not found</h1>
-        <p className="mt-2 text-sm">Check your WhatsApp confirmation link.</p>
+        <h1 className="text-[26px] font-bold">Can&apos;t find this pass</h1>
+        <p className="mt-2 text-[16px]">
+          The link may be old. Open your WhatsApp confirmation message again —
+          the newest link is the right one.
+        </p>
+        <HelpFooter />
       </main>
     );
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
       <div className="rounded-2xl bg-white p-5 text-center">
-        <p className="text-sm font-semibold text-proof-600">
-          {pass.status === "Confirmed" ? "Your viewing is confirmed" : `Status: ${pass.status}`}
+        <p className="text-[16px] font-bold text-proof-600">
+          {pass.status === "Confirmed" ? "🎉 You&apos;re booked!" : `Status: ${pass.status}`}
         </p>
-        <h1 className="mt-2 text-[20px] font-bold">{pass.listing}</h1>
-        <p className="text-sm">{pass.area}</p>
-        <p className="tabular mt-2 text-sm">
+        <h1 className="mt-2 text-[22px] font-bold leading-snug">{pass.listing}</h1>
+        <p className="mt-1 text-[16px]">{pass.area}</p>
+        <p className="tabular mt-2 text-[18px] font-semibold">
           {new Date(pass.startsAt).toLocaleString()}
         </p>
-        {pass.host && <p className="mt-1 text-sm">Host: {pass.host} · {pass.agency}</p>}
-        <div className="mt-3 rounded-xl bg-sun-100 p-3 text-sm">
-          Your 6-digit meeting code was sent on WhatsApp.
-          {pass.otpExpires && <> Code expires {new Date(pass.otpExpires).toLocaleTimeString()}.</>}
+        {pass.host && (
+          <p className="mt-2 text-[16px]">
+            You&apos;ll meet <span className="font-bold">{pass.host}</span> · {pass.agency}
+          </p>
+        )}
+        <div className="mt-4 rounded-xl bg-sun-100 p-4 text-[16px]">
+          <p className="font-bold">Your 6-digit code is on WhatsApp</p>
+          <p className="mt-1">
+            Show it to {pass.host ?? "your host"} at the venue.
+            {pass.otpExpires && <> It expires around {new Date(pass.otpExpires).toLocaleTimeString()} — come on time.</>}
+          </p>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <button className="rounded-xl bg-sand-100 px-3 py-3 text-sm font-semibold">
+        <div className="sticky-cta mt-4 grid grid-cols-1 gap-2">
+          <button className="w-full rounded-xl bg-sand-100 px-3 py-4 text-[16px] font-bold">
             Add to calendar
           </button>
-          <button className="rounded-xl bg-sand-100 px-3 py-3 text-sm font-semibold">
-            Need help?
-          </button>
-        </div>
-        <div className="mt-2">
           <CancelButton bookingId={pass.id} />
         </div>
-        <p className="mt-3 text-xs text-slate-500">
-          Saved offline in the PWA. Show your WhatsApp code to the agent at the venue.
-        </p>
+        <OfflineNote />
+        <HelpFooter contact={pass.contact} />
       </div>
     </main>
   );

@@ -1,43 +1,73 @@
 "use client";
 import { useState } from "react";
 
-const CATS = ["unavailable", "price", "location", "agent-absent", "differs", "safety", "other"];
+const CATS = [
+  { id: "unavailable", label: "Place not available", hint: "They said it's taken or closed" },
+  { id: "price", label: "Price is different", hint: "Different from the card" },
+  { id: "location", label: "Wrong location", hint: "Not where the card said" },
+  { id: "agent-absent", label: "Agent didn't come", hint: "Nobody showed up" },
+  { id: "differs", label: "Place looks different", hint: "Very different from pictures" },
+  { id: "safety", label: "I felt unsafe", hint: "We'll treat this with care" },
+  { id: "other", label: "Something else", hint: "Tell us below" },
+];
 
-// Bottom-sheet style report form. Public — no account needed.
+// Bottom-sheet style report form. Public — no account needed. Big radios,
+// plain words, one thumb-friendly column.
 export default function ReportPage() {
   const [listingId, setListingId] = useState("");
   const [bookingId, setBookingId] = useState("");
   const [category, setCategory] = useState("unavailable");
   const [detail, setDetail] = useState("");
   const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const submit = async () => {
+    if (!listingId.trim()) {
+      setMsg("Please add the listing ID from your Viewing Card first.");
+      return;
+    }
+    setBusy(true);
     const res = await fetch("/api/issues", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ listingId, bookingId: bookingId || undefined, category, detail: detail || undefined }),
     });
     const j = await res.json().catch(() => ({}));
-    setMsg(j.ok ? j.message : j.error ?? "Failed — check the listing ID.");
+    setBusy(false);
+    setMsg(j.ok ? j.message : j.error ?? "That didn't send — check your network and try again.");
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
-      <div className="rounded-2xl bg-white p-4">
-        <h1 className="text-[20px] font-bold">What went wrong?</h1>
-        <input value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="Listing ID" className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
-        <input value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Booking ID (optional)" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
-        <div className="mt-3 grid gap-2">
+    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
+      <div className="rounded-2xl bg-white p-5">
+        <h1 className="text-[24px] font-bold">What went wrong?</h1>
+        <p className="mt-1 text-[16px]">
+          Sorry about this. Tap what happened — a real person at the agency
+          will read it. We never punish anyone automatically.
+        </p>
+        <label className="mt-4 block text-[16px] font-semibold" htmlFor="listing">Listing ID (on your card)</label>
+        <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        <label className="mt-3 block text-[16px] font-semibold" htmlFor="booking">Booking ID <span className="font-normal">(if you booked)</span></label>
+        <input id="booking" value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Optional" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        <div className="mt-4 grid gap-2" role="radiogroup" aria-label="What went wrong">
           {CATS.map((c) => (
-            <label key={c} className="flex items-center gap-2 rounded-xl bg-sand-100 px-3 py-2 text-sm">
-              <input type="radio" checked={category === c} onChange={() => setCategory(c)} />
-              {c}
+            <label key={c.id} className={`flex min-h-[60px] cursor-pointer items-center gap-3 rounded-xl px-4 py-3 ${category === c.id ? "bg-proof-100 outline outline-2 outline-proof-600" : "bg-sand-100"}`}>
+              <input type="radio" checked={category === c.id} onChange={() => setCategory(c.id)} className="h-6 w-6 accent-[#177E5C]" />
+              <span>
+                <span className="block text-[16px] font-bold">{c.label}</span>
+                <span className="block text-[16px]">{c.hint}</span>
+              </span>
             </label>
           ))}
         </div>
-        <textarea value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="Optional detail" rows={3} className="mt-3 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
-        <button onClick={submit} className="mt-3 w-full rounded-xl bg-coral-500 px-4 py-3 text-white">Send report</button>
-        {msg && <p className="mt-3 text-sm">{msg}</p>}
+        <label className="mt-4 block text-[16px] font-semibold" htmlFor="detail">Anything else? <span className="font-normal">(optional)</span></label>
+        <textarea id="detail" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="In your own words…" rows={3} className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        <div className="sticky-cta mt-3">
+          <button onClick={submit} disabled={busy} className="w-full rounded-xl bg-coral-500 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60">
+            {busy ? "Sending…" : "Send report"}
+          </button>
+        </div>
+        {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       </div>
     </main>
   );

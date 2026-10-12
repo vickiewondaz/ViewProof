@@ -13,11 +13,74 @@
   --slate-500: #62708a;
   --slate-200: #d9e0e8;
 }
-html { -webkit-text-size-adjust: 100%; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--sand-100);
   color: var(--ink-900);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
-.tabular { font-variant-numeric: tabular-nums; }
+
+/* Human-first: every tap target ≥ 44px, generous by default. */
+button,
+a,
+input,
+select,
+textarea,
+label {
+  min-height: 24px;
+}
+button,
+a.btn,
+[role="button"] {
+  min-height: 48px;
+}
+
+/* Prevent iOS auto-zoom on focus: inputs stay 16px. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* Visible focus for outdoor + low-vision users. */
+:focus-visible {
+  outline: 3px solid var(--sky-500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sticky bottom action bar on phones (card / pass pages). */
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--sand-100) 40%);
+}
+
+/* Calm motion only; respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

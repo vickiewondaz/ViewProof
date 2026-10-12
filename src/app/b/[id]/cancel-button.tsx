@@ -16,11 +16,11 @@ export default function CancelButton({ bookingId }: { bookingId: string }) {
     <>
       <button
         onClick={cancel}
-        className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold"
+        className="w-full rounded-xl bg-white px-4 py-4 text-[16px] font-semibold"
       >
-        Cancel / request another slot
+        Can&apos;t make it? Cancel here
       </button>
-      {msg && <p className="mt-2 text-sm">{msg}</p>}
+      {msg && <p className="mt-2 text-[16px]">{msg}</p>}
     </>
   );
 }

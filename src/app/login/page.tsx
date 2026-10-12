@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
-// Owner: email OTP sign-in (Better Auth emailOTP).
+// Owner: email OTP sign-in. No passwords to forget, no app to download.
 export default function OwnerLoginPage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -14,7 +14,7 @@ export default function OwnerLoginPage() {
       email,
       type: "sign-in",
     });
-    setMsg(error ? error.message ?? "Failed to send" : "Code sent — check email.");
+    setMsg(error ? error.message ?? "That didn't send — check the email and try again." : "Code sent! Check your email inbox now.");
     if (!error) setSent(true);
   };
   const verify = async () => {
@@ -23,43 +23,52 @@ export default function OwnerLoginPage() {
       otp,
       name: email.split("@")[0],
     });
-    setMsg(error ? error.message ?? "Invalid code" : "Signed in.");
+    setMsg(error ? error.message ?? "Wrong code — try again." : "Welcome back! Taking you to your dashboard…");
   };
 
   return (
     <main className="mx-auto max-w-md px-4 py-6">
-      <h1 className="text-[26px] font-bold">Owner sign in</h1>
-      <p className="mt-1 text-sm">Email OTP via Better Auth. No passwords.</p>
+      <h1 className="text-[26px] font-bold">Welcome back 👋</h1>
+      <p className="mt-1 text-[16px]">
+        Type your work email. We&apos;ll send 6 numbers — no password needed.
+      </p>
+      <label className="mt-4 block text-[16px] font-semibold" htmlFor="email">Work email</label>
       <input
+        id="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="owner@agency.com"
-        className="mt-4 w-full rounded-xl border border-slate-200 bg-white px-4 py-3"
+        placeholder="you@youragency.com"
+        inputMode="email"
+        autoComplete="email"
+        className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]"
       />
       <button
         onClick={send}
-        className="mt-2 w-full rounded-xl bg-proof-600 px-4 py-3 text-white"
+        className="mt-3 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white"
       >
-        Send code
+        Send my code
       </button>
       {sent && (
         <>
+          <label className="mt-4 block text-[16px] font-semibold" htmlFor="otp">The 6 numbers from your email</label>
           <input
+            id="otp"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="6-digit code"
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            placeholder="··· ···"
             inputMode="numeric"
-            className="tabular mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-center tracking-[0.4em]"
+            autoComplete="one-time-code"
+            className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-center text-2xl tracking-[0.4em]"
           />
           <button
             onClick={verify}
-            className="mt-2 w-full rounded-xl bg-white px-4 py-3 font-semibold"
+            className="mt-3 w-full rounded-xl bg-white px-4 py-4 text-[18px] font-bold"
           >
-            Verify + sign in
+            Verify — let me in
           </button>
         </>
       )}
-      {msg && <p className="mt-3 text-sm">{msg}</p>}
+      {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
     </main>
   );
 }

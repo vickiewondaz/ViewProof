@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { EmptySlots, HelpFooter } from "@/components/human";
 
 async function getCard(slug: string) {
   const h = await headers();
@@ -37,74 +38,99 @@ export default async function ViewingCardPage({
   if (!c)
     return (
       <main className="mx-auto max-w-md px-4 py-10">
-        <h1 className="text-[26px] font-bold">Card not found</h1>
-        <p className="mt-2 text-sm">
-          This listing is unavailable, archived, or still a draft.{" "}
-          <Link href="/" className="text-sky-500">Back home</Link>
+        <h1 className="text-[26px] font-bold">Hmm, this card is gone</h1>
+        <p className="mt-2 text-[16px]">
+          The agency may have paused or removed this listing. Nothing was taken
+          from you — bookings here are always free.
         </p>
+        <Link
+          href="/"
+          className="mt-4 block rounded-xl bg-proof-600 px-4 py-3 text-center text-[16px] text-white"
+        >
+          Back home
+        </Link>
+        <HelpFooter />
       </main>
     );
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
       <div className="overflow-hidden rounded-2xl bg-white">
         {c.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.images[0]} alt={`${c.title}`} className="h-52 w-full object-cover" />
+          <img
+            src={c.images[0]}
+            alt={`${c.title}, ${c.area}`}
+            className="h-52 w-full object-cover"
+            loading="eager"
+          />
         ) : (
-          <div className="flex h-40 items-center justify-center bg-sand-100 text-sm">
-            Photos pending — awaiting agency confirmation
+          <div className="flex h-40 items-center justify-center bg-sand-100 px-4 text-center text-[16px]">
+            Photos coming — the agency hasn&apos;t added clear pictures yet.
           </div>
         )}
         <div className="p-4">
           <h1 className="text-[26px] font-bold leading-tight">{c.title}</h1>
-          <p className="text-sm">{c.area}</p>
-          <p className="tabular mt-2 text-base font-semibold">
+          <p className="mt-1 text-[16px]">{c.area}</p>
+          <p className="tabular mt-2 text-[20px] font-bold">
             {c.currency} {Number(c.price).toLocaleString()}
           </p>
-          <div className="mt-3 grid gap-1 text-sm">
-            <p>✓ Listing refreshed {new Date(c.lastConfirmedAt).toDateString()}</p>
-            <p>✓ Hosted by {c.agency?.name}</p>
-            {c.host && <p>✓ Your host: {c.host}</p>}
+          <ul className="mt-3 grid gap-2 text-[16px]">
+            <li>✓ Confirmed fresh: {new Date(c.lastConfirmedAt).toDateString()}</li>
+            <li>✓ Hosted by {c.agency?.name}</li>
+            {c.host && <li>✓ You&apos;ll meet: {c.host}</li>}
             {c.photographedAt && (
-              <p>✓ Photographed on {new Date(c.photographedAt).toDateString()}</p>
+              <li>✓ Pictures taken: {new Date(c.photographedAt).toDateString()}</li>
             )}
-            <p>ⓘ Title and ownership not checked by ViewProof</p>
-          </div>
+            <li>ⓘ We don&apos;t check title or ownership — ask the agency how they confirm it.</li>
+          </ul>
           {c.paused ? (
-            <div className="mt-4 rounded-xl bg-slate-200/60 p-3 text-sm">
-              Paused — awaiting agency reconfirmation.
-              <button className="mt-2 w-full rounded-xl bg-white px-4 py-3 font-semibold">
-                Notify me when fresh
+            <div className="mt-4 rounded-xl bg-slate-200/60 p-4">
+              <p className="text-[16px] font-semibold">Paused for now</p>
+              <p className="mt-1 text-[16px]">
+                The agency hasn&apos;t reconfirmed this place, so booking is
+                closed. Leave your number and we&apos;ll message you on WhatsApp
+                when it&apos;s fresh.
+              </p>
+              <button className="mt-3 w-full rounded-xl bg-white px-4 py-3 text-[16px] font-semibold">
+                Notify me on WhatsApp
               </button>
             </div>
           ) : (
             <>
-              <div className="mt-4 grid gap-2" id="book">
+              <h2 className="mt-5 text-[18px] font-bold">Pick a time that suits you</h2>
+              <div className="mt-2 grid gap-2" id="book">
                 {(c.slots ?? []).slice(0, 6).map((s: { id: string; startsAt: string; left: number }) => (
                   <button
                     key={s.id}
                     disabled={s.left <= 0}
-                    className="rounded-xl border border-slate-200 px-4 py-3 text-left text-sm disabled:opacity-50"
+                    aria-label={`Book ${new Date(s.startsAt).toLocaleString()}, ${s.left} places left`}
+                    className="min-h-[56px] rounded-xl border-2 border-slate-200 px-4 py-3 text-left text-[16px] disabled:opacity-50"
                   >
-                    {new Date(s.startsAt).toLocaleString()} · {s.left} left
+                    <span className="font-semibold">{new Date(s.startsAt).toLocaleString()}</span>
+                    <br />
+                    <span>{s.left > 0 ? `${s.left} place${s.left > 1 ? "s" : ""} left · free` : "Full"}</span>
                   </button>
                 ))}
-                {!c.slots?.length && (
-                  <p className="text-sm">No free slots yet — check back or ask the agency.</p>
-                )}
+                {!c.slots?.length && <EmptySlots />}
               </div>
-              <a
-                href="#book"
-                className="mt-3 block rounded-xl bg-proof-600 px-4 py-3 text-center text-white"
-              >
-                Book a free viewing
-              </a>
+              <div className="sticky-cta mt-3">
+                <a
+                  href="#book"
+                  className="block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white"
+                >
+                  Book a free viewing
+                </a>
+              </div>
             </>
           )}
-          <a href="#report" className="mt-2 block text-center text-sm text-sky-500">
-            Report an issue
+          <a
+            href="/report"
+            className="mt-2 block min-h-[48px] py-3 text-center text-[16px] text-sky-500"
+          >
+            Something looks wrong? Tell us
           </a>
+          <HelpFooter contact={c.agency?.contact} />
         </div>
       </div>
     </main>
