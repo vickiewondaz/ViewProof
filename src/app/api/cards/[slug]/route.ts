@@ -28,6 +28,7 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
   return NextResponse.json({
     ok: true,
     card: {
+      id: listing.id,
       slug: listing.slug,
       title: listing.title,
       type: listing.type,

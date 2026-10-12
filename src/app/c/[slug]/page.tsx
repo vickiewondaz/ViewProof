@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { EmptySlots, HelpFooter } from "@/components/human";
+import { HelpFooter } from "@/components/human";
+import BookForm from "@/components/book-form";
 
 async function getCard(slug: string) {
   const h = await headers();
@@ -100,32 +101,9 @@ export default async function ViewingCardPage({
               </button>
             </div>
           ) : (
-            <>
-              <h2 className="mt-5 text-[18px] font-bold">Pick a time that suits you</h2>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2" id="book">
-                {(c.slots ?? []).slice(0, 6).map((s: { id: string; startsAt: string; left: number }) => (
-                  <button
-                    key={s.id}
-                    disabled={s.left <= 0}
-                    aria-label={`Book ${new Date(s.startsAt).toLocaleString()}, ${s.left} places left`}
-                    className="min-h-[56px] rounded-xl border-2 border-slate-200 px-4 py-3 text-left text-[16px] disabled:opacity-50"
-                  >
-                    <span className="font-semibold">{new Date(s.startsAt).toLocaleString()}</span>
-                    <br />
-                    <span>{s.left > 0 ? `${s.left} place${s.left > 1 ? "s" : ""} left · free` : "Full"}</span>
-                  </button>
-                ))}
-                {!c.slots?.length && <EmptySlots />}
-              </div>
-              <div className="sticky-cta mt-3 md:static md:bg-none md:pb-0">
-                <a
-                  href="#book"
-                  className="block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white"
-                >
-                  Book a free viewing
-                </a>
-              </div>
-            </>
+            <div id="book">
+              <BookForm listingId={c.id} slots={c.slots ?? []} />
+            </div>
           )}
           <a
             href="/report"
