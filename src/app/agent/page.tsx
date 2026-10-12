@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { CheckCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type DayBooking = {
   id: string; buyerName: string; buyerPhone: string; status: string;
@@ -123,23 +125,24 @@ export default function AgentPage() {
         aria-label="Buyer's six digit code"
         className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-5 text-center text-3xl tracking-[0.4em]"
       />
-      <button
+      <Button
         onClick={() => submit("checkin")}
-        className="mt-4 w-full rounded-xl bg-proof-600 px-4 py-5 text-[20px] font-bold text-white"
+        size="lg"
+        className="mt-4 w-full text-[20px]"
       >
-        Confirm — we met ✅
-      </button>
+        <CheckCheck /> Confirm — we met
+      </Button>
       <p className="mt-3 text-center text-[16px] font-semibold">Didn&apos;t happen?</p>
       <div className="mt-2 grid grid-cols-1 gap-2 text-[16px] sm:grid-cols-3">
-        <button onClick={() => submit("no-show-buyer")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">Buyer didn&apos;t come</button>
-        <button onClick={() => submit("no-show-agent")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">I couldn&apos;t make it</button>
-        <button onClick={() => submit("unavailable")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">Place unavailable</button>
+        <Button onClick={() => submit("no-show-buyer")} variant="secondary">Buyer didn&apos;t come</Button>
+        <Button onClick={() => submit("no-show-agent")} variant="secondary">I couldn&apos;t make it</Button>
+        <Button onClick={() => submit("unavailable")} variant="secondary">Place unavailable</Button>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       {receipt && <p className="mt-3 rounded-xl bg-proof-100 p-4 text-[16px]" role="status">🎉 {receipt}</p>}
-      <button className="mt-3 w-full rounded-xl glass-soft px-4 py-4 text-[16px] font-semibold">
+      <Button variant="ghost" className="mt-3 w-full">
         Something wrong? Report it
-      </button>
+      </Button>
       <button
         onClick={async () => {
           try {
