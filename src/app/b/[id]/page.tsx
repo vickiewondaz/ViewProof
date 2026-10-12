@@ -46,11 +46,8 @@ export default async function ViewingPassPage({ params }: { params: { id: string
           </p>
         )}
         <div className="mt-4 rounded-xl bg-sun-100 p-4 text-[16px]">
-          <p className="font-bold">Your 6-digit code is on WhatsApp</p>
-          <p className="mt-1">
-            Show it to {pass.host ?? "your host"} at the venue.
-            {pass.otpExpires && <> It expires around {new Date(pass.otpExpires).toLocaleTimeString()} — come on time.</>}
-          </p>
+          <p className="font-bold">Code is on WhatsApp — show it at the venue.</p>
+          {pass.otpExpires && <p className="mt-1">Expires ~{new Date(pass.otpExpires).toLocaleTimeString()} — come on time.</p>}
         </div>
         <div className="sticky-cta mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:static md:bg-none md:pb-0">
           <button className="w-full rounded-xl bg-sand-100 px-3 py-4 text-[16px] font-bold">

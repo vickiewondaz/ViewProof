@@ -57,7 +57,7 @@ export default function BookForm({
 
   return (
     <div>
-      <h2 className="mt-5 text-[18px] font-bold">Pick a time that suits you</h2>
+      <h2 className="mt-5 text-[18px] font-bold">Pick a time</h2>
       <div className="mt-2 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2" role="radiogroup" aria-label="Viewing times">
         {slots.slice(0, 6).map((s) => (
           <label
@@ -98,7 +98,7 @@ export default function BookForm({
         autoComplete="tel"
         className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
       />
-      <p className="mt-1 text-[14px] text-slate-500">Your meeting code arrives here. We never share your number.</p>
+      <p className="mt-1 text-[14px] text-slate-500">Code arrives here. Never shared.</p>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
@@ -131,8 +131,7 @@ export default function BookForm({
           className="mt-1 h-6 w-6 accent-[#177E5C]"
         />
         <span className="text-[16px]">
-          Yes — contact me on WhatsApp about this viewing. Free viewing, no
-          payment before we meet.
+          Yes — WhatsApp me about this viewing. Free, no payment before we meet.
         </span>
       </label>
 

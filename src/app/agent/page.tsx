@@ -59,8 +59,7 @@ export default function AgentPage() {
     <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
       <h1 className="text-[26px] font-bold">You met? Confirm it ✅</h1>
       <p className="mt-1 text-[16px]">
-        Ask the buyer for the 6 numbers from their WhatsApp message, type them
-        below, tap confirm. Big buttons — works with one hand in the sun.
+        Get the buyer&apos;s 6 numbers, type them, tap confirm.
       </p>
 
       {today.length > 0 && (
@@ -130,7 +129,7 @@ export default function AgentPage() {
       >
         Confirm — we met ✅
       </button>
-      <p className="mt-3 text-center text-[16px] font-semibold">Didn&apos;t happen? Be honest, tap one:</p>
+      <p className="mt-3 text-center text-[16px] font-semibold">Didn&apos;t happen?</p>
       <div className="mt-2 grid grid-cols-1 gap-2 text-[16px] sm:grid-cols-3">
         <button onClick={() => submit("no-show-buyer")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">Buyer didn&apos;t come</button>
         <button onClick={() => submit("no-show-agent")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">I couldn&apos;t make it</button>
@@ -168,7 +167,7 @@ export default function AgentPage() {
         Switch booking alerts on 🔔
       </button>
       {pushState && <p className="mt-2 text-[16px]" role="status">{pushState}</p>}
-      <p className="mt-3 rounded-xl bg-sun-100 p-3 text-center text-[16px]">No network? The code saves on your phone and syncs later. Don&apos;t worry.</p>
+      <p className="mt-3 rounded-xl bg-sun-100 p-3 text-center text-[16px]">Offline? Codes save and sync later.</p>
     </main>
   );
 }

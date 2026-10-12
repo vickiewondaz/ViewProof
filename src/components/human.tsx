@@ -10,7 +10,7 @@ export function HelpFooter({ contact }: { contact?: string | null }) {
           Talk to the agency: <span className="font-semibold">{contact}</span>
         </span>
       ) : (
-        "Talk to the agency on WhatsApp — a person will reply."
+        "WhatsApp the agency — a person replies."
       )}
     </p>
   );
@@ -19,8 +19,7 @@ export function HelpFooter({ contact }: { contact?: string | null }) {
 export function OfflineNote() {
   return (
     <p className="mt-3 rounded-xl bg-sun-100 p-3 text-center text-[16px]">
-      No network? No wahala — your saved pass still opens. We&apos;ll sync when
-      you&apos;re back online.
+      Offline? Saved passes still open.
     </p>
   );
 }
@@ -37,8 +36,7 @@ export function PausedNotice({ contact, title, area }: { contact?: string | null
     <div className="mt-4 rounded-xl bg-slate-200/60 p-4">
       <p className="text-[16px] font-semibold">Paused for now</p>
       <p className="mt-1 text-[16px]">
-        The agency hasn&apos;t reconfirmed this place, so booking is closed.
-        Ping them on WhatsApp and they&apos;ll tell you when it&apos;s fresh.
+        Booking is closed until the agency reconfirms. Ping them on WhatsApp.
       </p>
       {link ? (
         <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl glass-soft px-4 py-3 text-center text-[16px] font-semibold">
@@ -54,9 +52,7 @@ export function EmptySlots({ contact }: { contact?: string | null }) {
   return (
     <div className="rounded-xl bg-sand-100 p-4 text-center">
       <p className="text-[16px] font-semibold">No free slots right now</p>
-      <p className="mt-1 text-[16px]">
-        New times open when the agency reconfirms. We&apos;ll tell you on WhatsApp.
-      </p>
+      <p className="mt-1 text-[16px]">New times appear when the agency reconfirms.</p>
       {link ? (
         <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl glass-soft px-4 py-3 text-[16px] font-semibold">
           Notify me on WhatsApp

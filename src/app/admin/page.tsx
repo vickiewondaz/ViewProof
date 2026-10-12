@@ -55,7 +55,7 @@ export default function AdminPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <h1 className="text-[26px] font-bold md:text-[32px]">Landlord&apos;s office 🔑</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
-        Every shop on one screen. Lock doors when you must — records are never deleted.
+        All shops, one screen. Lock doors, keep records.
       </p>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
 

@@ -81,20 +81,24 @@ export default async function ViewingCardPage({
             {c.currency} {Number(c.price).toLocaleString()}
           </p>
           <ul className="mt-3 grid gap-2 text-[16px]">
-            <li>✓ Confirmed fresh: {new Date(c.lastConfirmedAt).toDateString()}</li>
-            <li>✓ Hosted by {c.agency?.name}</li>
-            {c.host && <li>✓ You&apos;ll meet: {c.host}</li>}
+            <li>✓ Fresh: {new Date(c.lastConfirmedAt).toDateString()} · {c.host ? `meet ${c.host}` : `hosted by ${c.agency?.name}`}</li>
             {c.fresh?.score !== null && c.fresh?.score !== undefined && (
-              <li>🏅 {c.agency?.name} · {c.fresh.badge} ({c.fresh.viewings} viewings counted)</li>
+              <li>🏅 {c.fresh.badge}</li>
             )}
-            {c.fresh && (c.fresh.score === null || c.fresh.score === undefined) && (
-              <li>🌱 {c.agency?.name} is new here — {c.fresh.badge}</li>
+            {(!c.fresh || c.fresh.score === null || c.fresh.score === undefined) && (
+              <li>🌱 New agency — still earning its score.</li>
             )}
-            {c.photographedAt && (
-              <li>✓ Pictures taken: {new Date(c.photographedAt).toDateString()}</li>
-            )}
-            <li>ⓘ We don&apos;t check title or ownership — ask the agency how they confirm it.</li>
           </ul>
+          <details className="mt-2 text-[14px] text-slate-500">
+            <summary className="min-h-[44px] cursor-pointer py-2 text-[16px]">More about this card</summary>
+            <ul className="grid gap-1 pb-2">
+              {c.photographedAt && (
+                <li>Pictures taken {new Date(c.photographedAt).toDateString()}.</li>
+              )}
+              <li>Title and ownership not checked by ViewProof.</li>
+              <li>Based on {c.fresh?.viewings ?? 0} counted viewings.</li>
+            </ul>
+          </details>
           {c.paused ? (
             <PausedNotice contact={c.agency?.contact} title={c.title} area={c.area} />
           ) : (

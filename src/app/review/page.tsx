@@ -35,7 +35,7 @@ export default function ReviewPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <h1 className="text-[26px] font-bold md:text-[32px]">Needs review</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
-        Conflicts, stale flags, and buyer reports. Human decision only — no automatic enforcement.
+        Conflicts and reports. Humans decide — nothing automatic.
       </p>
       {msg && <p className="mt-3 text-[16px]">{msg}</p>}
       <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">

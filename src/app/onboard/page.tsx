@@ -37,7 +37,7 @@ export default function OnboardPage() {
   return (
     <main className="mx-auto max-w-md px-4 pb-10 pt-6 md:max-w-lg">
       <h1 className="text-[26px] font-bold">Set up your agency 🏠</h1>
-      <p className="mt-1 text-[16px]">Two minutes. After this you can add places and invite agents.</p>
+      <p className="mt-1 text-[16px]">Two minutes, then add places.</p>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       <label className="mt-4 block text-[16px] font-semibold" htmlFor="ag-name">Agency name</label>
       <input id="ag-name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="e.g. BrightHomes Agency" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />

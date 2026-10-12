@@ -16,10 +16,7 @@ export default function Home() {
           <h1 className="mt-2 text-[34px] font-bold leading-tight md:text-[48px]">
             See a place you trust, with someone you know
           </h1>
-          <p className="mt-3 text-[18px]">
-            Every card shows what the agency confirmed and when. Booking is
-            free, on WhatsApp — no app, no account, no wahala.
-          </p>
+          <p className="mt-3 text-[18px]">Fresh cards. Named hosts. Free WhatsApp booking.</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <Link
               href="/dashboard"
@@ -61,9 +58,7 @@ export default function Home() {
       </section>
 
       <p className="mx-auto mt-8 max-w-2xl text-center text-[16px] text-slate-500">
-        Honest note: we don&apos;t check title or ownership. We show you what
-        the agency confirmed, when they confirmed it, and who will meet you —
-        so nothing is hidden.
+        We don&apos;t verify title. We show what the agency confirmed — and who&apos;ll meet you.
       </p>
     </main>
   );

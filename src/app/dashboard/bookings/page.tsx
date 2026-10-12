@@ -88,13 +88,13 @@ export default function BookingsPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <h1 className="text-[26px] font-bold md:text-[32px]">Upcoming viewings</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
-        Everyone coming, when, with whom — and the buyer&apos;s number when you need it.
+        Everyone coming, when, and how to reach them.
       </p>
       <div className="mt-3">
         <a href="/api/ledger?format=csv" className="glass-soft inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
           📜 Export commission evidence (CSV)
         </a>
-        <p className="mt-1 text-[14px] text-slate-500">Settles “whose buyer was this?” — every past viewing with agent, time, and outcome.</p>
+        <p className="mt-1 text-[14px] text-slate-500">Settles “whose buyer?” — every viewing, agent, outcome.</p>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -143,7 +143,7 @@ export default function BookingsPage() {
       )}
 
       <h2 className="mt-8 text-[22px] font-bold">Recently done 🤝</h2>
-      <p className="mt-1 max-w-2xl text-[16px]">Close deals with the exact naira, track payouts till agents smile.</p>
+      <p className="mt-1 max-w-2xl text-[16px]">Close deals. Track payouts.</p>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {done.filter((b) => b.status === "Completed").map((b) => (
           <article key={b.id} className="glass rounded-2xl p-4">

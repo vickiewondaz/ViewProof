@@ -55,10 +55,7 @@ export default function ReportPage() {
     <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
       <div className="glass rounded-2xl p-5">
         <h1 className="text-[24px] font-bold">What went wrong?</h1>
-        <p className="mt-1 text-[16px]">
-          Sorry about this. Tap what happened — a real person at the agency
-          will read it. We never punish anyone automatically.
-        </p>
+        <p className="mt-1 text-[16px]">Tap what happened — a real person reads it.</p>
         <label className="mt-4 block text-[16px] font-semibold" htmlFor="listing">Listing ID (on your card)</label>
         <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
         <label className="mt-3 block text-[16px] font-semibold" htmlFor="booking">Booking ID <span className="font-normal">(if you booked)</span></label>

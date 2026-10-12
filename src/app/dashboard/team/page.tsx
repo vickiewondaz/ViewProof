@@ -43,7 +43,7 @@ export default function TeamPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <h1 className="text-[26px] font-bold md:text-[32px]">Your team</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
-        Add each host with the exact WhatsApp number they sign in with — that number is how the app knows it&apos;s them.
+        Use the exact WhatsApp number they sign in with.
       </p>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
 
