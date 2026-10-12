@@ -72,7 +72,7 @@ export default function AgentPage() {
                   setReceipt(null);
                   document.getElementById("code")?.focus();
                 }}
-                className={`rounded-xl border-2 px-4 py-3 text-left text-[16px] ${bookingId === b.id ? "border-proof-600 bg-proof-100" : "border-slate-200 bg-white"}`}
+                className={`rounded-xl border-2 px-4 py-3 text-left text-[16px] ${bookingId === b.id ? "border-proof-600 bg-proof-100" : "border-slate-200 glass-soft glass-input"}`}
               >
                 <span className="font-bold">{new Date(b.slot.startsAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
                 {" · "}{b.listing.title} · {b.buyerName}
@@ -96,7 +96,7 @@ export default function AgentPage() {
         onChange={(e) => setBookingId(e.target.value)}
         placeholder="Paste booking ID here"
         autoComplete="off"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
       />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="code">
         Buyer&apos;s 6-digit code
@@ -110,7 +110,7 @@ export default function AgentPage() {
         maxLength={6}
         placeholder="··· ···"
         aria-label="Buyer's six digit code"
-        className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-5 text-center text-3xl tracking-[0.4em]"
+        className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-5 text-center text-3xl tracking-[0.4em]"
       />
       <button
         onClick={() => submit("checkin")}
@@ -120,13 +120,13 @@ export default function AgentPage() {
       </button>
       <p className="mt-3 text-center text-[16px] font-semibold">Didn&apos;t happen? Be honest, tap one:</p>
       <div className="mt-2 grid grid-cols-1 gap-2 text-[16px] sm:grid-cols-3">
-        <button onClick={() => submit("no-show-buyer")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">Buyer didn&apos;t come</button>
-        <button onClick={() => submit("no-show-agent")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">I couldn&apos;t make it</button>
-        <button onClick={() => submit("unavailable")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">Place unavailable</button>
+        <button onClick={() => submit("no-show-buyer")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">Buyer didn&apos;t come</button>
+        <button onClick={() => submit("no-show-agent")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">I couldn&apos;t make it</button>
+        <button onClick={() => submit("unavailable")} className="min-h-[52px] rounded-xl glass-soft px-2 py-3 font-semibold">Place unavailable</button>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       {receipt && <p className="mt-3 rounded-xl bg-proof-100 p-4 text-[16px]" role="status">🎉 {receipt}</p>}
-      <button className="mt-3 w-full rounded-xl bg-white px-4 py-4 text-[16px] font-semibold">
+      <button className="mt-3 w-full rounded-xl glass-soft px-4 py-4 text-[16px] font-semibold">
         Something wrong? Report it
       </button>
       <button

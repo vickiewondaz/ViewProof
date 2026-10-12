@@ -57,7 +57,7 @@ export default async function ViewingCardPage({
   return (
     <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-6">
       {/* Phones: gallery over details. Desktop: gallery left, booking panel right. */}
-      <div className="grid gap-4 overflow-hidden rounded-2xl bg-white md:grid-cols-[1.25fr_1fr]">
+      <div className="grid gap-4 overflow-hidden glass rounded-2xl md:grid-cols-[1.25fr_1fr]">
         <div>
           {c.images?.[0] ? (
             // eslint-disable-next-line @next/next/no-img-element

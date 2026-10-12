@@ -26,12 +26,12 @@ export default function DashboardPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-[26px] font-bold md:text-[32px]">Owner dashboard</h1>
-        <a href="/api/reports/weekly?format=csv" className="rounded-xl bg-white px-4 py-3 text-[16px] font-semibold">
+        <a href="/api/reports/weekly?format=csv" className="rounded-xl glass-soft px-4 py-3 text-[16px] font-semibold">
           Export CSV
         </a>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        <section className="rounded-2xl bg-white p-4">
+        <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
           <p className="text-sm">
             {Object.entries(s.listings.byStatus).map(([k, v]) => `${k}: ${v}`).join(" · ")}
@@ -45,13 +45,13 @@ export default function DashboardPage() {
             </p>
           )}
         </section>
-        <section className="rounded-2xl bg-white p-4">
+        <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Today&apos;s viewings</h2>
           <p className="text-sm">
             {Object.entries(s.bookingsToday).map(([k, v]) => `${k}: ${v}`).join(" · ") || "No activity yet."}
           </p>
         </section>
-        <section className="rounded-2xl bg-white p-4">
+        <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Agent scorecard</h2>
           <div className="mt-2 grid gap-2">
             {s.scorecard.map((a) => (
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             {!s.scorecard.length && <p className="text-sm">No agents yet.</p>}
           </div>
         </section>
-        <section className="rounded-2xl bg-white p-4">
+        <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Issues inbox · {s.openIssues} open</h2>
           <a href="/review" className="text-sm text-sky-500">Open triage queue →</a>
         </section>

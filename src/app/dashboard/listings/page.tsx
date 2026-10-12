@@ -136,7 +136,7 @@ export default function ListingsPage() {
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
 
       {showForm && (
-        <section className="mt-4 rounded-2xl bg-white p-4 md:p-6">
+        <section className="mt-4 glass rounded-2xl p-4 md:p-6">
           <h2 className="text-[18px] font-bold">New listing (starts as draft)</h2>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             <div>
@@ -145,7 +145,7 @@ export default function ListingsPage() {
             </div>
             <div>
               <label className="block text-[16px] font-semibold" htmlFor="nl-type">Type</label>
-              <select id="nl-type" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]">
+              <select id="nl-type" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]">
                 <option value="rent">Rent</option>
                 <option value="sale">Sale</option>
                 <option value="land">Land</option>
@@ -163,7 +163,7 @@ export default function ListingsPage() {
             </div>
             <div className="md:col-span-2">
               <label className="block text-[16px] font-semibold" htmlFor="nl-agent">Who hosts viewings?</label>
-              <select id="nl-agent" value={f.agentId} onChange={(e) => setF({ ...f, agentId: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]">
+              <select id="nl-agent" value={f.agentId} onChange={(e) => setF({ ...f, agentId: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]">
                 <option value="">Choose later</option>
                 {agents.map((a) => <option key={a.id} value={a.id}>{a.publicName} ({a.fullName})</option>)}
               </select>
@@ -177,7 +177,7 @@ export default function ListingsPage() {
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {listings.map((l) => (
-          <article key={l.id} className="rounded-2xl bg-white p-4">
+          <article key={l.id} className="glass rounded-2xl p-4">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-[18px] font-bold leading-snug">{l.title}</p>
@@ -209,12 +209,12 @@ export default function ListingsPage() {
                   <Link href={`/c/${l.slug}`} className="flex min-h-[48px] items-center justify-center rounded-xl bg-sand-100 px-2 py-2 text-[16px] font-semibold">
                     View card →
                   </Link>
-                  <button onClick={() => setStatus(l.id, "Unavailable")} className="min-h-[48px] rounded-xl bg-white px-2 py-2 text-[16px] font-semibold">
+                  <button onClick={() => setStatus(l.id, "Unavailable")} className="min-h-[48px] rounded-xl glass-soft px-2 py-2 text-[16px] font-semibold">
                     Pause
                   </button>
                 </>
               )}
-              <button onClick={() => toggleSlots(l.id)} className="col-span-2 min-h-[48px] rounded-xl bg-white px-2 py-2 text-[16px] font-semibold">
+              <button onClick={() => toggleSlots(l.id)} className="col-span-2 min-h-[48px] rounded-xl glass-soft px-2 py-2 text-[16px] font-semibold">
                 {openSlots === l.id ? "Hide times ▴" : "Viewing times ▾"}
               </button>
             </div>
@@ -223,7 +223,7 @@ export default function ListingsPage() {
                 {(slots[l.id] ?? []).map((s) => (
                   <div key={s.id} className="flex items-center justify-between gap-2 border-b border-white py-2 text-[16px] last:border-0">
                     <span>{new Date(s.startsAt).toLocaleString()} · {s.bookedCount}/{s.capacity} taken</span>
-                    <button onClick={() => dropSlot(l.id, s.id)} aria-label="Remove time" className="min-h-[44px] min-w-[44px] rounded-lg bg-white px-3 font-bold">×</button>
+                    <button onClick={() => dropSlot(l.id, s.id)} aria-label="Remove time" className="min-h-[44px] min-w-[44px] rounded-lg glass-soft px-3 font-bold">×</button>
                   </div>
                 ))}
                 {!(slots[l.id] ?? []).length && <p className="py-2 text-[16px]">No times yet — add the first below.</p>}
@@ -233,7 +233,7 @@ export default function ListingsPage() {
                     value={newSlot}
                     onChange={(e) => setNewSlot(e.target.value)}
                     aria-label="New viewing time"
-                    className="min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+                    className="min-h-[48px] w-full rounded-xl border border-slate-200 glass-soft glass-input px-3 text-[16px]"
                   />
                   <button onClick={() => addSlot(l.id)} className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white">
                     Add

@@ -41,7 +41,7 @@ export default function OwnerLoginPage() {
         placeholder="you@youragency.com"
         inputMode="email"
         autoComplete="email"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
       />
       <button
         onClick={send}
@@ -59,11 +59,11 @@ export default function OwnerLoginPage() {
             placeholder="··· ···"
             inputMode="numeric"
             autoComplete="one-time-code"
-            className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-center text-2xl tracking-[0.4em]"
+            className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-center text-2xl tracking-[0.4em]"
           />
           <button
             onClick={verify}
-            className="mt-3 w-full rounded-xl bg-white px-4 py-4 text-[18px] font-bold"
+            className="mt-3 w-full rounded-xl glass-soft px-4 py-4 text-[18px] font-bold"
           >
             Verify — let me in
           </button>

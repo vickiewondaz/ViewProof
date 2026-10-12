@@ -31,7 +31,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
 
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
-      <div className="rounded-2xl bg-white p-5 text-center">
+      <div className="glass rounded-2xl p-5 text-center">
         <p className="text-[16px] font-bold text-proof-600">
           {pass.status === "Confirmed" ? "🎉 You&apos;re booked!" : `Status: ${pass.status}`}
         </p>

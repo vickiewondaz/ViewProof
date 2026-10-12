@@ -16,7 +16,7 @@ export default function CancelButton({ bookingId }: { bookingId: string }) {
     <>
       <button
         onClick={cancel}
-        className="w-full rounded-xl bg-white px-4 py-4 text-[16px] font-semibold"
+        className="w-full rounded-xl glass-soft px-4 py-4 text-[16px] font-semibold"
       >
         Can&apos;t make it? Cancel here
       </button>

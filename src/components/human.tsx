@@ -41,7 +41,7 @@ export function PausedNotice({ contact, title, area }: { contact?: string | null
         Ping them on WhatsApp and they&apos;ll tell you when it&apos;s fresh.
       </p>
       {link ? (
-        <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl bg-white px-4 py-3 text-center text-[16px] font-semibold">
+        <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl glass-soft px-4 py-3 text-center text-[16px] font-semibold">
           Notify me on WhatsApp
         </a>
       ) : null}
@@ -58,7 +58,7 @@ export function EmptySlots({ contact }: { contact?: string | null }) {
         New times open when the agency reconfirms. We&apos;ll tell you on WhatsApp.
       </p>
       {link ? (
-        <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl bg-white px-4 py-3 text-[16px] font-semibold">
+        <a href={link} target="_blank" rel="noreferrer" className="mt-3 block rounded-xl glass-soft px-4 py-3 text-[16px] font-semibold">
           Notify me on WhatsApp
         </a>
       ) : (

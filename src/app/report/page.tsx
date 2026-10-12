@@ -53,7 +53,7 @@ export default function ReportPage() {
 
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
-      <div className="rounded-2xl bg-white p-5">
+      <div className="glass rounded-2xl p-5">
         <h1 className="text-[24px] font-bold">What went wrong?</h1>
         <p className="mt-1 text-[16px]">
           Sorry about this. Tap what happened — a real person at the agency
@@ -83,7 +83,7 @@ export default function ReportPage() {
           accept="image/*"
           capture="environment"
           onChange={(e) => onPhoto(e.target.files?.[0])}
-          className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]"
+          className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
         />
         {photoUrl && <p className="mt-1 text-[16px]">Photo added ✓</p>}
         <div className="sticky-cta mt-3">

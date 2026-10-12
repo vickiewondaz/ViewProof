@@ -29,13 +29,13 @@ export default function Home() {
             </Link>
             <Link
               href="/agent"
-              className="rounded-xl bg-white px-4 py-4 text-center text-[18px] font-bold"
+              className="rounded-xl glass-soft px-4 py-4 text-center text-[18px] font-bold"
             >
               I&apos;m hosting viewings
             </Link>
           </div>
         </div>
-        <div className="rounded-2xl bg-white p-5 md:p-8">
+        <div className="glass rounded-2xl p-5 md:p-8">
           <p className="text-[14px] font-bold text-proof-600">EXAMPLE CARD</p>
           <p className="mt-1 text-[22px] font-bold">3-bedroom · Gwarinpa, Abuja</p>
           <p className="tabular mt-1 text-[18px]">₦4,000,000 yearly</p>
@@ -53,7 +53,7 @@ export default function Home() {
       {/* How it works: 1 col phones → 3 col desktop. */}
       <section className="grid gap-3 md:grid-cols-3">
         {STEPS.map((s) => (
-          <div key={s.title} className="rounded-2xl bg-white p-5">
+          <div key={s.title} className="glass rounded-2xl p-5">
             <p className="text-[18px] font-bold">{s.title}</p>
             <p className="mt-1 text-[16px]">{s.text}</p>
           </div>
