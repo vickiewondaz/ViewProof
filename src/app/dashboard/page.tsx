@@ -36,6 +36,9 @@ export default function DashboardPage() {
           <p className="text-sm">
             {Object.entries(s.listings.byStatus).map(([k, v]) => `${k}: ${v}`).join(" · ")}
           </p>
+          <a href="/dashboard/listings" className="mt-2 inline-block rounded-xl bg-sand-100 px-4 py-3 text-[16px] font-semibold">
+            Manage listings →
+          </a>
           {s.listings.staleLive > 0 && (
             <p className="mt-1 rounded-xl bg-coral-100 p-2 text-sm">
               ⚠ {s.listings.staleLive} active look stale — reconfirm to unpause booking.
