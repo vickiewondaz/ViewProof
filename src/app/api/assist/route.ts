@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
 import { askGuide } from "@/lib/guide";
+import { llmGuide } from "@/lib/guide-llm";
 
 const Ask = z.object({
   slug: z.string().min(1).max(160),
@@ -30,24 +31,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false }, { status: 404 });
 
   const host = listing.agent?.publicName ?? listing.agent?.fullName?.split(" ")[0] ?? null;
-  const answer = await askGuide(
-    {
-      title: listing.title,
-      area: listing.area,
-      price: listing.price.toString(),
-      currency: listing.currency,
-      lastConfirmedAt: listing.lastConfirmedAt.toISOString(),
-      photographedAt: listing.photographedAt?.toISOString() ?? null,
-      agencyName: listing.agency.name,
-      agencyContact: listing.agency.contactPublic,
-      host,
-      bookable: listing.status === "Active",
-      paused: listing.status !== "Active",
-      slots: listing.slots.map((s) => ({ startsAt: s.startsAt.toISOString(), left: s.capacity - s.bookedCount })),
-      policy: listing.agency.policyText,
-      freshBadge: null,
-    },
-    parsed.data.question
-  );
+  const facts = {
+    title: listing.title,
+    area: listing.area,
+    price: listing.price.toString(),
+    currency: listing.currency,
+    lastConfirmedAt: listing.lastConfirmedAt.toISOString(),
+    photographedAt: listing.photographedAt?.toISOString() ?? null,
+    agencyName: listing.agency.name,
+    agencyContact: listing.agency.contactPublic,
+    host,
+    bookable: listing.status === "Active",
+    paused: listing.status !== "Active",
+    slots: listing.slots.map((s) => ({ startsAt: s.startsAt.toISOString(), left: s.capacity - s.bookedCount })),
+    policy: listing.agency.policyText,
+    freshBadge: null,
+  };
+  // Rules first (always correct), then Gemini → OpenRouter to warm the words.
+  // Guards discard any invention; failures serve the rule answer silently.
+  const rule = await askGuide(facts, parsed.data.question);
+  const answer = await llmGuide(facts, parsed.data.question, rule);
   return NextResponse.json({ ok: true, ...answer });
 }
