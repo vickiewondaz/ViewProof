@@ -8,6 +8,7 @@ type Listing = {
   agent?: { publicName: string; fullName: string } | null;
 };
 type Agent = { id: string; fullName: string; publicName: string; active: boolean };
+type Slot = { id: string; startsAt: string; capacity: number; bookedCount: number };
 
 const STATUS_HINT: Record<string, string> = {
   Draft: "Not visible yet — finish details, then publish.",
@@ -26,6 +27,9 @@ export default function ListingsPage() {
   const [showForm, setShowForm] = useState(false);
   const [f, setF] = useState({ title: "", type: "rent", area: "", price: "", agentId: "" });
   const [busy, setBusy] = useState(false);
+  const [openSlots, setOpenSlots] = useState<string | null>(null);
+  const [slots, setSlots] = useState<Record<string, Slot[]>>({});
+  const [newSlot, setNewSlot] = useState("");
 
   const load = async () => {
     const [l, a] = await Promise.all([
@@ -68,6 +72,51 @@ export default function ListingsPage() {
     const j = await res.json().catch(() => ({}));
     setMsg(j.ok ? `Fresh again ✓ Status: ${j.listing.status}.` : j.error ?? "Failed.");
     if (j.ok) load();
+  };
+
+  const setStatus = async (id: string, status: string) => {
+    const res = await fetch(`/api/listings/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    const j = await res.json().catch(() => ({}));
+    // Gate errors are human already ("Missing for Active: ...") — show them raw.
+    setMsg(j.ok ? `Now ${j.listing.status}.` : j.error ?? "Couldn't change — try again.");
+    if (j.ok) load();
+  };
+
+  const toggleSlots = async (id: string) => {
+    if (openSlots === id) return setOpenSlots(null);
+    setOpenSlots(id);
+    const res = await fetch(`/api/slots?listingId=${id}`).then((r) => r.json()).catch(() => ({}));
+    if (res.ok) setSlots((s) => ({ ...s, [id]: res.slots }));
+  };
+
+  const addSlot = async (listingId: string) => {
+    if (!newSlot) return setMsg("Pick a date and time first.");
+    const res = await fetch("/api/slots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId, startsAt: new Date(newSlot).toISOString(), capacity: 2 }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (j.ok) {
+      setNewSlot("");
+      setMsg("Time added ✓ Buyers can book it now.");
+      const r = await fetch(`/api/slots?listingId=${listingId}`).then((x) => x.json()).catch(() => ({}));
+      if (r.ok) setSlots((s) => ({ ...s, [listingId]: r.slots }));
+    } else setMsg(j.error ?? "Couldn't add — try again.");
+  };
+
+  const dropSlot = async (listingId: string, slotId: string) => {
+    const res = await fetch(`/api/slots/${slotId}`, { method: "DELETE" });
+    const j = await res.json().catch(() => ({}));
+    if (j.ok) {
+      setMsg("Time removed.");
+      const r = await fetch(`/api/slots?listingId=${listingId}`).then((x) => x.json()).catch(() => ({}));
+      if (r.ok) setSlots((s) => ({ ...s, [listingId]: r.slots }));
+    } else setMsg(j.error ?? "Couldn't remove.");
   };
 
   return (
@@ -150,12 +199,48 @@ export default function ListingsPage() {
                   Reconfirm ✓
                 </button>
               )}
-              {l.status === "Active" && (
-                <Link href={`/c/${l.slug}`} className="flex min-h-[48px] items-center justify-center rounded-xl bg-sand-100 px-2 py-2 text-[16px] font-semibold">
-                  View card →
-                </Link>
+              {(l.status === "Draft" || l.status === "NeedsReview" || l.status === "Unavailable") && (
+                <button onClick={() => setStatus(l.id, "Active")} className="min-h-[48px] rounded-xl bg-proof-600 px-2 py-2 text-[16px] font-bold text-white">
+                  Publish 🚀
+                </button>
               )}
+              {l.status === "Active" && (
+                <>
+                  <Link href={`/c/${l.slug}`} className="flex min-h-[48px] items-center justify-center rounded-xl bg-sand-100 px-2 py-2 text-[16px] font-semibold">
+                    View card →
+                  </Link>
+                  <button onClick={() => setStatus(l.id, "Unavailable")} className="min-h-[48px] rounded-xl bg-white px-2 py-2 text-[16px] font-semibold">
+                    Pause
+                  </button>
+                </>
+              )}
+              <button onClick={() => toggleSlots(l.id)} className="col-span-2 min-h-[48px] rounded-xl bg-white px-2 py-2 text-[16px] font-semibold">
+                {openSlots === l.id ? "Hide times ▴" : "Viewing times ▾"}
+              </button>
             </div>
+            {openSlots === l.id && (
+              <div className="mt-2 rounded-xl bg-sand-100 p-3">
+                {(slots[l.id] ?? []).map((s) => (
+                  <div key={s.id} className="flex items-center justify-between gap-2 border-b border-white py-2 text-[16px] last:border-0">
+                    <span>{new Date(s.startsAt).toLocaleString()} · {s.bookedCount}/{s.capacity} taken</span>
+                    <button onClick={() => dropSlot(l.id, s.id)} aria-label="Remove time" className="min-h-[44px] min-w-[44px] rounded-lg bg-white px-3 font-bold">×</button>
+                  </div>
+                ))}
+                {!(slots[l.id] ?? []).length && <p className="py-2 text-[16px]">No times yet — add the first below.</p>}
+                <div className="mt-2 flex gap-2">
+                  <input
+                    type="datetime-local"
+                    value={newSlot}
+                    onChange={(e) => setNewSlot(e.target.value)}
+                    aria-label="New viewing time"
+                    className="min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+                  />
+                  <button onClick={() => addSlot(l.id)} className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white">
+                    Add
+                  </button>
+                </div>
+              </div>
+            )}
           </article>
         ))}
       </div>

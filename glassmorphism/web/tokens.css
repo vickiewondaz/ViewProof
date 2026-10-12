@@ -1,0 +1,88 @@
+/* ============================================================
+   Glass System — shared design tokens (CSS custom properties)
+   Source of truth: ../tokens.json
+   ============================================================ */
+
+:root {
+  /* Backgrounds */
+  --glass-canvas-light: #eef1fb;
+  --glass-canvas-dark: #0b1020;
+  --glass-blob-a: #5b6cff;
+  --glass-blob-b: #18c5b4;
+  --glass-blob-c: #ff8a3d;
+  --glass-blob-d: #e0447a;
+
+  /* Text */
+  --glass-text-light: #0b1020;
+  --glass-muted-light: rgba(11, 16, 32, 0.62);
+  --glass-text-dark: #ffffff;
+  --glass-muted-dark: rgba(255, 255, 255, 0.72);
+
+  /* Accent */
+  --glass-accent-primary: #5b6cff;
+  --glass-accent-success: #1e9e52;
+  --glass-accent-warning: #e0a008;
+  --glass-accent-danger: #d63a3a;
+
+  /* Glass material */
+  --glass-blur-sm: 10px;
+  --glass-blur-md: 18px;
+  --glass-blur-lg: 28px;
+  --glass-saturation-light: 1.4;
+  --glass-saturation-dark: 1.6;
+
+  --glass-fill-light: rgba(255, 255, 255, 0.55);
+  --glass-fill-dark: rgba(17, 22, 46, 0.42);
+  --glass-fill-strong-light: rgba(255, 255, 255, 0.72);
+  --glass-fill-strong-dark: rgba(17, 22, 46, 0.60);
+  --glass-border-light: rgba(255, 255, 255, 0.70);
+  --glass-border-dark: rgba(255, 255, 255, 0.16);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 8px 32px rgba(8, 12, 32, 0.20);
+  --glass-shadow-raised: 0 18px 50px rgba(8, 12, 32, 0.32);
+
+  /* Radius / spacing / motion */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --radius-pill: 999px;
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --motion-fast: 120ms;
+  --motion-base: 220ms;
+  --easing: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Active theme (defaults to light) */
+  --surface-fill: var(--glass-fill-light);
+  --surface-fill-strong: var(--glass-fill-strong-light);
+  --surface-border: var(--glass-border-light);
+  --text: var(--glass-text-light);
+  --text-muted: var(--glass-muted-light);
+  --saturation: var(--glass-saturation-light);
+}
+
+/* Dark theme — apply class="glass-theme-dark" to a container or <html> */
+.glass-theme-dark {
+  --surface-fill: var(--glass-fill-dark);
+  --surface-fill-strong: var(--glass-fill-strong-dark);
+  --surface-border: var(--glass-border-dark);
+  --text: var(--glass-text-dark);
+  --text-muted: var(--glass-muted-dark);
+  --saturation: var(--glass-saturation-dark);
+}
+
+/* Accessibility: honor "reduce transparency" by falling back to solid surfaces */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-fill-light: rgba(255, 255, 255, 0.97);
+    --glass-border-light: rgba(11, 16, 32, 0.12);
+  }
+  .glass-theme-dark,
+  :root:has(.glass-theme-dark) {
+    --glass-fill-dark: rgba(20, 25, 50, 0.97);
+  }
+  .glass-surface { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}

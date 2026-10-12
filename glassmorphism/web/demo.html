@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" class="glass-theme-light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Glass System — Web Preview</title>
+<style>
+/* Tokens (mirrors tokens.css) */
+:root{
+  --canvas-light:#eef1fb; --canvas-dark:#0b1020;
+  --blob-a:#5b6cff; --blob-b:#18c5b4; --blob-c:#ff8a3d; --blob-d:#e0447a;
+  --accent:#5b6cff; --success:#1e9e52;
+  --blur-sm:10px; --blur-md:18px; --blur-lg:28px;
+  --r-sm:12px; --r-md:18px; --r-lg:26px; --r-pill:999px;
+  --md:16px; --lg:24px; --xl:32px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --fill:rgba(255,255,255,.55); --fill-strong:rgba(255,255,255,.72);
+  --border:rgba(255,255,255,.70); --text:#0b1020; --muted:rgba(11,16,32,.62); --sat:1.4;
+  --shadow:0 8px 32px rgba(8,12,32,.20); --shadow-2:0 18px 50px rgba(8,12,32,.32);
+}
+html.glass-theme-dark{
+  --fill:rgba(17,22,46,.42); --fill-strong:rgba(17,22,46,.60);
+  --border:rgba(255,255,255,.16); --text:#fff; --muted:rgba(255,255,255,.72); --sat:1.6;
+}
+*{box-sizing:border-box}
+body{margin:0}
+.canvas{position:relative;min-height:100vh;background:var(--canvas-light);color:var(--text);
+  overflow:hidden;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:40px;}
+html.glass-theme-dark .canvas{background:var(--canvas-dark)}
+.canvas::before,.canvas::after{content:"";position:absolute;width:60vmax;height:60vmax;border-radius:50%;
+  filter:blur(30px);opacity:.8;pointer-events:none;z-index:0;transition:background .4s}
+.canvas::before{top:-20vmax;left:-14vmax;
+  background:radial-gradient(circle at 30% 30%,var(--blob-a),transparent 60%),radial-gradient(circle at 70% 40%,var(--blob-b),transparent 60%)}
+.canvas::after{bottom:-22vmax;right:-16vmax;
+  background:radial-gradient(circle at 60% 70%,var(--blob-c),transparent 60%),radial-gradient(circle at 30% 80%,var(--blob-d),transparent 60%)}
+.canvas > *{position:relative;z-index:1}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+h1{font-size:1.9rem;margin:0}
+.sub{color:var(--muted);margin:6px 0 0}
+.glass{background:var(--fill);-webkit-backdrop-filter:blur(var(--blur-md)) saturate(var(--sat));
+  backdrop-filter:blur(var(--blur-md)) saturate(var(--sat));border:1px solid var(--border);
+  box-shadow:var(--shadow);border-radius:var(--r-lg)}
+.card{padding:var(--lg)}
+.card h3{margin:0 0 6px}
+.card p{margin:0;color:var(--muted);line-height:1.5}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:var(--r-pill);
+  border:1px solid var(--border);background:var(--fill-strong);color:var(--text);font-weight:600;cursor:pointer;
+  -webkit-backdrop-filter:blur(var(--blur-sm)) saturate(var(--sat));backdrop-filter:blur(var(--blur-sm)) saturate(var(--sat));
+  box-shadow:var(--shadow);transition:transform .12s var(--ease),box-shadow .12s var(--ease)}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.btn.primary{background:color-mix(in srgb,var(--accent) 88%,transparent);color:#fff;border-color:rgba(255,255,255,.4)}
+.input{padding:12px 16px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--fill);
+  color:var(--text);font-size:.95rem;outline:none;min-width:240px;
+  -webkit-backdrop-filter:blur(var(--blur-sm));backdrop-filter:blur(var(--blur-sm))}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--r-pill);
+  font-size:.78rem;font-weight:600;background:var(--fill-strong);border:1px solid var(--border)}
+.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 22px;border-radius:var(--r-pill)}
+.nav .brand{font-weight:700}
+.nav nav{display:flex;gap:22px}
+.nav a{color:var(--muted);text-decoration:none;font-size:.92rem}
+.nav a:hover{color:var(--text)}
+.toggle{width:52px;height:30px;border-radius:var(--r-pill);border:1px solid var(--border);
+  background:var(--fill);position:relative;cursor:pointer;-webkit-backdrop-filter:blur(var(--blur-sm));backdrop-filter:blur(var(--blur-sm));
+  transition:background .22s var(--ease)}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .22s var(--ease)}
+.toggle[aria-checked=true]{background:var(--accent)}
+.toggle[aria-checked=true]::after{transform:translateX(22px)}
+@media (prefers-reduced-transparency:reduce){.glass,.btn,.input,.badge,.toggle{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--fill-strong)}}
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="wrap">
+    <header class="nav glass">
+      <span class="brand">Glass System</span>
+      <nav><a href="#">Home</a><a href="#">Components</a><a href="#">Tokens</a></nav>
+      <button id="theme" class="btn" aria-pressed="false">🌙 Dark</button>
+    </header>
+
+    <div>
+      <h1>Glassmorphism, one token set.</h1>
+      <p class="sub">Web (CSS/React) · iOS (SwiftUI) · Android (Compose) — same surfaces, blur, borders & shadows.</p>
+    </div>
+
+    <div class="grid">
+      <div class="glass card">
+        <h3>Frosted card</h3>
+        <p>Backdrop blur + saturate over a vibrant backdrop, hairline border, layered shadow.</p>
+      </div>
+      <div class="glass card">
+        <h3>Strong variant</h3>
+        <p>Boost the fill opacity for legibility over busy backgrounds or small text.</p>
+      </div>
+      <div class="glass card">
+        <h3>Accessible</h3>
+        <p>Honors <code>prefers-reduced-transparency</code> by falling back to solid surfaces.</p>
+      </div>
+    </div>
+
+    <div class="glass card">
+      <h3>Controls</h3>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary">Primary action</button>
+        <button class="btn">Secondary</button>
+        <span class="badge"><span class="dot"></span>Live</span>
+        <input class="input" placeholder="Type something…" />
+        <button id="sw" class="toggle" role="switch" aria-checked="false"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const root = document.documentElement;
+  const themeBtn = document.getElementById("theme");
+  themeBtn.addEventListener("click", () => {
+    const dark = root.classList.toggle("glass-theme-dark");
+    root.classList.toggle("glass-theme-light", !dark);
+    themeBtn.textContent = dark ? "☀️ Light" : "🌙 Dark";
+    themeBtn.setAttribute("aria-pressed", String(dark));
+  });
+  const sw = document.getElementById("sw");
+  sw.addEventListener("click", () => {
+    sw.setAttribute("aria-checked", sw.getAttribute("aria-checked") === "true" ? "false" : "true");
+  });
+</script>
+</body>
+</html>
