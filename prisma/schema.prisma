@@ -44,6 +44,11 @@ enum IssueStatus {
   Dismissed
 }
 
+enum AgencyStatus {
+  Active
+  Suspended
+}
+
 enum EvidenceKind {
   mandate
   photo
@@ -59,13 +64,14 @@ enum EvidenceStatus {
 }
 
 model Agency {
-  id                  String    @id @default(cuid())
+  id                  String       @id @default(cuid())
   name                String
   contactPublic       String
   areas               String[]
-  policyText          String    @default("")
-  refreshIntervalDays Int       @default(14)
-  createdAt           DateTime  @default(now())
+  policyText          String       @default("")
+  refreshIntervalDays Int          @default(14)
+  status              AgencyStatus @default(Active)
+  createdAt           DateTime     @default(now())
   agents              Agent[]
   listings            Listing[]
 }
@@ -109,7 +115,7 @@ model Listing {
   slots           Slot[]
   bookings        Booking[]
   issues          Issue[]
-  evidenceDocs  EvidenceDoc[]
+  evidenceDocs    EvidenceDoc[]
 
   @@index([agencyId, status])
   @@index([slug])
@@ -183,20 +189,21 @@ model AuditLog {
 // Scanned / pictured documents as *submitted evidence only* — never proof.
 // Buyer sees label + date only; reviewer sees thumbnail. Bytes auto-expire;
 // audit keeps who/when without bytes. OCR extracts to draft, human approves.
+
 model EvidenceDoc {
-  id         String         @id @default(cuid())
-  listingId  String
-  listing    Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  kind       EvidenceKind   @default(photo)
-  imageUrl   String
-  hash       String
-  takenAt    DateTime?
-  uploadedBy String
-  status     EvidenceStatus @default(Pending)
-  ocrText    String?        @db.Text
+  id            String         @id @default(cuid())
+  listingId     String
+  listing       Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  kind          EvidenceKind   @default(photo)
+  imageUrl      String
+  hash          String
+  takenAt       DateTime?
+  uploadedBy    String
+  status        EvidenceStatus @default(Pending)
+  ocrText       String?        @db.Text
   ocrConfidence Float?
-  createdAt  DateTime       @default(now())
-  reviewedAt DateTime?
+  createdAt     DateTime       @default(now())
+  reviewedAt    DateTime?
 
   @@index([listingId, status])
   @@index([hash])
@@ -216,6 +223,7 @@ model WaMessage {
 }
 
 // PWA Web Push subscriptions (booking alerts fallback alongside WhatsApp).
+
 model PushSub {
   id        String   @id @default(cuid())
   endpoint  String   @unique
@@ -242,6 +250,10 @@ model User {
   sessions            Session[]
   accounts            Account[]
 
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
   @@unique([email])
   @@unique([phoneNumber])
   @@map("user")
@@ -257,6 +269,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@index([userId])

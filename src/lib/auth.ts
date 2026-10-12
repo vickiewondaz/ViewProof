@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { emailOTP, phoneNumber } from "better-auth/plugins";
+import { emailOTP, phoneNumber, admin } from "better-auth/plugins";
 import { prisma } from "./db";
 import { sendAuthCode } from "./whatsapp";
 import { sendEmailOtp } from "./email";
@@ -42,6 +42,12 @@ export const auth = betterAuth({
         getTempEmail: (phoneNumber) => `${phoneNumber}@viewproof.local`,
         getTempName: (phoneNumber) => phoneNumber,
       },
+    }),
+    // Platform admin: user management (ban, roles, impersonate) for the
+    // landlord's office. First admin via: npx auth create-admin --email you@...
+    admin({
+      defaultRole: "seeker",
+      bannedUserMessage: "This account is paused. Talk to ViewProof support on WhatsApp if this is a mistake.",
     }),
   ],
 });

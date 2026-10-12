@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 type Summary = {
+  agency?: { name: string; status: string };
   listings: { total: number; byStatus: Record<string, number>; staleLive: number };
   bookingsToday: Record<string, number>;
   scorecard: { id: string; name: string; active: boolean; assigned: number; attended: number; noShows: number; mismatches: number; attendedPct: number }[];
@@ -31,6 +32,12 @@ export default function DashboardPage() {
         </a>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {s.agency?.status === "Suspended" && (
+          <div className="rounded-2xl bg-coral-100 p-4 md:col-span-2 xl:col-span-3">
+            <p className="text-[16px] font-bold">🔒 This shop is locked by platform support</p>
+            <p className="mt-1 text-[16px]">Your cards are hidden and bookings paused. Records are safe. Talk to support to reopen.</p>
+          </div>
+        )}
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
           <p className="text-sm">

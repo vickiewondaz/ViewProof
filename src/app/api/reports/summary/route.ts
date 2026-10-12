@@ -66,6 +66,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     summary: {
+      agency: { name: agency.name, status: agency.status },
       listings: { total: listings.length, byStatus, staleLive },
       bookingsToday: Object.fromEntries(bookingsToday.map((b) => [b.status, b._count])),
       scorecard,

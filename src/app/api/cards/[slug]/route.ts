@@ -20,6 +20,9 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
   });
   if (!listing || listing.status === "Draft" || listing.status === "Archived")
     return NextResponse.json({ ok: false }, { status: 404 });
+  // Suspended agency = locked shop: cards vanish, history stays.
+  if (listing.agency.status === "Suspended")
+    return NextResponse.json({ ok: false }, { status: 404 });
 
   const stale = isStale(listing.lastConfirmedAt, listing.agency.refreshIntervalDays);
   const bookable = listing.status === "Active" && !stale;

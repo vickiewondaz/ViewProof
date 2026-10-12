@@ -77,6 +77,8 @@ export async function POST(req: Request) {
     include: { agency: true, agent: true },
   });
   if (!full) return NextResponse.json({ ok: false, error: "Listing not found" }, { status: 404 });
+  if (full.agency.status === "Suspended")
+    return NextResponse.json({ ok: false, error: "This agency is paused — talk to them directly." }, { status: 403 });
   if (full.status !== "Active")
     return NextResponse.json({ ok: false, error: "Listing is not bookable right now" }, { status: 409 });
   const stale =
