@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 import { uploadPhoto } from "@/lib/upload-client";
 
@@ -205,18 +206,12 @@ export default function ListingsPage() {
           <p className="mt-1 text-[16px]">Fresh cards get bookings. Stale ones pause themselves.</p>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowForm((v) => !v)}
-            className="rounded-xl bg-proof-600 px-4 py-3 text-[16px] font-bold text-white"
-          >
+          <Button onClick={() => setShowForm((v) => !v)}>
             {showForm ? "Close" : "+ Add a place"}
-          </button>
-          <button
-            onClick={() => setShowImport((v) => !v)}
-            className="glass-soft rounded-xl px-4 py-3 text-[16px] font-semibold"
-          >
+          </Button>
+          <Button onClick={() => setShowImport((v) => !v)} variant="secondary">
             {showImport ? "Close" : "Import CSV"}
-          </button>
+          </Button>
         </div>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
@@ -248,9 +243,9 @@ export default function ListingsPage() {
                 }}
               />
             </label>
-            <button onClick={() => importCsv(csv)} disabled={busy} className="rounded-xl bg-proof-600 px-6 py-3 text-[16px] font-bold text-white disabled:opacity-60">
+            <Button onClick={() => importCsv(csv)} disabled={busy}>
               {busy ? "Importing…" : "Import as drafts"}
-            </button>
+            </Button>
           </div>
         </section>
       )}
@@ -289,9 +284,9 @@ export default function ListingsPage() {
               </select>
             </div>
           </div>
-          <button onClick={create} disabled={busy} className="mt-4 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60 md:w-auto md:px-8">
+          <Button onClick={create} disabled={busy} size="lg" className="mt-4 w-full md:w-auto">
             {busy ? "Saving…" : "Save draft"}
-          </button>
+          </Button>
         </section>
       )}
 
@@ -360,35 +355,33 @@ export default function ListingsPage() {
                   placeholder="e.g. 10% of agency fee on close"
                   className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
                 />
-                <button onClick={() => saveEdit(l.id)} className="mt-3 w-full min-h-[52px] rounded-xl bg-proof-600 px-4 text-[18px] font-bold text-white">
+                <Button onClick={() => saveEdit(l.id)} size="lg" className="mt-3 w-full">
                   Save details
-                </button>
+                </Button>
               </div>
             )}
             <div className="mt-3 grid grid-cols-2 gap-2">
               {(l.status === "StalePaused" || l.status === "Active" || l.status === "NeedsReview") && (
-                <button onClick={() => reconfirm(l.id)} className="min-h-[48px] rounded-xl bg-proof-600 px-2 py-2 text-[16px] font-bold text-white">
+                <Button onClick={() => reconfirm(l.id)} size="sm">
                   Reconfirm ✓
-                </button>
+                </Button>
               )}
               {(l.status === "Draft" || l.status === "NeedsReview" || l.status === "Unavailable") && (
-                <button onClick={() => setStatus(l.id, "Active")} className="min-h-[48px] rounded-xl bg-proof-600 px-2 py-2 text-[16px] font-bold text-white">
+                <Button onClick={() => setStatus(l.id, "Active")} size="sm">
                   Publish 🚀
-                </button>
+                </Button>
               )}
               {l.status === "Active" && (
                 <>
-                  <Link href={`/c/${l.slug}`} className="flex min-h-[48px] items-center justify-center rounded-xl bg-sand-100 px-2 py-2 text-[16px] font-semibold">
-                    View card →
-                  </Link>
-                  <button onClick={() => setStatus(l.id, "Unavailable")} className="min-h-[48px] rounded-xl glass-soft px-2 py-2 text-[16px] font-semibold">
+                  <Button asChild variant="secondary" size="sm"><Link href={`/c/${l.slug}`}>View card →</Link></Button>
+                  <Button onClick={() => setStatus(l.id, "Unavailable")} variant="secondary" size="sm">
                     Pause
-                  </button>
+                  </Button>
                 </>
               )}
-              <button onClick={() => toggleSlots(l.id)} className="col-span-2 min-h-[48px] rounded-xl glass-soft px-2 py-2 text-[16px] font-semibold">
+              <Button onClick={() => toggleSlots(l.id)} variant="secondary" className="col-span-2">
                 {openSlots === l.id ? "Hide times ▴" : "Viewing times ▾"}
-              </button>
+              </Button>
             </div>
             {openSlots === l.id && (
               <div className="mt-2 rounded-xl bg-sand-100 p-3">
@@ -407,9 +400,9 @@ export default function ListingsPage() {
                     aria-label="New viewing time"
                     className="min-h-[48px] w-full rounded-xl border border-slate-200 glass-soft glass-input px-3 text-[16px]"
                   />
-                  <button onClick={() => addSlot(l.id)} className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white">
+                  <Button onClick={() => addSlot(l.id)} className="shrink-0">
                     Add
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Agency = {
   id: string; name: string; contact: string; status: string;
@@ -72,12 +73,13 @@ export default function AdminPage() {
             <p className="mt-1 text-[14px] text-slate-500">
               {a.owner ?? "no owner login yet"} · {a.listings} listings · {a.agents} hosts · since {new Date(a.createdAt).toDateString()}
             </p>
-            <button
+            <Button
               onClick={() => flip(a)}
-              className={`mt-3 min-h-[48px] w-full rounded-xl px-2 text-[16px] font-bold ${a.status === "Suspended" ? "bg-proof-600 text-white" : "bg-coral-500 text-white"}`}
+              variant={a.status === "Suspended" ? "default" : "destructive"}
+              className="mt-3 w-full"
             >
               {a.status === "Suspended" ? "Reopen shop ✓" : "Lock shop 🔒"}
-            </button>
+            </Button>
           </article>
         ))}
       </div>
@@ -91,8 +93,8 @@ export default function AdminPage() {
         <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto_auto]">
           <input value={banEmail} onChange={(e) => setBanEmail(e.target.value)} placeholder="account@email.com" inputMode="email" className="glass-soft glass-input min-h-[48px] rounded-xl px-4 text-[16px]" />
           <input value={banReason} onChange={(e) => setBanReason(e.target.value)} placeholder="Reason (optional)" className="glass-soft glass-input min-h-[48px] rounded-xl px-4 text-[16px]" />
-          <button onClick={() => ban(false)} className="min-h-[48px] rounded-xl bg-coral-500 px-4 text-[16px] font-bold text-white">Lock</button>
-          <button onClick={() => ban(true)} className="glass-soft min-h-[48px] rounded-xl px-4 text-[16px] font-semibold">Unlock</button>
+          <Button onClick={() => ban(false)} variant="destructive">Lock</Button>
+          <Button onClick={() => ban(true)} variant="secondary">Unlock</Button>
         </div>
       </section>
     </main>

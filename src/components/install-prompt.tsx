@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
@@ -29,16 +30,17 @@ export default function InstallPrompt() {
         <br />
         Your passes open even offline.
       </p>
-      <button
+      <Button
+        size="sm"
+        className="shrink-0"
         onClick={async () => {
           await evt.prompt();
           localStorage.setItem("vp-install-dismissed", "1");
           setHide(true);
         }}
-        className="shrink-0 rounded-xl bg-proof-600 px-4 py-3 text-[16px] font-bold text-white"
       >
         Install
-      </button>
+      </Button>
       <button
         onClick={() => {
           localStorage.setItem("vp-install-dismissed", "1");

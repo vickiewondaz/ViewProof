@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Summary = {
   agency?: { name: string; status: string };
@@ -27,9 +28,7 @@ export default function DashboardPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-[26px] font-bold md:text-[32px]">Owner dashboard</h1>
-        <a href="/api/reports/weekly?format=csv" className="rounded-xl glass-soft px-4 py-3 text-[16px] font-semibold">
-          Export CSV
-        </a>
+        <Button asChild variant="secondary" size="sm"><a href="/api/reports/weekly?format=csv">Export CSV</a></Button>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {s.agency?.status === "Suspended" && (
@@ -63,9 +62,7 @@ export default function DashboardPage() {
           <p className="text-[16px]">
             {Object.entries(s.listings.byStatus).map(([k, v]) => `${k}: ${v}`).join(" · ")}
           </p>
-          <a href="/dashboard/listings" className="mt-2 inline-block rounded-xl bg-sand-100 px-4 py-3 text-[16px] font-semibold">
-            Manage listings →
-          </a>
+          <Button asChild variant="secondary" size="sm" className="mt-2"><a href="/dashboard/listings">Manage listings →</a></Button>
           {s.listings.staleLive > 0 && (
             <p className="mt-1 rounded-xl bg-coral-100 p-2 text-[16px]">
               ⚠ {s.listings.staleLive} active look stale — reconfirm to unpause booking.
@@ -77,9 +74,7 @@ export default function DashboardPage() {
           <p className="text-[16px]">
             {Object.entries(s.bookingsToday).map(([k, v]) => `${k}: ${v}`).join(" · ") || "No activity yet."}
           </p>
-          <a href="/dashboard/bookings" className="glass-soft mt-2 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
-            Open bookings →
-          </a>
+          <Button asChild variant="secondary" size="sm" className="mt-2"><a href="/dashboard/bookings">Open bookings →</a></Button>
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Agent scorecard</h2>
@@ -94,13 +89,11 @@ export default function DashboardPage() {
             ))}
             {!s.scorecard.length && <p className="text-[16px]">No agents yet.</p>}
           </div>
-          <a href="/dashboard/team" className="glass-soft mt-3 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
-            Manage team →
-          </a>
+          <Button asChild variant="secondary" size="sm" className="mt-3"><a href="/dashboard/team">Manage team →</a></Button>
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Issues inbox · {s.openIssues} open</h2>
-          <a href="/review" className="text-[16px] text-sky-500">Open triage queue →</a>
+          <Button asChild variant="ghost" size="sm" className="mt-1"><a href="/review">Open triage queue →</a></Button>
         </section>
       </div>
     </main>

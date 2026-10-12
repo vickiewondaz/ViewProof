@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 
 // Owner: email OTP sign-in. No passwords to forget, no app to download.
 export default function OwnerLoginPage() {
@@ -43,12 +44,9 @@ export default function OwnerLoginPage() {
         autoComplete="email"
         className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
       />
-      <button
-        onClick={send}
-        className="mt-3 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white"
-      >
+      <Button onClick={send} size="lg" className="mt-3 w-full">
         Send my code
-      </button>
+      </Button>
       {sent && (
         <>
           <label className="mt-4 block text-[16px] font-semibold" htmlFor="otp">The 6 numbers from your email</label>
@@ -61,12 +59,9 @@ export default function OwnerLoginPage() {
             autoComplete="one-time-code"
             className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-center text-2xl tracking-[0.4em]"
           />
-          <button
-            onClick={verify}
-            className="mt-3 w-full rounded-xl glass-soft px-4 py-4 text-[18px] font-bold"
-          >
+          <Button onClick={verify} variant="secondary" size="lg" className="mt-3 w-full">
             Verify — let me in
-          </button>
+          </Button>
         </>
       )}
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}

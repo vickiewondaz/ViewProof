@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // Something broke — say so kindly, offer a way back, never a stack trace.
 export default function ErrorPage({ reset }: { reset: () => void }) {
@@ -11,18 +13,12 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
           Something glitched on our side. Nothing you did was lost — bookings and codes are safe.
         </p>
         <div className="mt-4 grid gap-2">
-          <button
-            onClick={reset}
-            className="w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white"
-          >
+          <Button onClick={reset} size="lg" className="w-full">
             Try again
-          </button>
-          <a
-            href="/"
-            className="glass-soft block w-full rounded-xl px-4 py-4 text-center text-[16px] font-semibold"
-          >
-            Back home
-          </a>
+          </Button>
+          <Button asChild variant="secondary" className="w-full">
+            <Link href="/">Back home</Link>
+          </Button>
         </div>
       </div>
     </main>

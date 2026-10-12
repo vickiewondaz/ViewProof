@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // First-run desk: signed-in owner without an agency founds one here and
 // becomes its owner. One agency per account (open a second account for more).
@@ -31,8 +33,8 @@ export default function OnboardPage() {
   };
 
   if (me === null) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Checking who you are…</p></main>;
-  if (!me) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Sign in first, then come back here.</p><a href="/login" className="mt-3 block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white">Sign in</a></main>;
-  if (me.agencyId) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">You already have an agency 🎉</p><a href="/dashboard" className="mt-3 block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white">Open dashboard</a></main>;
+  if (!me) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Sign in first, then come back here.</p><Button asChild size="lg" className="mt-3 w-full"><Link href="/login">Sign in</Link></Button></main>;
+  if (me.agencyId) return <main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">You already have an agency 🎉</p><Button asChild size="lg" className="mt-3 w-full"><Link href="/dashboard">Open dashboard</Link></Button></main>;
 
   return (
     <main className="mx-auto max-w-md px-4 pb-10 pt-6 md:max-w-lg">
@@ -45,9 +47,9 @@ export default function OnboardPage() {
       <input id="ag-contact" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} placeholder="+234 800 000 0000" inputMode="tel" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="ag-areas">Areas you cover <span className="font-normal">(comma separated)</span></label>
       <input id="ag-areas" value={f.areas} onChange={(e) => setF({ ...f, areas: e.target.value })} placeholder="Gwarinpa, Lekki" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
-      <button onClick={create} disabled={busy} className="mt-4 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60">
+      <Button onClick={create} disabled={busy} size="lg" className="mt-4 w-full">
         {busy ? "Creating…" : "Create my agency"}
-      </button>
+      </Button>
     </main>
   );
 }

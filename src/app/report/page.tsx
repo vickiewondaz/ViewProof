@@ -1,5 +1,6 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { uploadPhoto } from "@/lib/upload-client";
 
@@ -114,9 +115,9 @@ function ReportForm() {
         />
         {photoUrl && <p className="mt-1 text-[16px]">Photo added ✓</p>}
         <div className="sticky-cta mt-3">
-          <button onClick={submit} disabled={busy} className="w-full rounded-xl bg-coral-500 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60">
+          <Button onClick={submit} disabled={busy} variant="destructive" size="lg" className="w-full">
             {busy ? "Sending…" : "Send report"}
-          </button>
+          </Button>
         </div>
         {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       </div>

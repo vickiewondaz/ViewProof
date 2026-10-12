@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Booking = {
   id: string; buyerName: string; buyerPhone: string; status: string;
@@ -55,9 +56,9 @@ export default function BookingsPage() {
             {" · "}{b.payoutStatus === "Paid" ? "paid ✓" : "payout pending ⏳"}
           </p>
           {b.payoutStatus !== "Paid" && (
-            <button onClick={() => act(b.id, "payout")} className="min-h-[48px] rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white">
+            <Button onClick={() => act(b.id, "payout")}>
               Mark paid
-            </button>
+            </Button>
           )}
         </div>
       ) : (
@@ -70,15 +71,15 @@ export default function BookingsPage() {
             aria-label="Closed price in naira"
             className="tabular min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
           />
-          <button
+          <Button
             onClick={() => {
               if (!Number(closePrice[b.id])) return setMsg("Add the closed price first — the exact naira both sides agreed.");
               act(b.id, "close", { closedPrice: Number(closePrice[b.id]) });
             }}
-            className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white"
+            className="shrink-0"
           >
             Close deal 🤝
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -122,17 +123,15 @@ export default function BookingsPage() {
                 {b.listing.area}{b.agent ? ` · host ${b.agent.publicName}` : ""}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <a href={wa} target="_blank" rel="noreferrer" className="glass-soft flex min-h-[48px] items-center justify-center rounded-xl px-2 text-[16px] font-semibold">
-                  Message buyer
-                </a>
+                <Button asChild variant="secondary" size="sm"><a href={wa} target="_blank" rel="noreferrer">Message buyer</a></Button>
                 {b.status === "Requested" && (
-                  <button onClick={() => act(b.id, "confirm")} className="min-h-[48px] rounded-xl bg-proof-600 px-2 text-[16px] font-bold text-white">
+                  <Button onClick={() => act(b.id, "confirm")} size="sm">
                     Confirm ✓
-                  </button>
+                  </Button>
                 )}
-                <button onClick={() => act(b.id, "cancel-agency")} className={`glass-soft min-h-[48px] rounded-xl px-2 text-[16px] font-semibold ${b.status === "Confirmed" ? "col-span-2" : ""}`}>
+                <Button onClick={() => act(b.id, "cancel-agency")} variant="secondary" size="sm" className={b.status === "Confirmed" ? "col-span-2" : ""}>
                   {b.status === "Requested" ? "Decline" : "Cancel viewing"}
-                </button>
+                </Button>
               </div>
             </article>
           );

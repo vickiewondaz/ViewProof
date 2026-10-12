@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const STEPS = [
   { title: "1. Share a card", text: "Agency posts a Viewing Card with fresh dates and a named host." },
@@ -18,18 +19,8 @@ export default function Home() {
           </h1>
           <p className="mt-3 text-[18px]">Fresh cards. Named hosts. Free WhatsApp booking.</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <Link
-              href="/dashboard"
-              className="rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white"
-            >
-              I run an agency
-            </Link>
-            <Link
-              href="/agent"
-              className="rounded-xl glass-soft px-4 py-4 text-center text-[18px] font-bold"
-            >
-              I&apos;m hosting viewings
-            </Link>
+            <Button asChild size="lg"><Link href="/dashboard">I run an agency</Link></Button>
+            <Button asChild size="lg" variant="secondary"><Link href="/agent">I&apos;m hosting viewings</Link></Button>
           </div>
         </div>
         <div className="glass rounded-2xl p-5 md:p-8">

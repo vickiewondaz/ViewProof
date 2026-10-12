@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 // Responsive shell: floating glass pill on all sizes; full nav on sm+.
 export default function SiteHeader() {
@@ -21,20 +22,10 @@ export default function SiteHeader() {
           <Link href="/review" className="rounded-full px-3 py-2 text-[16px] font-semibold hover:bg-white/60">
             Review
           </Link>
-          <Link
-            href="/login"
-            className="ml-1 rounded-full bg-proof-600 px-4 py-2 text-[16px] font-bold text-white"
-          >
-            Sign in
-          </Link>
+          <Button asChild size="sm" className="ml-1 rounded-full"><Link href="/login">Sign in</Link></Button>
         </nav>
         {/* Phones: one thumb-sized entry point; full nav lives on task screens. */}
-        <Link
-          href="/login"
-          className="rounded-full bg-proof-600 px-4 py-2 text-[16px] font-bold text-white sm:hidden"
-        >
-          Sign in
-        </Link>
+        <Button asChild size="sm" className="rounded-full sm:hidden"><Link href="/login">Sign in</Link></Button>
       </header>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Agent = { id: string; fullName: string; publicName: string; phone: string; active: boolean };
 
@@ -64,9 +65,9 @@ export default function TeamPage() {
             <input id="tm-phone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} placeholder="+234 800 000 0000" inputMode="tel" autoComplete="off" className="glass-soft glass-input mt-1 min-h-[48px] w-full rounded-xl px-4 text-[16px]" />
           </div>
         </div>
-        <button onClick={add} disabled={busy} className="mt-4 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60 md:w-auto md:px-8">
+        <Button onClick={add} disabled={busy} size="lg" className="mt-4 w-full md:w-auto">
           {busy ? "Adding…" : "Add host"}
-        </button>
+        </Button>
       </section>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">

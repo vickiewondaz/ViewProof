@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { SendHorizonal } from "lucide-react";
+import { Button } from "./ui/button";
 
 const CHIPS = ["Is it still available?", "Who will meet me?", "How do I book?", "What if I need to cancel?"];
 
@@ -55,9 +57,9 @@ export default function AskBox({ slug }: { slug: string }) {
           aria-label="Ask about this place"
           className="glass-soft glass-input min-h-[48px] w-full rounded-xl px-4 text-[16px]"
         />
-        <button onClick={() => ask(q)} disabled={busy} className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-5 text-[16px] font-bold text-white disabled:opacity-60">
-          {busy ? "…" : "Ask"}
-        </button>
+        <Button onClick={() => ask(q)} disabled={busy} aria-label="Ask about this place">
+          {busy ? "…" : <><SendHorizonal /> Ask</>}
+        </Button>
       </div>
     </div>
   );

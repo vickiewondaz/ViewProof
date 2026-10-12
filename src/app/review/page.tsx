@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Issue = { id: string; category: string; detail?: string | null; status: string; createdAt: string; listingId: string };
 
@@ -45,10 +46,10 @@ export default function ReviewPage() {
             <p className="font-semibold">{i.category} · {i.status}</p>
             <p className="mt-1 text-[16px]">{i.detail || "No detail."}</p>
             <p className="mt-1 text-[14px] text-slate-500">{new Date(i.createdAt).toLocaleString()}</p>
-            <div className="mt-2 grid grid-cols-1 gap-2 text-[16px]">
-              <button onClick={() => triage(i.id, "UnderReview")} className="min-h-[52px] rounded-lg bg-sand-100 px-2 py-3 font-semibold">I&apos;m looking into it</button>
-              <button onClick={() => triage(i.id, "Resolved")} className="min-h-[52px] rounded-lg bg-proof-100 px-2 py-3 font-semibold">Fixed ✓</button>
-              <button onClick={() => triage(i.id, "Dismissed")} className="min-h-[52px] rounded-lg glass-soft px-2 py-3 font-semibold">Not an issue</button>
+            <div className="mt-2 grid grid-cols-1 gap-2">
+              <Button onClick={() => triage(i.id, "UnderReview")} variant="secondary">I&apos;m looking into it</Button>
+              <Button onClick={() => triage(i.id, "Resolved")}>Fixed ✓</Button>
+              <Button onClick={() => triage(i.id, "Dismissed")} variant="ghost">Not an issue</Button>
             </div>
           </div>
         ))}
