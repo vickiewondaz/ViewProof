@@ -27,7 +27,7 @@ export default function OwnerLoginPage() {
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
       <h1 className="text-[26px] font-bold">Welcome back 👋</h1>
       <p className="mt-1 text-[16px]">
         Type your work email. We&apos;ll send 6 numbers — no password needed.

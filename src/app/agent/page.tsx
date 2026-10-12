@@ -29,7 +29,7 @@ export default function AgentPage() {
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
       <h1 className="text-[26px] font-bold">You met? Confirm it ✅</h1>
       <p className="mt-1 text-[16px]">
         Ask the buyer for the 6 numbers from their WhatsApp message, type them
@@ -67,7 +67,7 @@ export default function AgentPage() {
         Confirm — we met ✅
       </button>
       <p className="mt-3 text-center text-[16px] font-semibold">Didn&apos;t happen? Be honest, tap one:</p>
-      <div className="mt-2 grid grid-cols-1 gap-2 text-[16px]">
+      <div className="mt-2 grid grid-cols-1 gap-2 text-[16px] sm:grid-cols-3">
         <button onClick={() => submit("no-show-buyer")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">Buyer didn&apos;t come</button>
         <button onClick={() => submit("no-show-agent")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">I couldn&apos;t make it</button>
         <button onClick={() => submit("unavailable")} className="min-h-[52px] rounded-xl bg-white px-2 py-3 font-semibold">Place unavailable</button>

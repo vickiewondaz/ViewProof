@@ -23,7 +23,7 @@ export default function AgentLoginPage() {
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 py-6">
+    <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
       <h1 className="text-[26px] font-bold">Hello 👋</h1>
       <p className="mt-1 text-[16px]">
         Type your WhatsApp number. We&apos;ll message you 6 numbers there.

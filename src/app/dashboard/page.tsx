@@ -19,18 +19,18 @@ export default function DashboardPage() {
       .catch(() => setMsg("Failed to load."));
   }, []);
 
-  if (msg) return <main className="mx-auto max-w-2xl px-4 py-6"><p className="text-sm">{msg}</p></main>;
-  if (!s) return <main className="mx-auto max-w-2xl px-4 py-6"><p className="text-sm">Loading…</p></main>;
+  if (msg) return <main className="mx-auto w-full max-w-6xl px-4 py-6"><p className="text-[16px]">{msg}</p></main>;
+  if (!s) return <main className="mx-auto w-full max-w-6xl px-4 py-6"><p className="text-[16px]">Loading your numbers…</p></main>;
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[26px] font-bold">Owner dashboard</h1>
-        <a href="/api/reports/weekly?format=csv" className="rounded-xl bg-white px-3 py-2 text-sm font-semibold">
+    <main className="mx-auto w-full max-w-6xl px-4 py-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-[26px] font-bold md:text-[32px]">Owner dashboard</h1>
+        <a href="/api/reports/weekly?format=csv" className="rounded-xl bg-white px-4 py-3 text-[16px] font-semibold">
           Export CSV
         </a>
       </div>
-      <div className="mt-4 grid gap-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <section className="rounded-2xl bg-white p-4">
           <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
           <p className="text-sm">

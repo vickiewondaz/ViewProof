@@ -30,13 +30,13 @@ export default function ReviewPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-6">
-      <h1 className="text-[26px] font-bold">Needs review</h1>
-      <p className="mt-1 text-sm">
+    <main className="mx-auto w-full max-w-6xl px-4 py-6">
+      <h1 className="text-[26px] font-bold md:text-[32px]">Needs review</h1>
+      <p className="mt-1 max-w-2xl text-[16px]">
         Conflicts, stale flags, and buyer reports. Human decision only — no automatic enforcement.
       </p>
-      {msg && <p className="mt-3 text-sm">{msg}</p>}
-      <div className="mt-4 grid gap-2">
+      {msg && <p className="mt-3 text-[16px]">{msg}</p>}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {issues.map((i) => (
           <div key={i.id} className="rounded-2xl bg-white p-4 text-sm">
             <p className="font-semibold">{i.category} · {i.status}</p>

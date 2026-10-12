@@ -38,7 +38,7 @@ export default function ReportPage() {
   };
 
   return (
-    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
+    <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
       <div className="rounded-2xl bg-white p-5">
         <h1 className="text-[24px] font-bold">What went wrong?</h1>
         <p className="mt-1 text-[16px]">

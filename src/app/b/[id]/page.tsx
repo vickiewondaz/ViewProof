@@ -19,7 +19,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
   const pass = data?.pass;
   if (!pass)
     return (
-      <main className="mx-auto max-w-md px-4 py-10">
+      <main className="mx-auto max-w-md md:max-w-lg px-4 py-10">
         <h1 className="text-[26px] font-bold">Can&apos;t find this pass</h1>
         <p className="mt-2 text-[16px]">
           The link may be old. Open your WhatsApp confirmation message again —
@@ -30,7 +30,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
     );
 
   return (
-    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
+    <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
       <div className="rounded-2xl bg-white p-5 text-center">
         <p className="text-[16px] font-bold text-proof-600">
           {pass.status === "Confirmed" ? "🎉 You&apos;re booked!" : `Status: ${pass.status}`}
@@ -52,7 +52,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
             {pass.otpExpires && <> It expires around {new Date(pass.otpExpires).toLocaleTimeString()} — come on time.</>}
           </p>
         </div>
-        <div className="sticky-cta mt-4 grid grid-cols-1 gap-2">
+        <div className="sticky-cta mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:static md:bg-none md:pb-0">
           <button className="w-full rounded-xl bg-sand-100 px-3 py-4 text-[16px] font-bold">
             Add to calendar
           </button>

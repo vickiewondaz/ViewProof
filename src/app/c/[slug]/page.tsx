@@ -54,22 +54,25 @@ export default async function ViewingCardPage({
     );
 
   return (
-    <main className="mx-auto max-w-md px-4 pb-10 pt-6">
-      <div className="overflow-hidden rounded-2xl bg-white">
-        {c.images?.[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={c.images[0]}
-            alt={`${c.title}, ${c.area}`}
-            className="h-52 w-full object-cover"
-            loading="eager"
-          />
-        ) : (
-          <div className="flex h-40 items-center justify-center bg-sand-100 px-4 text-center text-[16px]">
-            Photos coming — the agency hasn&apos;t added clear pictures yet.
-          </div>
-        )}
-        <div className="p-4">
+    <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-6">
+      {/* Phones: gallery over details. Desktop: gallery left, booking panel right. */}
+      <div className="grid gap-4 overflow-hidden rounded-2xl bg-white md:grid-cols-[1.25fr_1fr]">
+        <div>
+          {c.images?.[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={c.images[0]}
+              alt={`${c.title}, ${c.area}`}
+              className="h-52 w-full object-cover md:h-full md:min-h-[420px]"
+              loading="eager"
+            />
+          ) : (
+            <div className="flex h-40 items-center justify-center bg-sand-100 px-4 text-center text-[16px] md:h-full md:min-h-[420px]">
+              Photos coming — the agency hasn&apos;t added clear pictures yet.
+            </div>
+          )}
+        </div>
+        <div className="p-4 md:p-6">
           <h1 className="text-[26px] font-bold leading-tight">{c.title}</h1>
           <p className="mt-1 text-[16px]">{c.area}</p>
           <p className="tabular mt-2 text-[20px] font-bold">
@@ -99,7 +102,7 @@ export default async function ViewingCardPage({
           ) : (
             <>
               <h2 className="mt-5 text-[18px] font-bold">Pick a time that suits you</h2>
-              <div className="mt-2 grid gap-2" id="book">
+              <div className="mt-2 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2" id="book">
                 {(c.slots ?? []).slice(0, 6).map((s: { id: string; startsAt: string; left: number }) => (
                   <button
                     key={s.id}
@@ -114,7 +117,7 @@ export default async function ViewingCardPage({
                 ))}
                 {!c.slots?.length && <EmptySlots />}
               </div>
-              <div className="sticky-cta mt-3">
+              <div className="sticky-cta mt-3 md:static md:bg-none md:pb-0">
                 <a
                   href="#book"
                   className="block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white"
