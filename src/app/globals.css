@@ -33,6 +33,30 @@
   --glass-easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ---- shadcn theme, mapped to ViewProof brand (light only, per design system) ---- */
+:root {
+  --background: #f7f3ec;
+  --foreground: #14213d;
+  --card: rgba(255, 255, 255, 0.78);
+  --card-foreground: #14213d;
+  --popover: #ffffff;
+  --popover-foreground: #14213d;
+  --primary: #177e5c;
+  --primary-foreground: #ffffff;
+  --secondary: #e1f0ff;
+  --secondary-foreground: #14213d;
+  --muted: #f7f3ec;
+  --muted-foreground: #62708a;
+  --accent: #fff2cf;
+  --accent-foreground: #14213d;
+  --destructive: #e66d5a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(20, 33, 61, 0.1);
+  --input: rgba(20, 33, 61, 0.16);
+  --ring: #327ccb;
+  --radius: 0.75rem;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;

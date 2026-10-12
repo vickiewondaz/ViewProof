@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
 import { EmptySlots } from "./human";
 
 type Slot = { id: string; startsAt: string; left: number };
@@ -136,13 +137,14 @@ export default function BookForm({
       </label>
 
       <div className="sticky-cta mt-3 md:static md:bg-none md:pb-0">
-        <button
+        <Button
           onClick={submit}
           disabled={busy}
-          className="w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60"
+          size="lg"
+          className="w-full"
         >
           {busy ? "Booking you in…" : "Book my free viewing"}
-        </button>
+        </Button>
       </div>
       {msg && <p className="mt-2 text-[16px]" role="status">{msg}</p>}
     </div>

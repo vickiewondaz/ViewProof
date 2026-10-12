@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { CheckCircle2, Award, Sprout, ShieldAlert, CalendarCheck } from "lucide-react";
 import { HelpFooter, PausedNotice } from "@/components/human";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import BookForm from "@/components/book-form";
 import AskBox from "@/components/ask-box";
 
@@ -40,26 +44,27 @@ export default async function ViewingCardPage({
   if (!c)
     return (
       <main className="mx-auto max-w-md px-4 py-10">
-        <h1 className="text-[26px] font-bold">Hmm, this card is gone</h1>
-        <p className="mt-2 text-[16px]">
-          The agency may have paused or removed this listing. Nothing was taken
-          from you — bookings here are always free.
-        </p>
-        <Link
-          href="/"
-          className="mt-4 block rounded-xl bg-proof-600 px-4 py-3 text-center text-[16px] text-white"
-        >
-          Back home
-        </Link>
-        <HelpFooter />
+        <Card>
+          <CardContent className="text-center">
+            <h1 className="text-[26px] font-bold">Hmm, this card is gone</h1>
+            <p className="mt-2 text-[16px]">
+              The agency may have paused or removed this listing. Nothing was taken
+              from you — bookings here are always free.
+            </p>
+            <Button asChild size="lg" className="mt-4 w-full">
+              <Link href="/">Back home</Link>
+            </Button>
+            <HelpFooter />
+          </CardContent>
+        </Card>
       </main>
     );
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-6">
       {/* Phones: gallery over details. Desktop: gallery left, booking panel right. */}
-      <div className="grid gap-4 overflow-hidden glass rounded-2xl md:grid-cols-[1.25fr_1fr]">
-        <div>
+      <Card className="grid gap-0 overflow-hidden md:grid-cols-[1.25fr_1fr]">
+        <div className="relative">
           {c.images?.[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -73,29 +78,50 @@ export default async function ViewingCardPage({
               Photos coming — the agency hasn&apos;t added clear pictures yet.
             </div>
           )}
+          <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+            {c.paused ? (
+              <Badge variant="warn"><ShieldAlert />Paused</Badge>
+            ) : (
+              <Badge variant="confirmed"><CalendarCheck />Bookable</Badge>
+            )}
+          </div>
         </div>
-        <div className="p-4 md:p-6">
-          <h1 className="text-[26px] font-bold leading-tight">{c.title}</h1>
-          <p className="mt-1 text-[16px]">{c.area}</p>
-          <p className="tabular mt-2 text-[20px] font-bold">
+        <CardContent>
+          <h1 className="text-[26px] font-bold leading-tight tracking-tight">{c.title}</h1>
+          <p className="mt-1 text-[16px] text-slate-500">{c.area}</p>
+          <p className="tabular mt-2 text-[24px] font-bold tracking-tight">
             {c.currency} {Number(c.price).toLocaleString()}
           </p>
-          <ul className="mt-3 grid gap-2 text-[16px]">
-            <li>✓ Fresh: {new Date(c.lastConfirmedAt).toDateString()} · {c.host ? `meet ${c.host}` : `hosted by ${c.agency?.name}`}</li>
-            {c.fresh?.score !== null && c.fresh?.score !== undefined && (
-              <li>🏅 {c.fresh.badge}</li>
+          <div className="mt-3 flex flex-wrap gap-2" aria-label="Evidence status">
+            <Badge variant="confirmed">
+              <CheckCircle2 />
+              Fresh {new Date(c.lastConfirmedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+            </Badge>
+            {c.host && (
+              <Badge variant="confirmed">
+                <CheckCircle2 />
+                Meet {c.host}
+              </Badge>
             )}
-            {(!c.fresh || c.fresh.score === null || c.fresh.score === undefined) && (
-              <li>🌱 New agency — still earning its score.</li>
+            {c.fresh?.score !== null && c.fresh?.score !== undefined ? (
+              <Badge variant="score">
+                <Award />
+                {c.fresh.badge}
+              </Badge>
+            ) : (
+              <Badge variant="neutral">
+                <Sprout />
+                New agency — earning its score
+              </Badge>
             )}
-          </ul>
+          </div>
           <details className="mt-2 text-[14px] text-slate-500">
-            <summary className="min-h-[44px] cursor-pointer py-2 text-[16px]">More about this card</summary>
+            <summary className="min-h-[44px] cursor-pointer py-2 text-[16px] font-semibold">More about this card</summary>
             <ul className="grid gap-1 pb-2">
               {c.photographedAt && (
                 <li>Pictures taken {new Date(c.photographedAt).toDateString()}.</li>
               )}
-              <li>Title and ownership not checked by ViewProof.</li>
+              <li>Hosted by {c.agency?.name}. Title and ownership not checked by ViewProof.</li>
               <li>Based on {c.fresh?.viewings ?? 0} counted viewings.</li>
             </ul>
           </details>
@@ -106,16 +132,13 @@ export default async function ViewingCardPage({
               <BookForm listingId={c.id} slots={c.slots ?? []} contact={c.agency?.contact} />
             </div>
           )}
-          <a
-            href={`/report?listing=${c.id}`}
-            className="mt-2 block min-h-[48px] py-3 text-center text-[16px] text-sky-500"
-          >
-            Something looks wrong? Tell us
-          </a>
+          <Button variant="ghost" asChild className="mt-1 w-full">
+            <a href={`/report?listing=${c.id}`}>Something looks wrong? Tell us</a>
+          </Button>
           <AskBox slug={c.slug} />
           <HelpFooter contact={c.agency?.contact} />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </main>
   );
 }
