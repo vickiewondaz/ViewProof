@@ -6,6 +6,7 @@ export type StaffUser = {
   email: string;
   role?: string | null;
   agencyId?: string | null;
+  phoneNumber?: string | null;
 };
 
 export async function getStaffUser() {

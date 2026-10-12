@@ -34,8 +34,16 @@ export async function POST(req: Request) {
   if (!b) return NextResponse.json({ ok: false }, { status: 404 });
   if (b.listing.agencyId !== agencyScope(u))
     return NextResponse.json({ ok: false }, { status: 403 });
-  if (u.role === "agent" && b.agentId !== u.id)
-    return NextResponse.json({ ok: false, error: "Not your booking" }, { status: 403 });
+  if (u.role === "agent") {
+    const row = u.phoneNumber
+      ? await prisma.agent.findFirst({
+          where: { agencyId: agencyScope(u), phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
+          select: { id: true },
+        })
+      : null;
+    if (!row || b.agentId !== row.id)
+      return NextResponse.json({ ok: false, error: "Not your booking — ask your owner to add your number to the roster." }, { status: 403 });
+  }
   if (!["Confirmed"].includes(b.status as string))
     return NextResponse.json({ ok: false, error: `Cannot record outcome in state ${b.status}` }, { status: 409 });
 

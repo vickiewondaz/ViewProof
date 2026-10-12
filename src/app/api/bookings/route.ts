@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { getStaffUser, agencyScope } from "@/lib/session";
 import { generateOtp } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
@@ -20,6 +21,44 @@ const BookingInput = z.object({
   buyerPhone: z.string().min(7).max(20),
   prequal: Prequal,
 });
+
+// GET /api/bookings?day=today — staff only. Agent sees own day;
+// owner sees the whole agency day. Includes buyer contact (staff-only)
+// plus listing + slot for the day view.
+export async function GET(req: Request) {
+  const u = await getStaffUser();
+  if (!u) return NextResponse.json({ ok: false }, { status: 401 });
+  const scope = agencyScope(u);
+  const day = new URL(req.url).searchParams.get("day") ?? "today";
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start.getTime() + (day === "tomorrow" ? 2 : 1) * 24 * 3600e3);
+  const from = day === "tomorrow" ? new Date(start.getTime() + 24 * 3600e3) : start;
+  // Auth user ≠ Agent row: match roster by phone within the agency.
+  let agentRow: string | undefined;
+  if (u.role === "agent" && u.phoneNumber) {
+    agentRow = (
+      await prisma.agent.findFirst({
+        where: { agencyId: scope, phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
+        select: { id: true },
+      })
+    )?.id;
+  }
+  const bookings = await prisma.booking.findMany({
+    where: {
+      listing: { agencyId: scope },
+      ...(u.role === "agent" ? { agentId: agentRow ?? "__none__" } : {}),
+      slot: { startsAt: { gte: from, lt: end } },
+    },
+    include: {
+      listing: { select: { title: true, area: true } },
+      slot: { select: { startsAt: true } },
+    },
+    orderBy: { slot: { startsAt: "asc" } },
+    take: 100,
+  });
+  return NextResponse.json({ ok: true, bookings });
+}
 
 // POST /api/bookings — public, rate-limited upstream. Creates Requested,
 // locks slot capacity in a transaction, mints OTP, sends booking_confirm.

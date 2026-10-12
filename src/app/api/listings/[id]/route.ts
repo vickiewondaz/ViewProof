@@ -23,8 +23,16 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!u) return NextResponse.json({ ok: false }, { status: 401 });
   const existing = await scoped(params.id, agencyScope(u));
   if (!existing) return NextResponse.json({ ok: false }, { status: 404 });
-  if (u.role === "agent" && existing.agentId !== u.id)
-    return NextResponse.json({ ok: false }, { status: 403 });
+  if (u.role === "agent") {
+    const row = u.phoneNumber
+      ? await prisma.agent.findFirst({
+          where: { agencyId: agencyScope(u), phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
+          select: { id: true },
+        })
+      : null;
+    if (!row || existing.agentId !== row.id)
+      return NextResponse.json({ ok: false }, { status: 403 });
+  }
 
   const json = await req.json().catch(() => ({}));
   const parsed = ListingUpdate.safeParse(json);

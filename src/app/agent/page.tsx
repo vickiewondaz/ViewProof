@@ -1,5 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+type DayBooking = {
+  id: string; buyerName: string; buyerPhone: string; status: string;
+  listing: { title: string; area: string }; slot: { startsAt: string };
+};
 
 // Agent check-in — big-text sunlight mode. Works online; PWA queues offline
 // (Phase 6 service worker) with "will sync" notice. QR fallback reuses same
@@ -10,6 +15,21 @@ export default function AgentPage() {
   const [msg, setMsg] = useState("");
   const [receipt, setReceipt] = useState<string | null>(null);
   const [pushState, setPushState] = useState("");
+  const [today, setToday] = useState<DayBooking[]>([]);
+
+  useEffect(() => {
+    fetch("/api/bookings?day=today")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          setToday(j.bookings);
+          const next = j.bookings.find((b: DayBooking) => b.status === "Confirmed" || b.status === "Requested");
+          if (next && !bookingId) setBookingId(next.id);
+        }
+      })
+      .catch(() => null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async (action: string) => {
     setMsg("");
@@ -36,6 +56,31 @@ export default function AgentPage() {
         Ask the buyer for the 6 numbers from their WhatsApp message, type them
         below, tap confirm. Big buttons — works with one hand in the sun.
       </p>
+
+      {today.length > 0 && (
+        <>
+          <h2 className="mt-5 text-[18px] font-bold">Today&apos;s viewings</h2>
+          <div className="mt-2 grid gap-2">
+            {today.map((b) => (
+              <button
+                key={b.id}
+                onClick={() => {
+                  setBookingId(b.id);
+                  setMsg("");
+                  setReceipt(null);
+                  document.getElementById("code")?.focus();
+                }}
+                className={`rounded-xl border-2 px-4 py-3 text-left text-[16px] ${bookingId === b.id ? "border-proof-600 bg-proof-100" : "border-slate-200 bg-white"}`}
+              >
+                <span className="font-bold">{new Date(b.slot.startsAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+                {" · "}{b.listing.title} · {b.buyerName}
+                <br />
+                <span className="text-[14px]">{b.status}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <label className="mt-4 block text-[16px] font-semibold" htmlFor="booking">
         Booking ID (from your WhatsApp alert)
       </label>
