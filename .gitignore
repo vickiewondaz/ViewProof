@@ -14,3 +14,4 @@ tsconfig.tsbuildinfo
 public/sw.js
 public/workbox-*.js
 glassmorphism/
+.DS_Store
