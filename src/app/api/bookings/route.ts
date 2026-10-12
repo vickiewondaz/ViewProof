@@ -3,8 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { generateOtp } from "@/lib/otp";
-import { sendWhatsApp } from "@/lib/whatsapp";
+import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
+import { notifyAgency } from "@/lib/push";
 
 const Prequal = z.object({
   budgetBand: z.string().max(60).optional(),
@@ -60,7 +61,8 @@ export async function POST(req: Request) {
   });
   if (recent) return NextResponse.json({ ok: true, booking: serialize(recent), deduped: true });
 
-  const { hash, expires } = generateOtp();
+    // The plain code goes to the buyer over WhatsApp only — never logs/responses.
+    const { code, hash, expires } = generateOtp();
 
   try {
     const booking = await prisma.$transaction(async (tx) => {
@@ -86,16 +88,20 @@ export async function POST(req: Request) {
 
     await audit({ actor: `buyer:${d.buyerPhone}`, entity: "booking", entityId: booking.id, action: "request", diff: { slot: slot.id } });
 
-    // Fire-and-forget WhatsApp (outside 24h window → template, free tier).
+    // Fire-and-forget notifications (templates work outside the 24h window).
+    const hostName =
+      full.agent?.publicName ?? full.agent?.fullName?.split(" ")[0] ?? "your host";
+    const when = fmtDateTime(slot.startsAt);
     void (async () => {
+      // 1. Buyer: booking requested + meeting code.
       try {
-        const res = (await sendWhatsApp({
+        const res = await sendWhatsApp({
           to: d.buyerPhone,
           template: "booking_confirm",
-          components: [],
-        })) as { messages?: { id: string }[]; skipped?: boolean };
+          params: [d.buyerName, full.title, when, "requested", hostName, full.agency.name, code],
+        });
         await prisma.waMessage.create({
-          data: { bookingId: booking.id, template: "booking_confirm", wamid: res?.messages?.[0]?.id, status: res?.skipped ? "skipped" : "sent" },
+          data: { bookingId: booking.id, template: "booking_confirm", wamid: "skipped" in res ? undefined : res.messages?.[0]?.id, status: "skipped" in res ? "skipped" : "sent" },
         });
       } catch (e) {
         await prisma.waMessage.create({
@@ -103,6 +109,26 @@ export async function POST(req: Request) {
         });
         console.warn("[booking_confirm] send failed", e);
       }
+      // 2. Assigned agent: 1-tap confirm link (correct recipient — was buyer before).
+      if (full.agent?.phone) {
+        try {
+          await sendWhatsApp({
+            to: full.agent.phone,
+            template: "agent_alert",
+            params: [booking.id.slice(-6), d.buyerName, d.buyerPhone, full.title, when, `${siteUrl()}/agent`],
+          });
+          await prisma.waMessage.create({
+            data: { bookingId: booking.id, template: "agent_alert", status: "sent" },
+          });
+        } catch (e) {
+          await prisma.waMessage.create({
+            data: { bookingId: booking.id, template: "agent_alert", status: "failed" },
+          });
+          console.warn("[agent_alert] send failed", e);
+        }
+      }
+      // 3. Web Push to agency devices (WhatsApp stays primary).
+      await notifyAgency(full.agencyId, `New viewing request: ${full.title} — ${when}`);
     })();
 
     return NextResponse.json({ ok: true, booking: serialize(booking) }, { status: 201 });

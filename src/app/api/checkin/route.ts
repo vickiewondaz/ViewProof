@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { getStaffUser, agencyScope } from "@/lib/session";
 import { verifyOtp, OTP_MAX_ATTEMPTS } from "@/lib/otp";
-import { sendWhatsApp } from "@/lib/whatsapp";
+import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 
 const Checkin = z.object({
   bookingId: z.string(),
@@ -80,8 +80,16 @@ export async function POST(req: Request) {
   await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "checkin", diff: { deviceId } });
 
   void (async () => {
+    const agent = b.agentId
+      ? await prisma.agent.findUnique({ where: { id: b.agentId } }).catch(() => null)
+      : null;
+    const host = agent?.publicName ?? agent?.fullName?.split(" ")[0] ?? "your host";
     try {
-      await sendWhatsApp({ to: b.buyerPhone, template: "receipt", components: [] });
+      await sendWhatsApp({
+        to: b.buyerPhone,
+        template: "receipt",
+        params: [b.listing.title, fmtDateTime(b.slot.startsAt), host, `${siteUrl()}/b/${b.id}`],
+      });
       await prisma.waMessage.create({ data: { bookingId: b.id, template: "receipt", status: "sent" } });
     } catch (e) {
       await prisma.waMessage.create({ data: { bookingId: b.id, template: "receipt", status: "failed" } });

@@ -220,8 +220,11 @@ model PushSub {
   id        String   @id @default(cuid())
   endpoint  String   @unique
   keys      Json
+  agencyId  String?
   agentId   String?
   createdAt DateTime @default(now())
+
+  @@index([agencyId])
 }
 
 model User {

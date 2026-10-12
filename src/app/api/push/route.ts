@@ -5,11 +5,12 @@ import { prisma } from "@/lib/db";
 const Sub = z.object({
   endpoint: z.string().url().max(2000),
   keys: z.object({ p256dh: z.string(), auth: z.string() }),
+  agencyId: z.string().optional(),
   agentId: z.string().optional(),
 });
 
 // POST /api/push — store PWA subscription (agent booking alerts).
-// Actual fan-out happens in booking/checkin flows (Phase 6+); WhatsApp stays primary.
+// Fan-out runs on booking create (notifyAgency); WhatsApp stays primary.
 export async function POST(req: Request) {
   const parsed = Sub.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success)
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   await prisma.pushSub.upsert({
     where: { endpoint: parsed.data.endpoint },
     create: parsed.data,
-    update: { keys: parsed.data.keys as object, agentId: parsed.data.agentId },
+    update: { keys: parsed.data.keys as object, agencyId: parsed.data.agencyId, agentId: parsed.data.agentId },
   });
   return NextResponse.json({ ok: true }, { status: 201 });
 }

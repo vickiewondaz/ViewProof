@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { sendWhatsApp } from "@/lib/whatsapp";
+import { sendWhatsApp, fmtDateTime } from "@/lib/whatsapp";
 
 // GET /api/jobs/reminders — cron with x-cron-secret. Sends 24h + 2h utility
 // reminders for Confirmed bookings; skips already-reminded via wa_messages.
@@ -21,7 +21,11 @@ export async function GET(req: Request) {
         status: "Confirmed" as never,
         slot: { startsAt: { gte: new Date(now + w.from), lte: new Date(now + w.to) } },
       },
-      include: { slot: true },
+      include: {
+        slot: true,
+        listing: { include: { agency: true } },
+        agent: { select: { publicName: true, fullName: true } },
+      },
       take: 200,
     });
     for (const b of bookings) {
@@ -29,8 +33,13 @@ export async function GET(req: Request) {
         where: { bookingId: b.id, template: w.template },
       });
       if (already) continue;
+      const host = b.agent?.publicName ?? b.agent?.fullName?.split(" ")[0] ?? "your host";
       try {
-        await sendWhatsApp({ to: b.buyerPhone, template: w.template, components: [] });
+        await sendWhatsApp({
+          to: b.buyerPhone,
+          template: w.template,
+          params: [b.listing.title, fmtDateTime(b.slot.startsAt), host, b.listing.agency.name],
+        });
         await prisma.waMessage.create({
           data: { bookingId: b.id, template: w.template, status: "sent" },
         });

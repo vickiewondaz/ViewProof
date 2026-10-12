@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP, phoneNumber } from "better-auth/plugins";
 import { prisma } from "./db";
-import { sendWhatsApp } from "./whatsapp";
+import { sendAuthCode } from "./whatsapp";
 import { sendEmailOtp } from "./email";
 
 // Better Auth — Owner: email OTP. Agent: phone OTP via WhatsApp Cloud API.
@@ -32,14 +32,11 @@ export const auth = betterAuth({
       expiresIn: 600,
       allowedAttempts: 5,
       sendOTP: ({ phoneNumber, code }) => {
-        // Agents receive OTP on WhatsApp (free-tier auth template).
+        // Agents receive login codes on WhatsApp (authentication template).
         // Fire-and-forget to avoid timing attacks.
-        void sendWhatsApp({
-          to: phoneNumber,
-          template: "receipt",
-          components: [],
-        }).catch((e) => console.warn("[phone-otp] whatsapp send failed", e));
-        console.log(`[phone-otp] ${phoneNumber} -> ${code}`);
+        void sendAuthCode(phoneNumber, code).catch((e) =>
+          console.warn("[phone-otp] whatsapp send failed", e)
+        );
       },
       signUpOnVerification: {
         getTempEmail: (phoneNumber) => `${phoneNumber}@viewproof.local`,

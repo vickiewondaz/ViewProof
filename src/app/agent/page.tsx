@@ -9,6 +9,7 @@ export default function AgentPage() {
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState("");
   const [receipt, setReceipt] = useState<string | null>(null);
+  const [pushState, setPushState] = useState("");
 
   const submit = async (action: string) => {
     setMsg("");
@@ -77,6 +78,31 @@ export default function AgentPage() {
       <button className="mt-3 w-full rounded-xl bg-white px-4 py-4 text-[16px] font-semibold">
         Something wrong? Report it
       </button>
+      <button
+        onClick={async () => {
+          try {
+            const me = await fetch("/api/me").then((r) => r.json());
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+            });
+            const j = sub.toJSON();
+            await fetch("/api/push", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ endpoint: j.endpoint, keys: j.keys, agencyId: me?.user?.agencyId ?? undefined }),
+            });
+            setPushState("Alerts on ✓ New bookings will buzz here, plus WhatsApp.");
+          } catch {
+            setPushState("Couldn't switch alerts on — WhatsApp alerts still work fine.");
+          }
+        }}
+        className="mt-2 w-full rounded-xl bg-sand-100 px-4 py-4 text-[16px] font-semibold"
+      >
+        Switch booking alerts on 🔔
+      </button>
+      {pushState && <p className="mt-2 text-[16px]" role="status">{pushState}</p>}
       <p className="mt-3 rounded-xl bg-sun-100 p-3 text-center text-[16px]">No network? The code saves on your phone and syncs later. Don&apos;t worry.</p>
     </main>
   );

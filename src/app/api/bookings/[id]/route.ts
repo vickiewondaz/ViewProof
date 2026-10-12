@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { getStaffUser, agencyScope } from "@/lib/session";
 import { generateOtp, OTP_RESEND_COOLDOWN_MS } from "@/lib/otp";
-import { sendWhatsApp } from "@/lib/whatsapp";
+import { sendWhatsApp, fmtDateTime } from "@/lib/whatsapp";
 
 const Patch = z.object({
   action: z.enum(["confirm", "cancel-buyer", "cancel-agency", "resend"]),
@@ -78,8 +78,29 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       data: { status: "Confirmed" as never },
     });
     await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "confirm", diff: {} });
-    // Agent alert (assigned) — fire-and-forget.
-    void sendWhatsApp({ to: b.buyerPhone, template: "booking_confirm", components: [] }).catch(() => null);
+    // Buyer hears "confirmed" (was wrongly re-sent as a generic alert before).
+    void (async () => {
+      const full = await prisma.booking.findUnique({
+        where: { id: b.id },
+        include: {
+          listing: { include: { agency: true } },
+          slot: true,
+          agent: { select: { publicName: true, fullName: true } },
+        },
+      });
+      if (!full) return;
+      const host = full.agent?.publicName ?? full.agent?.fullName?.split(" ")[0] ?? "your host";
+      try {
+        await sendWhatsApp({
+          to: full.buyerPhone,
+          template: "booking_confirm",
+          params: [full.buyerName, full.listing.title, fmtDateTime(full.slot.startsAt), "confirmed", host, full.listing.agency.name, "— see your earlier message"],
+        });
+        await prisma.waMessage.create({ data: { bookingId: b.id, template: "booking_confirm", status: "sent" } });
+      } catch {
+        await prisma.waMessage.create({ data: { bookingId: b.id, template: "booking_confirm", status: "failed" } });
+      }
+    })();
     return NextResponse.json({ ok: true, booking: { id: updated.id, status: updated.status } });
   }
 
@@ -95,19 +116,40 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ ok: true, booking: { id: updated.id, status: updated.status } });
   }
 
-  // resend — 60s cooldown, rotates OTP, resets attempts.
+  // resend — 60s cooldown, rotates OTP, resets attempts, delivers new code.
   const lastMsg = await prisma.waMessage.findFirst({
     where: { bookingId: b.id, template: "booking_confirm" },
     orderBy: { at: "desc" },
   });
   if (lastMsg && Date.now() - lastMsg.at.getTime() < OTP_RESEND_COOLDOWN_MS)
     return NextResponse.json({ ok: false, error: "Wait 60s before resend" }, { status: 429 });
-  const { hash, expires } = generateOtp();
+  const { code: freshCode, hash, expires } = generateOtp();
   const updated = await prisma.booking.update({
     where: { id: b.id },
     data: { otpHash: hash, otpExpires: expires, otpAttempts: 0 },
   });
-  await prisma.waMessage.create({ data: { bookingId: b.id, template: "booking_confirm", status: "resent" } });
+  void (async () => {
+    const full = await prisma.booking.findUnique({
+      where: { id: b.id },
+      include: {
+        listing: { include: { agency: true } },
+        slot: true,
+        agent: { select: { publicName: true, fullName: true } },
+      },
+    });
+    if (!full) return;
+    const host = full.agent?.publicName ?? full.agent?.fullName?.split(" ")[0] ?? "your host";
+    try {
+      await sendWhatsApp({
+        to: full.buyerPhone,
+        template: "booking_confirm",
+        params: [full.buyerName, full.listing.title, fmtDateTime(full.slot.startsAt), full.status, host, full.listing.agency.name, freshCode],
+      });
+      await prisma.waMessage.create({ data: { bookingId: b.id, template: "booking_confirm", status: "resent" } });
+    } catch {
+      await prisma.waMessage.create({ data: { bookingId: b.id, template: "booking_confirm", status: "failed" } });
+    }
+  })();
   await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "otp-resend", diff: {} });
   return NextResponse.json({ ok: true, booking: { id: updated.id, otpExpires: updated.otpExpires } });
 }
