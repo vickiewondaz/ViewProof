@@ -69,6 +69,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       ...(d.features !== undefined && { features: d.features as object }),
       ...(d.accessRef !== undefined && { accessRef: d.accessRef }),
       ...(d.internalNotes !== undefined && { internalNotes: d.internalNotes }),
+      ...((d.commissionTerms !== undefined && u.role !== "agent") && { commissionTerms: d.commissionTerms }),
       ...(d.status !== undefined && { status: d.status as never }),
       // Fact edits do NOT refresh the stale clock; only /reconfirm does.
     },

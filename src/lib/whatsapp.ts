@@ -14,6 +14,7 @@ export const TEMPLATES = {
   refresh_nudge: "refresh_nudge",
   receipt: "receipt",
   weekly_summary: "weekly_summary",
+  deal_closed: "deal_closed",
 } as const;
 
 /** Exact approved bodies. Keep in sync with Meta template submissions. */
@@ -32,6 +33,8 @@ export const TEMPLATE_COPIES: Record<keyof typeof TEMPLATES, string> = {
     "Done! You viewed {{1}} on {{2}} with {{3}}. Anything mismatched? Report here: {{4}}",
   weekly_summary:
     "ViewProof weekly for {{1}}: {{2}} viewing(s) completed, {{3}} upcoming. {{4}} live listings, {{5}} paused as stale. {{6}} Full report: {{7}}",
+  deal_closed:
+    "Good news {{1}}! Your deal for {{2}} closed at {{3}} with {{4}}. The record is kept. ViewProof does not handle payments.",
 };
 
 export function siteUrl(): string {

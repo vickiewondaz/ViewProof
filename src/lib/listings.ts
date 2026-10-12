@@ -22,6 +22,7 @@ export const ListingCreate = z.object({
   features: z.record(z.string(), z.unknown()).optional(),
   accessRef: z.string().max(120).optional(),
   internalNotes: z.string().max(5000).optional(),
+  commissionTerms: z.string().max(280).optional(),
   status: ListingStatusEnum.default("Draft"),
 });
 

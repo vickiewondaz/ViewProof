@@ -8,6 +8,7 @@ type Listing = {
   id: string; title: string; area: string; price: string; currency: string;
   status: string; slug: string; lastConfirmedAt: string;
   imageUrls: string[]; photographedAt: string | null; agentId: string | null;
+  commissionTerms?: string | null;
   agent?: { publicName: string; fullName: string } | null;
 };
 type Agent = { id: string; fullName: string; publicName: string; active: boolean };
@@ -36,7 +37,7 @@ export default function ListingsPage() {
   const [slots, setSlots] = useState<Record<string, Slot[]>>({});
   const [newSlot, setNewSlot] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
-  const [ef, setEf] = useState({ price: "", agentId: "", photographedAt: "", photos: [] as string[] });
+  const [ef, setEf] = useState({ price: "", agentId: "", photographedAt: "", photos: [] as string[], commissionTerms: "" });
   const [uploading, setUploading] = useState(false);
 
   const load = async () => {
@@ -153,6 +154,7 @@ export default function ListingsPage() {
       agentId: l.agentId ?? "",
       photographedAt: l.photographedAt ? l.photographedAt.slice(0, 10) : "",
       photos: l.imageUrls ?? [],
+      commissionTerms: l.commissionTerms ?? "",
     });
     setMsg("");
   };
@@ -181,6 +183,7 @@ export default function ListingsPage() {
         agentId: ef.agentId || undefined,
         photographedAt: ef.photographedAt || undefined,
         imageUrls: ef.photos,
+        commissionTerms: ef.commissionTerms.trim() || undefined,
       }),
     });
     const j = await res.json().catch(() => ({}));
@@ -305,6 +308,7 @@ export default function ListingsPage() {
             <p className="mt-1 text-[14px] text-slate-500">
               Confirmed {new Date(l.lastConfirmedAt).toDateString()}
               {l.agent ? ` · ${l.agent.publicName}` : " · no host yet"}
+              {l.commissionTerms ? ` · ✍ ${l.commissionTerms}` : ""}
             </p>
             <p className="mt-1 text-[14px]">{STATUS_HINT[l.status] ?? ""}</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -343,6 +347,16 @@ export default function ListingsPage() {
                   <option value="">No host yet</option>
                   {agents.map((a) => <option key={a.id} value={a.id}>{a.publicName} ({a.fullName})</option>)}
                 </select>
+                <label className="mt-3 block text-[16px] font-semibold" htmlFor={`terms-${l.id}`}>
+                  Host&apos;s cut, agreed upfront <span className="font-normal">(shown to the host — ends “remembered differently” fights)</span>
+                </label>
+                <input
+                  id={`terms-${l.id}`}
+                  value={ef.commissionTerms}
+                  onChange={(e) => setEf({ ...ef, commissionTerms: e.target.value })}
+                  placeholder="e.g. 10% of agency fee on close"
+                  className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+                />
                 <button onClick={() => saveEdit(l.id)} className="mt-3 w-full min-h-[52px] rounded-xl bg-proof-600 px-4 text-[18px] font-bold text-white">
                   Save details
                 </button>

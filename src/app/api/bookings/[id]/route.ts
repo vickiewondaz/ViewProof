@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { getStaffUser, agencyScope } from "@/lib/session";
+import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
 import { generateOtp, OTP_RESEND_COOLDOWN_MS } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime } from "@/lib/whatsapp";
 
 const Patch = z.object({
-  action: z.enum(["confirm", "cancel-buyer", "cancel-agency", "resend"]),
+  action: z.enum(["confirm", "cancel-buyer", "cancel-agency", "resend", "close", "payout"]),
+  closedPrice: z.coerce.number().positive().optional(),
 });
 
 // GET /api/bookings/[id] — public pass payload by unguessable id (no PII beyond
@@ -114,6 +115,61 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     await prisma.slot.update({ where: { id: b.slotId }, data: { bookedCount: { decrement: 1 } } }).catch(() => null);
     await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "cancel-agency", diff: {} });
     return NextResponse.json({ ok: true, booking: { id: updated.id, status: updated.status } });
+  }
+
+  if (action === "close") {
+    // Owner or the assigned host records the closed deal. Terms were agreed
+    // upfront on the listing; this stamps price + date + payout-pending.
+    if (u.role === "agent") {
+      const row = u.phoneNumber ? await findRosterAgent(agencyScope(u), u.phoneNumber) : null;
+      if (!row || b.agentId !== row.id)
+        return NextResponse.json({ ok: false, error: "Not your booking — ask your owner to add your number to the roster." }, { status: 403 });
+    }
+    if (b.status !== "Completed")
+      return NextResponse.json({ ok: false, error: "Only attended viewings can close." }, { status: 409 });
+    const price = parsed.data.closedPrice;
+    if (!price) return NextResponse.json({ ok: false, error: "Add the closed price." }, { status: 400 });
+    const updated = await prisma.booking.update({
+      where: { id: b.id },
+      data: { closedPrice: price, closedAt: new Date(), payoutStatus: "Pending" },
+    });
+    await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "close", diff: { closedPrice: price } });
+    void (async () => {
+      const full = await prisma.booking.findUnique({
+        where: { id: b.id },
+        include: {
+          listing: { select: { title: true, currency: true } },
+          agent: { select: { publicName: true, fullName: true } },
+        },
+      });
+      if (!full) return;
+      const host = full.agent?.publicName ?? full.agent?.fullName?.split(" ")[0] ?? "your host";
+      try {
+        await sendWhatsApp({
+          to: full.buyerPhone,
+          template: "deal_closed",
+          params: [full.buyerName, full.listing.title, `${full.listing.currency} ${Number(price).toLocaleString()}`, host],
+        });
+        await prisma.waMessage.create({ data: { bookingId: b.id, template: "deal_closed", status: "sent" } });
+      } catch {
+        await prisma.waMessage.create({ data: { bookingId: b.id, template: "deal_closed", status: "failed" } });
+      }
+    })();
+    return NextResponse.json({ ok: true, booking: { id: updated.id, closedPrice: updated.closedPrice } });
+  }
+
+  if (action === "payout") {
+    // Owner only: money visibly marked paid. ViewProof never moves cash.
+    if (u.role !== "owner" && u.role !== "admin")
+      return NextResponse.json({ ok: false }, { status: 403 });
+    if (!b.closedAt)
+      return NextResponse.json({ ok: false, error: "Close the deal first." }, { status: 409 });
+    const updated = await prisma.booking.update({
+      where: { id: b.id },
+      data: { payoutStatus: "Paid", paidAt: new Date() },
+    });
+    await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "payout", diff: {} });
+    return NextResponse.json({ ok: true, booking: { id: updated.id, payoutStatus: updated.payoutStatus } });
   }
 
   // resend — 60s cooldown, rotates OTP, resets attempts, delivers new code.

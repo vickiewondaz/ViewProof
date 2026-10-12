@@ -72,6 +72,8 @@ export async function POST(req: Request) {
       features: (d.features ?? {}) as object,
       accessRef: d.accessRef,
       internalNotes: d.internalNotes,
+      // Terms are the owner's call — agents can't promise themselves a cut.
+      commissionTerms: u.role === "agent" ? undefined : d.commissionTerms,
       slug: slugify(d.title, d.area),
       lastConfirmedAt: new Date(),
     },

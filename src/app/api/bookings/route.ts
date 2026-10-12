@@ -7,6 +7,7 @@ import { generateOtp } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
 import { notifyAgency } from "@/lib/push";
+import { reliability } from "@/lib/reliability";
 
 const Prequal = z.object({
   budgetBand: z.string().max(60).optional(),
@@ -22,7 +23,7 @@ const BookingInput = z.object({
   prequal: Prequal,
 });
 
-// GET /api/bookings?day=today|tomorrow|upcoming — staff only. Agent sees
+// GET /api/bookings?day=today|tomorrow|upcoming|history — staff only. Agent sees
 // own roster bookings; owner sees the whole agency. Includes buyer contact
 // (staff-only) plus listing + slot + host for ops views.
 export async function GET(req: Request) {
@@ -33,6 +34,7 @@ export async function GET(req: Request) {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const upcoming = day === "upcoming";
+  const history = day === "history";
   const end = new Date(start.getTime() + (day === "tomorrow" ? 2 : 1) * 24 * 3600e3);
   const from = upcoming ? new Date() : day === "tomorrow" ? new Date(start.getTime() + 24 * 3600e3) : start;
   // Auth user ≠ Agent row: match roster by phone within the agency.
@@ -49,17 +51,44 @@ export async function GET(req: Request) {
             status: { in: ["Requested", "Confirmed"] as never },
             slot: { startsAt: { gte: from } },
           }
-        : { slot: { startsAt: { gte: from, lt: end } } }),
+        : history
+          ? {
+              status: { in: ["Completed", "NoShowBuyer", "NoShowAgent", "NeedsReview"] as never },
+              slot: { startsAt: { gte: new Date(Date.now() - 60 * 24 * 3600e3) } },
+            }
+          : { slot: { startsAt: { gte: from, lt: end } } }),
     },
     include: {
-      listing: { select: { title: true, area: true } },
+      listing: { select: { title: true, area: true, commissionTerms: true } },
       slot: { select: { startsAt: true } },
       agent: { select: { publicName: true, fullName: true } },
     },
     orderBy: { slot: { startsAt: "asc" } },
     take: 100,
   });
-  return NextResponse.json({ ok: true, bookings });
+  // Buyer reliability, agency-wide: kept word vs broke it. Two grouped
+  // queries, not N+1 — cheap at pilot scale, honest at any scale.
+  const [kept, broke] = await Promise.all([
+    prisma.booking.groupBy({
+      by: ["buyerPhone"],
+      where: { listing: { agencyId: scope }, status: "Completed" as never },
+      _count: true,
+    }),
+    prisma.booking.groupBy({
+      by: ["buyerPhone"],
+      where: { listing: { agencyId: scope }, status: "NoShowBuyer" as never },
+      _count: true,
+    }),
+  ]);
+  const keptBy = new Map(kept.map((k) => [k.buyerPhone, k._count]));
+  const brokeBy = new Map(broke.map((k) => [k.buyerPhone, k._count]));
+  return NextResponse.json({
+    ok: true,
+    bookings: bookings.map((b) => ({
+      ...b,
+      reliability: reliability(keptBy.get(b.buyerPhone) ?? 0, brokeBy.get(b.buyerPhone) ?? 0),
+    })),
+  });
 }
 
 // POST /api/bookings — public, rate-limited upstream. Creates Requested,
@@ -125,6 +154,8 @@ export async function POST(req: Request) {
           otpHash: hash,
           otpExpires: expires,
           agentId: full.agentId,
+          // Permanent introducer link — who sourced this buyer, frozen now.
+          introducedBy: full.agentId,
         },
       });
     });

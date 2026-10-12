@@ -5,35 +5,82 @@ type Booking = {
   id: string; buyerName: string; buyerPhone: string; status: string;
   listing: { title: string; area: string }; slot: { startsAt: string };
   agent?: { publicName: string; fullName: string } | null;
+  reliability?: { attended: number; total: number; label: string };
+  closedPrice?: string | number | null; closedAt?: string | null;
+  payoutStatus?: string | null;
 };
 
 const digits = (s: string) => s.replace(/\D/g, "");
 
 // Owner's bookings desk: every live viewing, buyer one tap away,
-// honest cancel when plans change.
+// honest cancel when plans change — plus deal closes and payouts.
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [done, setDone] = useState<Booking[]>([]);
   const [msg, setMsg] = useState("");
+  const [closePrice, setClosePrice] = useState<Record<string, string>>({});
 
   const load = async () => {
-    const r = await fetch("/api/bookings?day=upcoming").then((x) => x.json()).catch(() => ({}));
+    const [r, h] = await Promise.all([
+      fetch("/api/bookings?day=upcoming").then((x) => x.json()).catch(() => ({})),
+      fetch("/api/bookings?day=history").then((x) => x.json()).catch(() => ({})),
+    ]);
     if (r.ok) setBookings(r.bookings);
     else setMsg("Sign in as owner to see bookings.");
+    if (h.ok) setDone(h.bookings);
   };
   useEffect(() => {
     load();
   }, []);
 
-  const act = async (id: string, action: string) => {
+  const act = async (id: string, action: string, extra?: object) => {
     const res = await fetch(`/api/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action, ...extra }),
     });
     const j = await res.json().catch(() => ({}));
     setMsg(j.ok ? "Done ✓" : j.error ?? "Couldn't do that.");
     if (j.ok) load();
   };
+
+  const closeCard = (b: Booking) => (
+    <div key={b.id} className="mt-2 rounded-xl bg-sand-100 p-3">
+      {b.closedAt ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[16px]">
+            Closed <span className="tabular font-bold">{b.closedPrice ? Number(b.closedPrice).toLocaleString() : ""}</span>
+            {" · "}{b.payoutStatus === "Paid" ? "paid ✓" : "payout pending ⏳"}
+          </p>
+          {b.payoutStatus !== "Paid" && (
+            <button onClick={() => act(b.id, "payout")} className="min-h-[48px] rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white">
+              Mark paid
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <input
+            value={closePrice[b.id] ?? ""}
+            onChange={(e) => setClosePrice({ ...closePrice, [b.id]: e.target.value.replace(/\D/g, "") })}
+            placeholder="Closed price ₦"
+            inputMode="numeric"
+            aria-label="Closed price in naira"
+            className="tabular min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+          />
+          <button
+            onClick={() => {
+              if (!Number(closePrice[b.id])) return setMsg("Add the closed price first — the exact naira both sides agreed.");
+              act(b.id, "close", { closedPrice: Number(closePrice[b.id]) });
+            }}
+            className="min-h-[48px] shrink-0 rounded-xl bg-proof-600 px-4 text-[16px] font-bold text-white"
+          >
+            Close deal 🤝
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
@@ -65,6 +112,9 @@ export default function BookingsPage() {
               <p className="mt-1 text-[16px]">
                 {b.buyerName} · <span className="tabular">{b.buyerPhone}</span>
               </p>
+              {b.reliability && b.reliability.total > 0 && (
+                <p className="mt-1 text-[14px]">🤝 Buyer: {b.reliability.label}</p>
+              )}
               <p className="mt-1 text-[14px] text-slate-500">
                 {b.listing.area}{b.agent ? ` · host ${b.agent.publicName}` : ""}
               </p>
@@ -87,6 +137,22 @@ export default function BookingsPage() {
       </div>
       {!bookings.length && (
         <p className="mt-6 text-center text-[16px]">Nothing upcoming — share a Viewing Card and bookings land here.</p>
+      )}
+
+      <h2 className="mt-8 text-[22px] font-bold">Recently done 🤝</h2>
+      <p className="mt-1 max-w-2xl text-[16px]">Close deals with the exact naira, track payouts till agents smile.</p>
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {done.filter((b) => b.status === "Completed").map((b) => (
+          <article key={b.id} className="glass rounded-2xl p-4">
+            <p className="text-[18px] font-bold leading-snug">{b.listing.title}</p>
+            <p className="mt-1 text-[16px]">{b.buyerName} · host {b.agent?.publicName ?? "—"}</p>
+            <p className="tabular mt-1 text-[14px] text-slate-500">{new Date(b.slot.startsAt).toLocaleString()}</p>
+            {closeCard(b)}
+          </article>
+        ))}
+      </div>
+      {!done.filter((b) => b.status === "Completed").length && (
+        <p className="mt-4 text-[16px]">No completed viewings yet — closed deals appear here.</p>
       )}
     </main>
   );

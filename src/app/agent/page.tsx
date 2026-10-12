@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 type DayBooking = {
   id: string; buyerName: string; buyerPhone: string; status: string;
-  listing: { title: string; area: string }; slot: { startsAt: string };
+  listing: { title: string; area: string; commissionTerms?: string | null }; slot: { startsAt: string };
+  reliability?: { attended: number; total: number; label: string };
 };
 
 // Agent check-in — big-text sunlight mode. Works online; PWA queues offline
@@ -78,6 +79,12 @@ export default function AgentPage() {
                 {" · "}{b.listing.title} · {b.buyerName}
                 <br />
                 <span className="text-[14px]">{b.status}</span>
+                {b.reliability && b.reliability.total > 0 && (
+                  <><br /><span className="text-[14px]">🤝 {b.reliability.label}</span></>
+                )}
+                {b.listing.commissionTerms && (
+                  <><br /><span className="text-[14px]">✍ Your cut: {b.listing.commissionTerms}</span></>
+                )}
               </button>
             ))}
           </div>

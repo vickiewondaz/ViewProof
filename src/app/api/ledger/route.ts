@@ -18,7 +18,7 @@ export async function GET(req: Request) {
       status: { in: ["Completed", "NoShowBuyer", "NoShowAgent", "NeedsReview"] as never },
     },
     include: {
-      listing: { select: { title: true, area: true, price: true, currency: true } },
+      listing: { select: { title: true, area: true, price: true, currency: true, commissionTerms: true } },
       slot: { select: { startsAt: true } },
       agent: { select: { publicName: true, fullName: true } },
     },
@@ -34,16 +34,21 @@ export async function GET(req: Request) {
     area: b.listing.area,
     price: b.listing.price.toString(),
     agent: b.agent?.publicName ?? b.agent?.fullName ?? "unassigned",
+    introducedBy: b.introducedBy ?? b.agentId ?? "unassigned",
+    terms: b.listing.commissionTerms ?? "",
     scheduled: b.slot.startsAt,
     checkedIn: b.checkinAt,
     outcome: b.status,
     receipt: b.status === "Completed" ? b.id : null,
+    closedPrice: b.closedPrice?.toString() ?? "",
+    closedAt: b.closedAt,
+    payout: b.payoutStatus ?? "",
   }));
 
   if (new URL(req.url).searchParams.get("format") === "csv") {
-    const head = "booking,buyer,phone,listing,agent,scheduled,checked_in,outcome";
+    const head = "booking,buyer,phone,listing,agent,introduced_by,terms,scheduled,checked_in,outcome,closed_price,payout";
     const lines = pack.map((p) =>
-      [p.bookingId, `"${p.buyer}"`, p.buyerPhone, `"${p.listing}"`, `"${p.agent}"`, p.scheduled.toISOString(), p.checkedIn?.toISOString() ?? "", p.outcome].join(",")
+      [p.bookingId, `"${p.buyer}"`, p.buyerPhone, `"${p.listing}"`, `"${p.agent}"`, p.introducedBy, `"${p.terms}"`, p.scheduled.toISOString(), p.checkedIn?.toISOString() ?? "", p.outcome, p.closedPrice, p.payout].join(",")
     );
     return new NextResponse([head, ...lines].join("\n"), {
       headers: { "Content-Type": "text/csv", "Content-Disposition": "attachment; filename=viewproof-ledger.csv" },

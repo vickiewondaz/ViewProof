@@ -111,6 +111,9 @@ model Listing {
   features        Json?
   accessRef       String?
   internalNotes   String?       @db.Text
+  // Commission terms, agreed BEFORE any viewing and shown to the host.
+  // Free text ("10% of agency fee on close") — precision beats structure here.
+  commissionTerms String?
   slug            String        @unique
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -152,6 +155,15 @@ model Booking {
   checkinAt   DateTime?
   agentId     String?
   agent       Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  // Who introduced this buyer — snapshotted at request, never rewritten.
+  // Settles "whose buyer was this?" months later.
+  introducedBy String?
+  // Deal closure (owner or host records; other side notified via WhatsApp).
+  closedPrice Decimal?      @db.Decimal(14, 2)
+  closedAt    DateTime?
+  // Payout visibility, not money movement: Pending → Paid + dates.
+  payoutStatus String?       @default("Pending")
+  paidAt      DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   issues      Issue[]
