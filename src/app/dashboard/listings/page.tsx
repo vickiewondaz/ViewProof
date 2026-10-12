@@ -28,6 +28,8 @@ export default function ListingsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [msg, setMsg] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [csv, setCsv] = useState("");
   const [f, setF] = useState({ title: "", type: "rent", area: "", price: "", agentId: "" });
   const [busy, setBusy] = useState(false);
   const [openSlots, setOpenSlots] = useState<string | null>(null);
@@ -71,6 +73,25 @@ export default function ListingsPage() {
       setMsg("Saved as draft — add photos, then publish from the card.");
       load();
     } else setMsg(j.error ?? "Couldn't save — try again.");
+  };
+
+  const importCsv = async (text: string) => {
+    if (!text.trim()) return setMsg("Paste your spreadsheet first — or pick a .csv file below.");
+    setBusy(true);
+    const res = await fetch("/api/listings/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ csv: text }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (j.ok) {
+      const bad = (j.errors ?? []).map((e: { row: number; error: string }) => `row ${e.row}: ${e.error}`).join("; ");
+      setMsg(`${j.created.length} draft(s) added ✓${bad ? ` Skipped — ${bad}.` : " Add photos, then publish."}`);
+      setCsv("");
+      setShowImport(false);
+      load();
+    } else setMsg(j.error ?? "Couldn't import.");
   };
 
   const reconfirm = async (id: string) => {
@@ -177,14 +198,56 @@ export default function ListingsPage() {
           <h1 className="text-[26px] font-bold md:text-[32px]">Your listings</h1>
           <p className="mt-1 text-[16px]">Fresh cards get bookings. Stale ones pause themselves.</p>
         </div>
-        <button
-          onClick={() => setShowForm((v) => !v)}
-          className="rounded-xl bg-proof-600 px-4 py-3 text-[16px] font-bold text-white"
-        >
-          {showForm ? "Close" : "+ Add a place"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            className="rounded-xl bg-proof-600 px-4 py-3 text-[16px] font-bold text-white"
+          >
+            {showForm ? "Close" : "+ Add a place"}
+          </button>
+          <button
+            onClick={() => setShowImport((v) => !v)}
+            className="glass-soft rounded-xl px-4 py-3 text-[16px] font-semibold"
+          >
+            {showImport ? "Close" : "Import CSV"}
+          </button>
+        </div>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
+
+      {showImport && (
+        <section className="glass mt-4 rounded-2xl p-4 md:p-6">
+          <h2 className="text-[18px] font-bold">Bring your spreadsheet</h2>
+          <p className="mt-1 text-[16px]">
+            Columns: title, type (rent/sale/land/commercial/other), area, price, currency, agentPhone, imageUrl, photographedAt.
+            Everything lands as draft — nothing goes live until you add photos and publish.
+          </p>
+          <textarea
+            value={csv}
+            onChange={(e) => setCsv(e.target.value)}
+            placeholder={"title,type,area,price\nSunny 2-bed,rent,Lekki,3500000"}
+            rows={5}
+            className="glass-soft glass-input mt-3 w-full rounded-xl px-4 py-3 font-mono text-[14px]"
+          />
+          <div className="mt-3 flex flex-wrap gap-2">
+            <label className="glass-soft cursor-pointer rounded-xl px-4 py-3 text-[16px] font-semibold">
+              Choose .csv file
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) file.text().then((t) => setCsv(t)).catch(() => setMsg("Couldn't read that file."));
+                }}
+              />
+            </label>
+            <button onClick={() => importCsv(csv)} disabled={busy} className="rounded-xl bg-proof-600 px-6 py-3 text-[16px] font-bold text-white disabled:opacity-60">
+              {busy ? "Importing…" : "Import as drafts"}
+            </button>
+          </div>
+        </section>
+      )}
 
       {showForm && (
         <section className="mt-4 glass rounded-2xl p-4 md:p-6">

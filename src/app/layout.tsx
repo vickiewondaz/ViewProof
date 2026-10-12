@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import SiteHeader from "@/components/site-header";
+import InstallPrompt from "@/components/install-prompt";
 
 export const metadata: Metadata = {
   title: "ViewProof — Accountable property viewings",
@@ -34,6 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen antialiased">
         <SiteHeader />
+        <div className="px-3 pt-3">
+          <InstallPrompt />
+        </div>
         {children}
         <footer className="mx-auto w-full max-w-6xl px-4 pb-10 pt-6 text-center text-[14px] text-slate-500">
           ViewProof · honest viewings · we don&apos;t verify title or ownership
