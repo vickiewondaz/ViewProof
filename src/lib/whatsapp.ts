@@ -13,6 +13,7 @@ export const TEMPLATES = {
   agent_alert: "agent_alert",
   refresh_nudge: "refresh_nudge",
   receipt: "receipt",
+  weekly_summary: "weekly_summary",
 } as const;
 
 /** Exact approved bodies. Keep in sync with Meta template submissions. */
@@ -29,6 +30,8 @@ export const TEMPLATE_COPIES: Record<keyof typeof TEMPLATES, string> = {
     "Hello {{1}}: {{2}} listing(s) paused as stale. Tap to reconfirm and reopen booking: {{3}}",
   receipt:
     "Done! You viewed {{1}} on {{2}} with {{3}}. Anything mismatched? Report here: {{4}}",
+  weekly_summary:
+    "ViewProof weekly for {{1}}: {{2}} viewing(s) completed, {{3}} upcoming. {{4}} live listings, {{5}} paused as stale. {{6}} Full report: {{7}}",
 };
 
 export function siteUrl(): string {
