@@ -10,9 +10,11 @@ type Slot = { id: string; startsAt: string; left: number };
 export default function BookForm({
   listingId,
   slots,
+  contact,
 }: {
   listingId: string;
   slots: Slot[];
+  contact?: string | null;
 }) {
   const router = useRouter();
   const [slotId, setSlotId] = useState(slots[0]?.id ?? "");
@@ -24,7 +26,7 @@ export default function BookForm({
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (!slots.length) return <EmptySlots />;
+  if (!slots.length) return <EmptySlots contact={contact} />;
 
   const submit = async () => {
     if (!slotId) return setMsg("Pick a time above first.");

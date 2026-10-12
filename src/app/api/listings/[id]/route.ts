@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { getStaffUser, agencyScope } from "@/lib/session";
+import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
 import { ListingUpdate, activeGate } from "@/lib/listings";
 
 async function scoped(id: string, agencyId: string) {
@@ -25,10 +25,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!existing) return NextResponse.json({ ok: false }, { status: 404 });
   if (u.role === "agent") {
     const row = u.phoneNumber
-      ? await prisma.agent.findFirst({
-          where: { agencyId: agencyScope(u), phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
-          select: { id: true },
-        })
+      ? await findRosterAgent(agencyScope(u), u.phoneNumber)
       : null;
     if (!row || existing.agentId !== row.id)
       return NextResponse.json({ ok: false }, { status: 403 });

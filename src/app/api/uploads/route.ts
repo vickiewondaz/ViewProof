@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStore } from "@netlify/blobs";
 import { getStaffUser } from "@/lib/session";
 import { audit } from "@/lib/audit";
+import { rateLimit, clientKey } from "@/lib/ratelimit";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -13,11 +14,17 @@ const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 // siteID/token — otherwise returns 503 with a human message.
 export async function POST(req: Request) {
   const u = await getStaffUser();
-  if (!u) return NextResponse.json({ ok: false }, { status: 401 });
-
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   const kind = String(form?.get("kind") ?? "evidence");
+  // Buyers (no account) may attach photos to issue reports only — rate-limited.
+  // Staff kinds (evidence/listing) require sign-in.
+  if (!u) {
+    if (kind !== "issues")
+      return NextResponse.json({ ok: false }, { status: 401 });
+    if (!rateLimit(`uploads:${clientKey(req)}`, 10))
+      return NextResponse.json({ ok: false, error: "Too many photos — try later." }, { status: 429 });
+  }
   if (!(file instanceof Blob))
     return NextResponse.json({ ok: false, error: "Choose a photo first." }, { status: 400 });
   if (file.size > MAX_BYTES)
@@ -28,10 +35,10 @@ export async function POST(req: Request) {
   try {
     const store = getStore("viewproof-images");
     const ext = file.type === "image/png" ? "png" : file.type === "image/jpeg" ? "jpg" : "webp";
-    const key = `${kind}/${u.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const key = `${kind}/${u?.id ?? "buyer"}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     await store.set(key, file);
     const url = `/api/uploads?key=${encodeURIComponent(key)}`;
-    await audit({ actor: u.id, entity: "upload", entityId: key, action: "upload", diff: { kind } });
+    await audit({ actor: u?.id ?? "buyer", entity: "upload", entityId: key, action: "upload", diff: { kind } });
     return NextResponse.json({ ok: true, url, key }, { status: 201 });
   } catch (e) {
     console.warn("[uploads] blob store unavailable", e);

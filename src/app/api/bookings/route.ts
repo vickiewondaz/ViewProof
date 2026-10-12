@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { getStaffUser, agencyScope } from "@/lib/session";
+import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
 import { generateOtp } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
@@ -37,12 +37,7 @@ export async function GET(req: Request) {
   // Auth user ≠ Agent row: match roster by phone within the agency.
   let agentRow: string | undefined;
   if (u.role === "agent" && u.phoneNumber) {
-    agentRow = (
-      await prisma.agent.findFirst({
-        where: { agencyId: scope, phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
-        select: { id: true },
-      })
-    )?.id;
+    agentRow = (await findRosterAgent(scope, u.phoneNumber))?.id;
   }
   const bookings = await prisma.booking.findMany({
     where: {

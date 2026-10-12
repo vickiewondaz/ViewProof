@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { HelpFooter } from "@/components/human";
+import { HelpFooter, PausedNotice } from "@/components/human";
 import BookForm from "@/components/book-form";
 
 async function getCard(slug: string) {
@@ -89,20 +89,10 @@ export default async function ViewingCardPage({
             <li>ⓘ We don&apos;t check title or ownership — ask the agency how they confirm it.</li>
           </ul>
           {c.paused ? (
-            <div className="mt-4 rounded-xl bg-slate-200/60 p-4">
-              <p className="text-[16px] font-semibold">Paused for now</p>
-              <p className="mt-1 text-[16px]">
-                The agency hasn&apos;t reconfirmed this place, so booking is
-                closed. Leave your number and we&apos;ll message you on WhatsApp
-                when it&apos;s fresh.
-              </p>
-              <button className="mt-3 w-full rounded-xl bg-white px-4 py-3 text-[16px] font-semibold">
-                Notify me on WhatsApp
-              </button>
-            </div>
+            <PausedNotice contact={c.agency?.contact} title={c.title} area={c.area} />
           ) : (
             <div id="book">
-              <BookForm listingId={c.id} slots={c.slots ?? []} />
+              <BookForm listingId={c.id} slots={c.slots ?? []} contact={c.agency?.contact} />
             </div>
           )}
           <a

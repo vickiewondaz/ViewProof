@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description:
     "WhatsApp-first viewing workflow: clear cards, named agents, OTP check-in, receipts.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "ViewProof",
     description: "Clear information creates confident viewings.",

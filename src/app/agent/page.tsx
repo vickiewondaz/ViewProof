@@ -16,6 +16,7 @@ export default function AgentPage() {
   const [receipt, setReceipt] = useState<string | null>(null);
   const [pushState, setPushState] = useState("");
   const [today, setToday] = useState<DayBooking[]>([]);
+  const [dayMsg, setDayMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/bookings?day=today")
@@ -25,6 +26,8 @@ export default function AgentPage() {
           setToday(j.bookings);
           const next = j.bookings.find((b: DayBooking) => b.status === "Confirmed" || b.status === "Requested");
           if (next && !bookingId) setBookingId(next.id);
+        } else {
+          setDayMsg("Sign in + link your roster spot to see today's viewings here.");
         }
       })
       .catch(() => null);
@@ -59,8 +62,7 @@ export default function AgentPage() {
 
       {today.length > 0 && (
         <>
-          <h2 className="mt-5 text-[18px] font-bold">Today&apos;s viewings</h2>
-          <div className="mt-2 grid gap-2">
+          <h2 className="mt-5 text-[18px] font-bold">Today&apos;s viewings</h2>          <div className="mt-2 grid gap-2">
             {today.map((b) => (
               <button
                 key={b.id}
@@ -81,6 +83,10 @@ export default function AgentPage() {
           </div>
         </>
       )}
+      {today.length === 0 && dayMsg && (
+        <p className="mt-4 rounded-xl bg-sand-100 p-3 text-center text-[16px]">{dayMsg}</p>
+      )}
+
       <label className="mt-4 block text-[16px] font-semibold" htmlFor="booking">
         Booking ID (from your WhatsApp alert)
       </label>
@@ -128,10 +134,12 @@ export default function AgentPage() {
           try {
             const me = await fetch("/api/me").then((r) => r.json());
             const reg = await navigator.serviceWorker.ready;
-            const sub = await reg.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-            });
+            // VAPID key must be a Uint8Array (base64url -> bytes).
+            const b64 = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "")
+              .replace(/-/g, "+").replace(/_/g, "/");
+            const raw = atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
+            const key = new Uint8Array(Array.from(raw, (c) => c.charCodeAt(0)));
+            const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
             const j = sub.toJSON();
             await fetch("/api/push", {
               method: "POST",

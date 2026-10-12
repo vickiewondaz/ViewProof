@@ -23,7 +23,8 @@ export default function OwnerLoginPage() {
       otp,
       name: email.split("@")[0],
     });
-    setMsg(error ? error.message ?? "Wrong code — try again." : "Welcome back! Taking you to your dashboard…");
+    if (error) setMsg(error.message ?? "Wrong code — try again.");
+    else window.location.href = "/onboard";
   };
 
   return (

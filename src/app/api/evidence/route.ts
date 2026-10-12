@@ -11,6 +11,9 @@ const Upload = z.object({
   // MVP: client uploads bytes to storage first (Netlify Blobs/S3), sends URL.
   // PWA compresses to WebP ≤800KB + strips GPS before upload.
   imageUrl: z.string().url().max(2000),
+  // Optional sha256 of the bytes (client-computed) — better duplicate
+  // detection than the URL hash fallback below.
+  hash: z.string().regex(/^[0-9a-f]{64}$/).optional(),
   takenAt: z.coerce.date().optional(),
 });
 
@@ -28,7 +31,7 @@ export async function POST(req: Request) {
   });
   if (!listing) return NextResponse.json({ ok: false }, { status: 404 });
 
-  const hash = createHash("sha256").update(parsed.data.imageUrl).digest("hex");
+  const hash = parsed.data.hash ?? createHash("sha256").update(parsed.data.imageUrl).digest("hex");
   const dup = await prisma.evidenceDoc.findFirst({
     where: { hash, listingId: { not: listing.id } },
     select: { id: true, listingId: true },

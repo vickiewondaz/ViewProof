@@ -7,6 +7,7 @@ export default function AgentLoginPage() {
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   const [msg, setMsg] = useState("");
 
   const send = async () => {
@@ -19,7 +20,17 @@ export default function AgentLoginPage() {
       phoneNumber: phone,
       code,
     });
-    setMsg(error ? error.message ?? "Wrong code — try again." : "You're in! Your today's viewings are waiting.");
+    if (error) setMsg(error.message ?? "Wrong code — try again.");
+    else {
+      setSignedIn(true);
+      setMsg("You're in! One more tap to link your roster spot.");
+    }
+  };
+  const claim = async () => {
+    const res = await fetch("/api/agents/claim", { method: "POST" });
+    const j = await res.json().catch(() => ({}));
+    if (j.ok) window.location.href = "/agent";
+    else setMsg(j.error ?? "Couldn't link — try again.");
   };
 
   return (
@@ -65,6 +76,14 @@ export default function AgentLoginPage() {
         </>
       )}
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
+      {signedIn && (
+        <button
+          onClick={claim}
+          className="mt-3 w-full rounded-xl bg-proof-600 px-4 py-4 text-[18px] font-bold text-white"
+        >
+          Link my agent spot →
+        </button>
+      )}
     </main>
   );
 }

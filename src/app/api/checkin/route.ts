@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { getStaffUser, agencyScope } from "@/lib/session";
+import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
 import { verifyOtp, OTP_MAX_ATTEMPTS } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 
@@ -36,10 +36,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false }, { status: 403 });
   if (u.role === "agent") {
     const row = u.phoneNumber
-      ? await prisma.agent.findFirst({
-          where: { agencyId: agencyScope(u), phone: { in: [u.phoneNumber, u.phoneNumber.replace(/^\+/, "")] } },
-          select: { id: true },
-        })
+      ? await findRosterAgent(agencyScope(u), u.phoneNumber)
       : null;
     if (!row || b.agentId !== row.id)
       return NextResponse.json({ ok: false, error: "Not your booking — ask your owner to add your number to the roster." }, { status: 403 });
