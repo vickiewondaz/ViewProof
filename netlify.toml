@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Scheduled: stale sweeper + reminders (Phase 2-3)
+# [functions."scheduled-stale"]
+#   schedule = "0 */6 * * *"

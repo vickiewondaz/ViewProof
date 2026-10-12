@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+dist/
+*.log
+.env
+.env.local
+.env.*.local
+.vercel
+.netlify
+android/
+ios/
+tsconfig.tsbuildinfo
+public/sw.js
+public/workbox-*.js

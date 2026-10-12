@@ -1,0 +1,23 @@
+:root {
+  --ink-900: #14213d;
+  --proof-600: #177e5c;
+  --proof-100: #dcf5e8;
+  --sun-500: #f6b844;
+  --sun-100: #fff2cf;
+  --coral-500: #e66d5a;
+  --coral-100: #fde5e0;
+  --sky-500: #327ccb;
+  --sky-100: #e1f0ff;
+  --sand-100: #f7f3ec;
+  --white: #ffffff;
+  --slate-500: #62708a;
+  --slate-200: #d9e0e8;
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--sand-100);
+  color: var(--ink-900);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabular { font-variant-numeric: tabular-nums; }

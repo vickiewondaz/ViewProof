@@ -1,0 +1,247 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ListingStatus {
+  Draft
+  Active
+  NeedsReview
+  StalePaused
+  Unavailable
+  Archived
+}
+
+enum ListingType {
+  rent
+  sale
+  land
+  commercial
+  other
+}
+
+enum BookingStatus {
+  Requested
+  Confirmed
+  CancelledByBuyer
+  CancelledByAgency
+  Completed
+  NoShowBuyer
+  NoShowAgent
+  NeedsReview
+}
+
+enum IssueStatus {
+  Open
+  UnderReview
+  Resolved
+  Dismissed
+}
+
+model Agency {
+  id                  String    @id @default(cuid())
+  name                String
+  contactPublic       String
+  areas               String[]
+  policyText          String    @default("")
+  refreshIntervalDays Int       @default(14)
+  createdAt           DateTime  @default(now())
+  agents              Agent[]
+  listings            Listing[]
+}
+
+model Agent {
+  id         String    @id @default(cuid())
+  agencyId   String
+  agency     Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  fullName   String
+  publicName String
+  phone      String
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  listings   Listing[]
+  bookings   Booking[]
+
+  @@index([agencyId, active])
+}
+
+model Listing {
+  id              String        @id @default(cuid())
+  agencyId        String
+  agency          Agency        @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agentId         String?
+  agent           Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  title           String
+  type            ListingType
+  area            String
+  price           Decimal       @db.Decimal(14, 2)
+  currency        String        @default("NGN")
+  status          ListingStatus @default(Draft)
+  lastConfirmedAt DateTime      @default(now())
+  photographedAt  DateTime?
+  imageUrls       String[]
+  features        Json?
+  accessRef       String?
+  internalNotes   String?       @db.Text
+  slug            String        @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  slots           Slot[]
+  bookings        Booking[]
+  issues          Issue[]
+
+  @@index([agencyId, status])
+  @@index([slug])
+}
+
+model Slot {
+  id          String    @id @default(cuid())
+  listingId   String
+  listing     Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  startsAt    DateTime
+  capacity    Int       @default(1)
+  bookedCount Int       @default(0)
+  status      String    @default("open")
+  bookings    Booking[]
+
+  @@index([listingId, startsAt])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  listingId   String
+  listing     Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  slotId      String
+  slot        Slot          @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  buyerName   String
+  buyerPhone  String
+  prequal     Json?
+  status      BookingStatus @default(Requested)
+  otpHash     String?
+  otpExpires  DateTime?
+  otpAttempts Int           @default(0)
+  checkinAt   DateTime?
+  agentId     String?
+  agent       Agent?        @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  issues      Issue[]
+  waMessages  WaMessage[]
+
+  @@index([slotId, status])
+  @@index([listingId, status])
+}
+
+model Issue {
+  id        String      @id @default(cuid())
+  bookingId String?
+  booking   Booking?    @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  listingId String
+  listing   Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  category  String
+  detail    String?     @db.Text
+  photoUrl  String?
+  status    IssueStatus @default(Open)
+  createdAt DateTime    @default(now())
+
+  @@index([listingId, status])
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  actor    String
+  entity   String
+  entityId String
+  action   String
+  diff     Json?
+  at       DateTime @default(now())
+
+  @@index([entity, entityId])
+}
+
+model WaMessage {
+  id        String   @id @default(cuid())
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  template  String
+  wamid     String?
+  direction String   @default("outbound")
+  status    String   @default("queued")
+  at        DateTime @default(now())
+
+  @@index([bookingId])
+}
+
+model User {
+  id                  String    @id
+  name                String
+  email               String
+  emailVerified       Boolean   @default(false)
+  image               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  phoneNumber         String?
+  phoneNumberVerified Boolean?
+  role                String?   @default("seeker")
+  agencyId            String?
+  sessions            Session[]
+  accounts            Account[]
+
+  @@unique([email])
+  @@unique([phoneNumber])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
