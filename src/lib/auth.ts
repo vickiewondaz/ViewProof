@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP, phoneNumber } from "better-auth/plugins";
 import { prisma } from "./db";
 import { sendWhatsApp } from "./whatsapp";
+import { sendEmailOtp } from "./email";
 
 // Better Auth — Owner: email OTP. Agent: phone OTP via WhatsApp Cloud API.
 // Truth rules unchanged: OTP only proves contact reachability, never title/ownership.
@@ -22,8 +23,8 @@ export const auth = betterAuth({
       expiresIn: 600,
       allowedAttempts: 5,
       async sendVerificationOTP({ email, otp, type }) {
-        // TODO: plug Resend/SES. Dev: log only — never commit real keys.
-        console.log(`[email-otp:${type}] ${email} -> ${otp}`);
+        // Resend in production (set RESEND_API_KEY + EMAIL_FROM); console in dev.
+        void sendEmailOtp(email, otp, type);
       },
     }),
     phoneNumber({

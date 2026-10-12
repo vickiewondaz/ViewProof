@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { uploadPhoto } from "@/lib/upload-client";
 
 const CATS = [
   { id: "unavailable", label: "Place not available", hint: "They said it's taken or closed" },
@@ -18,8 +19,21 @@ export default function ReportPage() {
   const [bookingId, setBookingId] = useState("");
   const [category, setCategory] = useState("unavailable");
   const [detail, setDetail] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const onPhoto = async (f: File | undefined) => {
+    if (!f) return;
+    setMsg("Shrinking photo…");
+    try {
+      const url = await uploadPhoto(f, "issues");
+      setPhotoUrl(url);
+      setMsg("Photo added ✓");
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Photo failed — you can still send without it.");
+    }
+  };
 
   const submit = async () => {
     if (!listingId.trim()) {
@@ -30,7 +44,7 @@ export default function ReportPage() {
     const res = await fetch("/api/issues", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listingId, bookingId: bookingId || undefined, category, detail: detail || undefined }),
+      body: JSON.stringify({ listingId, bookingId: bookingId || undefined, category, detail: detail || undefined, photoUrl: photoUrl || undefined }),
     });
     const j = await res.json().catch(() => ({}));
     setBusy(false);
@@ -62,6 +76,16 @@ export default function ReportPage() {
         </div>
         <label className="mt-4 block text-[16px] font-semibold" htmlFor="detail">Anything else? <span className="font-normal">(optional)</span></label>
         <textarea id="detail" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="In your own words…" rows={3} className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        <label className="mt-4 block text-[16px] font-semibold" htmlFor="photo">Photo <span className="font-normal">(optional, helps a lot)</span></label>
+        <input
+          id="photo"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={(e) => onPhoto(e.target.files?.[0])}
+          className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-[16px]"
+        />
+        {photoUrl && <p className="mt-1 text-[16px]">Photo added ✓</p>}
         <div className="sticky-cta mt-3">
           <button onClick={submit} disabled={busy} className="w-full rounded-xl bg-coral-500 px-4 py-4 text-[18px] font-bold text-white disabled:opacity-60">
             {busy ? "Sending…" : "Send report"}

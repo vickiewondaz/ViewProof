@@ -1,19 +1,25 @@
 // Capacitor APK wrapper — thin shell around the production PWA (PRD 7.10).
 // No native logic fork: same Next.js build, same API.
-// Steps (on a machine with Android Studio):
-//   1. npm i @capacitor/core @capacitor/cli @capacitor/android
-//   2. npx cap init ViewProof com.viewproof.app --web-dir=out (or PWA URL via server.url below)
-//   3. npx cap add android
-//   4. npx cap sync && npx cap open android  (build AAB/APK, bump versionCode per web release)
-// Permissions: CAMERA (QR fallback), POST_NOTIFICATIONS (booking alerts).
+// The WebView loads your LIVE site (server.url). capacitor-www/ holds only a
+// tiny offline splash shown if the server is unreachable.
+// Build the APK/AAB on a machine with Android Studio:
+//   1. Set server.url below to your Netlify URL (no trailing slash)
+//   2. npm run apk:sync        (copies web assets into android/)
+//   3. npm run apk:open        (opens Android Studio → Build → Generate App Bundle)
+// Permissions (android/app/src/main/AndroidManifest.xml): CAMERA (QR fallback),
+// POST_NOTIFICATIONS (booking alerts). versionCode bumps per release.
 // Store notes: "Requires internet; saved passes readable offline."
-/** @type {import('@capacitor/cli').CapacitorConfig} */
-const config = {
+import type { CapacitorConfig } from "@capacitor/cli";
+
+const config: CapacitorConfig = {
   appId: "com.viewproof.app",
   appName: "ViewProof",
-  webDir: "public",
-  // For TWA-style live wrapper, comment webDir and use:
-  // server: { url: "https://viewproof.netlify.app", cleartext: false },
+  webDir: "capacitor-www",
+  server: {
+    // TODO: replace with your production URL, e.g. https://viewproof.netlify.app
+    url: "https://viewproof.netlify.app",
+    cleartext: false,
+  },
 };
 
 export default config;
