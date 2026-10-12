@@ -55,6 +55,12 @@ export default async function ViewingPassPage({ params }: { params: { id: string
           </button>
           <CancelButton bookingId={pass.id} />
         </div>
+        <a
+          href={`/report?listing=${pass.listingId}&booking=${pass.id}`}
+          className="mt-1 block min-h-[48px] py-3 text-center text-[16px] text-sky-500"
+        >
+          Something was off? Report it
+        </a>
         <OfflineNote />
         <HelpFooter contact={pass.contact} />
       </div>

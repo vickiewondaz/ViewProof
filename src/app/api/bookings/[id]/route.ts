@@ -29,6 +29,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       id: b.id,
       status: b.status,
       listing: b.listing.title,
+      listingId: b.listingId,
       area: b.listing.area,
       agency: b.listing.agency.name,
       contact: b.listing.agency.contactPublic,

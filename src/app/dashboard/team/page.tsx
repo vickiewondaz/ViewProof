@@ -41,6 +41,7 @@ export default function TeamPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
+      <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
       <h1 className="text-[26px] font-bold md:text-[32px]">Your team</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
         Use the exact WhatsApp number they sign in with.

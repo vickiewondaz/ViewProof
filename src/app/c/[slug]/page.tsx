@@ -107,7 +107,7 @@ export default async function ViewingCardPage({
             </div>
           )}
           <a
-            href="/report"
+            href={`/report?listing=${c.id}`}
             className="mt-2 block min-h-[48px] py-3 text-center text-[16px] text-sky-500"
           >
             Something looks wrong? Tell us

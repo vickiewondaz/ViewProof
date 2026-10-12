@@ -198,6 +198,7 @@ export default function ListingsPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
+      <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-[26px] font-bold md:text-[32px]">Your listings</h1>

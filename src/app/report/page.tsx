@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { uploadPhoto } from "@/lib/upload-client";
 
 const CATS = [
@@ -13,8 +14,17 @@ const CATS = [
 ];
 
 // Bottom-sheet style report form. Public — no account needed. Big radios,
-// plain words, one thumb-friendly column.
+// plain words, one thumb-friendly column. Arrives prefilled from card/pass links.
 export default function ReportPage() {
+  return (
+    <Suspense fallback={<main className="mx-auto max-w-md px-4 py-6"><p className="text-[16px]">Opening…</p></main>}>
+      <ReportForm />
+    </Suspense>
+  );
+}
+
+function ReportForm() {
+  const params = useSearchParams();
   const [listingId, setListingId] = useState("");
   const [bookingId, setBookingId] = useState("");
   const [category, setCategory] = useState("unavailable");
@@ -22,6 +32,20 @@ export default function ReportPage() {
   const [photoUrl, setPhotoUrl] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [linked, setLinked] = useState(false);
+
+  // Prefilled from ?listing= & ?booking= links — buyer never types IDs.
+  useEffect(() => {
+    const l = params.get("listing");
+    const b = params.get("booking");
+    if (l) {
+      setListingId(l);
+      setLinked(true);
+    }
+    if (b) setBookingId(b);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPhoto = async (f: File | undefined) => {
     if (!f) return;
@@ -56,10 +80,16 @@ export default function ReportPage() {
       <div className="glass rounded-2xl p-5">
         <h1 className="text-[24px] font-bold">What went wrong?</h1>
         <p className="mt-1 text-[16px]">Tap what happened — a real person reads it.</p>
-        <label className="mt-4 block text-[16px] font-semibold" htmlFor="listing">Listing ID (on your card)</label>
-        <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
-        <label className="mt-3 block text-[16px] font-semibold" htmlFor="booking">Booking ID <span className="font-normal">(if you booked)</span></label>
-        <input id="booking" value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Optional" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        {linked ? (
+          <p className="mt-3 rounded-xl bg-proof-100 p-3 text-[16px]">Linked to your viewing ✓ — just tell us what happened below.</p>
+        ) : (
+          <>
+            <label className="mt-4 block text-[16px] font-semibold" htmlFor="listing">Listing ID (on your card)</label>
+            <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+            <label className="mt-3 block text-[16px] font-semibold" htmlFor="booking">Booking ID <span className="font-normal">(if you booked)</span></label>
+            <input id="booking" value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Optional" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+          </>
+        )}
         <div className="mt-4 grid gap-2" role="radiogroup" aria-label="What went wrong">
           {CATS.map((c) => (
             <label key={c.id} className={`flex min-h-[60px] cursor-pointer items-center gap-3 rounded-xl px-4 py-3 ${category === c.id ? "bg-proof-100 outline outline-2 outline-proof-600" : "bg-sand-100"}`}>

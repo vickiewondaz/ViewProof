@@ -38,6 +38,26 @@ export default function DashboardPage() {
             <p className="mt-1 text-[16px]">Your cards are hidden and bookings paused. Records are safe. Talk to support to reopen.</p>
           </div>
         )}
+        {(() => {
+          const totalAssigned = s.scorecard.reduce((n, a) => n + a.assigned, 0);
+          const step =
+            s.listings.total === 0
+              ? { n: "Step 1 of 3", text: "Add your first place — it takes two minutes.", href: "/dashboard/listings", cta: "Add a place →" }
+              : (s.listings.byStatus["Active"] ?? 0) === 0
+                ? { n: "Step 2 of 3", text: "Add photos, pick a host, then publish your first card.", href: "/dashboard/listings", cta: "Publish →" }
+                : totalAssigned === 0
+                  ? { n: "Step 3 of 3", text: "Share a card on WhatsApp — bookings land here by themselves.", href: "/dashboard/listings", cta: "Open listings →" }
+                  : null;
+          return step ? (
+            <div className="rounded-2xl bg-proof-100 p-4 md:col-span-2 xl:col-span-3">
+              <p className="text-[14px] font-bold text-proof-600">{step.n}</p>
+              <p className="mt-1 text-[18px] font-bold">{step.text}</p>
+              <a href={step.href} className="mt-2 inline-block rounded-xl bg-proof-600 px-5 py-3 text-[16px] font-bold text-white">
+                {step.cta}
+              </a>
+            </div>
+          ) : null;
+        })()}
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
           <p className="text-[16px]">
