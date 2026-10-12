@@ -69,7 +69,7 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): LlmConfig {
     geminiKey: env.GEMINI_API_KEY || undefined,
     geminiModel: env.AI_GUIDE_GEMINI_MODEL || "gemini-3.8-flash",
     openrouterKey: env.OPENROUTER_API_KEY || undefined,
-    openrouterModel: env.AI_GUIDE_OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
+    openrouterModel: env.AI_GUIDE_OPENROUTER_MODEL || "liquid/lfm-2.5-2.6b:free",
     siteUrl: env.SITE_URL || undefined,
   };
 }
@@ -104,7 +104,7 @@ export async function llmGuide(
           Authorization: `Bearer ${cfg.openrouterKey}`,
           ...(cfg.siteUrl ? { "HTTP-Referer": cfg.siteUrl, "X-Title": "ViewProof" } : {}),
         },
-        cfg.openrouterModel ?? "meta-llama/llama-3.1-8b-instruct:free",
+        cfg.openrouterModel ?? "liquid/lfm-2.5-2.6b:free",
         system,
         question
       );
