@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { uploadPhoto } from "@/lib/upload-client";
+
 type Listing = {
   id: string; title: string; area: string; price: string; currency: string;
   status: string; slug: string; lastConfirmedAt: string;
+  imageUrls: string[]; photographedAt: string | null; agentId: string | null;
   agent?: { publicName: string; fullName: string } | null;
 };
 type Agent = { id: string; fullName: string; publicName: string; active: boolean };
@@ -30,6 +33,9 @@ export default function ListingsPage() {
   const [openSlots, setOpenSlots] = useState<string | null>(null);
   const [slots, setSlots] = useState<Record<string, Slot[]>>({});
   const [newSlot, setNewSlot] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [ef, setEf] = useState({ price: "", agentId: "", photographedAt: "", photos: [] as string[] });
+  const [uploading, setUploading] = useState(false);
 
   const load = async () => {
     const [l, a] = await Promise.all([
@@ -119,6 +125,51 @@ export default function ListingsPage() {
     } else setMsg(j.error ?? "Couldn't remove.");
   };
 
+  const startEdit = (l: Listing) => {
+    setEditing(l.id);
+    setEf({
+      price: String(Math.round(Number(l.price))),
+      agentId: l.agentId ?? "",
+      photographedAt: l.photographedAt ? l.photographedAt.slice(0, 10) : "",
+      photos: l.imageUrls ?? [],
+    });
+    setMsg("");
+  };
+
+  const onPhoto = async (f: File | undefined) => {
+    if (!f) return;
+    setUploading(true);
+    setMsg("Shrinking photo…");
+    try {
+      const url = await uploadPhoto(f, "listings");
+      setEf((e) => ({ ...e, photos: [...e.photos, url] }));
+      setMsg("Photo added ✓ Remember to save below.");
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Photo failed — try again.");
+    }
+    setUploading(false);
+  };
+
+  const saveEdit = async (id: string) => {
+    if (!Number(ef.price) || Number(ef.price) <= 0) return setMsg("Price must be above zero.");
+    const res = await fetch(`/api/listings/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        price: Number(ef.price),
+        agentId: ef.agentId || undefined,
+        photographedAt: ef.photographedAt || undefined,
+        imageUrls: ef.photos,
+      }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (j.ok) {
+      setEditing(null);
+      setMsg("Saved ✓ — publish when the details look right.");
+      load();
+    } else setMsg(j.error ?? "Couldn't save.");
+  };
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -193,6 +244,47 @@ export default function ListingsPage() {
               {l.agent ? ` · ${l.agent.publicName}` : " · no host yet"}
             </p>
             <p className="mt-1 text-[14px]">{STATUS_HINT[l.status] ?? ""}</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button onClick={() => (editing === l.id ? setEditing(null) : startEdit(l))} className="glass-soft col-span-2 min-h-[48px] rounded-xl px-2 py-2 text-[16px] font-semibold">
+                {editing === l.id ? "Close edit ▴" : "Edit details ▾"}
+              </button>
+            </div>
+            {editing === l.id && (
+              <div className="mt-2 rounded-xl bg-sand-100 p-3">
+                <p className="text-[16px] font-bold">Photos <span className="font-normal">(needed to publish)</span></p>
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {ef.photos.map((p) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <div key={p} className="relative">
+                      <img src={p} alt="Listing photo" className="h-20 w-full rounded-lg object-cover" />
+                      <button onClick={() => setEf((e) => ({ ...e, photos: e.photos.filter((x) => x !== p) }))} aria-label="Remove photo" className="absolute right-1 top-1 min-h-[36px] min-w-[36px] rounded-lg bg-white/90 font-bold">×</button>
+                    </div>
+                  ))}
+                </div>
+                <label className="mt-2 block rounded-xl border-2 border-dashed border-slate-200 px-4 py-4 text-center text-[16px] font-semibold">
+                  {uploading ? "Shrinking…" : "+ Add photo (camera)"}
+                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => onPhoto(e.target.files?.[0])} />
+                </label>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-[16px] font-semibold">Photo taken on</label>
+                    <input type="date" value={ef.photographedAt} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setEf({ ...ef, photographedAt: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]" />
+                  </div>
+                  <div>
+                    <label className="block text-[16px] font-semibold">Price (₦)</label>
+                    <input value={ef.price} onChange={(e) => setEf({ ...ef, price: e.target.value.replace(/\D/g, "") })} inputMode="numeric" className="tabular mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]" />
+                  </div>
+                </div>
+                <label className="mt-3 block text-[16px] font-semibold">Host</label>
+                <select value={ef.agentId} onChange={(e) => setEf({ ...ef, agentId: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+                  <option value="">No host yet</option>
+                  {agents.map((a) => <option key={a.id} value={a.id}>{a.publicName} ({a.fullName})</option>)}
+                </select>
+                <button onClick={() => saveEdit(l.id)} className="mt-3 w-full min-h-[52px] rounded-xl bg-proof-600 px-4 text-[18px] font-bold text-white">
+                  Save details
+                </button>
+              </div>
+            )}
             <div className="mt-3 grid grid-cols-2 gap-2">
               {(l.status === "StalePaused" || l.status === "Active" || l.status === "NeedsReview") && (
                 <button onClick={() => reconfirm(l.id)} className="min-h-[48px] rounded-xl bg-proof-600 px-2 py-2 text-[16px] font-bold text-white">

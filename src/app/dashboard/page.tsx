@@ -64,6 +64,9 @@ export default function DashboardPage() {
             ))}
             {!s.scorecard.length && <p className="text-sm">No agents yet.</p>}
           </div>
+          <a href="/dashboard/team" className="glass-soft mt-3 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
+            Manage team →
+          </a>
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Issues inbox · {s.openIssues} open</h2>

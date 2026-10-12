@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { getStaffUser, agencyScope } from "@/lib/session";
+import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
 import { ListingCreate, activeGate, slugify } from "@/lib/listings";
 
 // GET /api/listings — staff only, scoped to agency.
@@ -9,11 +9,18 @@ export async function GET() {
   const u = await getStaffUser();
   if (!u) return NextResponse.json({ ok: false }, { status: 401 });
   const scope = agencyScope(u);
+  let agentRow: string | undefined;
+  if (u.role === "agent" && u.phoneNumber) {
+    agentRow = (await findRosterAgent(scope, u.phoneNumber))?.id;
+  }
   const listings = await prisma.listing.findMany({
-    where: u.role === "agent" ? { agencyId: scope, agentId: u.id } : { agencyId: scope },
+    where: u.role === "agent" ? { agencyId: scope, agentId: agentRow ?? "__none__" } : { agencyId: scope },
     orderBy: { updatedAt: "desc" },
     take: 100,
-    include: { agent: { select: { publicName: true, fullName: true } } },
+    include: {
+      agent: { select: { publicName: true, fullName: true } },
+      _count: { select: { slots: true, bookings: true } },
+    },
   });
   return NextResponse.json({ ok: true, listings });
 }
