@@ -22,9 +22,9 @@ const BookingInput = z.object({
   prequal: Prequal,
 });
 
-// GET /api/bookings?day=today — staff only. Agent sees own day;
-// owner sees the whole agency day. Includes buyer contact (staff-only)
-// plus listing + slot for the day view.
+// GET /api/bookings?day=today|tomorrow|upcoming — staff only. Agent sees
+// own roster bookings; owner sees the whole agency. Includes buyer contact
+// (staff-only) plus listing + slot + host for ops views.
 export async function GET(req: Request) {
   const u = await getStaffUser();
   if (!u) return NextResponse.json({ ok: false }, { status: 401 });
@@ -32,8 +32,9 @@ export async function GET(req: Request) {
   const day = new URL(req.url).searchParams.get("day") ?? "today";
   const start = new Date();
   start.setHours(0, 0, 0, 0);
+  const upcoming = day === "upcoming";
   const end = new Date(start.getTime() + (day === "tomorrow" ? 2 : 1) * 24 * 3600e3);
-  const from = day === "tomorrow" ? new Date(start.getTime() + 24 * 3600e3) : start;
+  const from = upcoming ? new Date() : day === "tomorrow" ? new Date(start.getTime() + 24 * 3600e3) : start;
   // Auth user ≠ Agent row: match roster by phone within the agency.
   let agentRow: string | undefined;
   if (u.role === "agent" && u.phoneNumber) {
@@ -43,11 +44,17 @@ export async function GET(req: Request) {
     where: {
       listing: { agencyId: scope },
       ...(u.role === "agent" ? { agentId: agentRow ?? "__none__" } : {}),
-      slot: { startsAt: { gte: from, lt: end } },
+      ...(upcoming
+        ? {
+            status: { in: ["Requested", "Confirmed"] as never },
+            slot: { startsAt: { gte: from } },
+          }
+        : { slot: { startsAt: { gte: from, lt: end } } }),
     },
     include: {
       listing: { select: { title: true, area: true } },
       slot: { select: { startsAt: true } },
+      agent: { select: { publicName: true, fullName: true } },
     },
     orderBy: { slot: { startsAt: "asc" } },
     take: 100,

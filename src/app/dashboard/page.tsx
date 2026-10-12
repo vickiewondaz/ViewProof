@@ -50,6 +50,9 @@ export default function DashboardPage() {
           <p className="text-sm">
             {Object.entries(s.bookingsToday).map(([k, v]) => `${k}: ${v}`).join(" · ") || "No activity yet."}
           </p>
+          <a href="/dashboard/bookings" className="glass-soft mt-2 inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
+            Open bookings →
+          </a>
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Agent scorecard</h2>
