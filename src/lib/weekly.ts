@@ -6,6 +6,8 @@ export type WeeklyReport = {
   bookings: Record<string, number>;
   issues: Record<string, number>;
   attendance: { agent: string; assigned: number; attended: number }[];
+  stalePaused: number;
+  newMismatches: number;
 };
 
 // Single source of truth for the owner weekly report (PRD 7.8).
@@ -35,12 +37,20 @@ export async function buildWeeklyReport(agencyId: string): Promise<WeeklyReport>
       return { agent: a.publicName ?? a.fullName, assigned, attended };
     })
   );
+  // Wasted-trip ledger: stale pauses + fresh mismatch flags this week.
+  // Each one is a buyer who did NOT waste transport fare because of you.
+  const [stalePaused, newMismatches] = await Promise.all([
+    prisma.auditLog.count({ where: { entity: "listing", action: "auto-stale-pause", at: { gte: weekAgo } } }),
+    prisma.issue.count({ where: { listing: { agencyId }, createdAt: { gte: weekAgo } } }),
+  ]);
   return {
     weekStarting: weekAgo.toISOString(),
     listings: Object.fromEntries(listings.map((l) => [l.status, l._count])),
     bookings: Object.fromEntries(bookings.map((b) => [b.status, b._count])),
     issues: Object.fromEntries(issues.map((i) => [i.category, i._count])),
     attendance,
+    stalePaused,
+    newMismatches,
   };
 }
 
@@ -64,5 +74,11 @@ export function formatWeeklyText(agencyName: string, r: WeeklyReport): string {
     .map((a) => `${a.agent}: ${a.attended}/${a.assigned} attended`)
     .join("; ");
   if (stars) lines.push(stars + ".");
+  // Wasted-trip receipt: honest, counted, in naira terms buyers feel.
+  if (r.stalePaused > 0 || r.newMismatches > 0) {
+    lines.push(
+      `You saved buyers ~${r.stalePaused + r.newMismatches} wasted trip(s) this week (${r.stalePaused} stale auto-paused, ${r.newMismatches} mismatches flagged).`
+    );
+  }
   return lines.join("\n");
 }

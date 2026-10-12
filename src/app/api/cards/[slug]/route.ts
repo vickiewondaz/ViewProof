@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { buildEvidence, isStale } from "@/lib/stale";
+import { freshScore } from "@/lib/fresh";
 
 // Public card payload — structured facts + evidence + slots. No PII:
 // agent first/public name only, no internal notes, no buyer data, no exact
@@ -27,6 +28,7 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
   const stale = isStale(listing.lastConfirmedAt, listing.agency.refreshIntervalDays);
   const bookable = listing.status === "Active" && !stale;
   const agentName = listing.agent?.publicName ?? listing.agent?.fullName?.split(" ")[0] ?? null;
+  const fresh = await freshScore(listing.agencyId);
 
   return NextResponse.json({
     ok: true,
@@ -47,6 +49,7 @@ export async function GET(_req: Request, { params }: { params: { slug: string } 
       status: stale ? "StalePaused" : listing.status,
       agency: { name: listing.agency.name, contact: listing.agency.contactPublic },
       host: agentName,
+      fresh: { score: fresh.score, viewings: fresh.viewings, badge: fresh.badge },
       evidence: buildEvidence({
         agentName,
         lastConfirmedAt: listing.lastConfirmedAt,

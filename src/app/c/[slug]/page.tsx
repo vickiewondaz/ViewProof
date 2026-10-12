@@ -3,6 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { HelpFooter, PausedNotice } from "@/components/human";
 import BookForm from "@/components/book-form";
+import AskBox from "@/components/ask-box";
 
 async function getCard(slug: string) {
   const h = await headers();
@@ -83,6 +84,12 @@ export default async function ViewingCardPage({
             <li>✓ Confirmed fresh: {new Date(c.lastConfirmedAt).toDateString()}</li>
             <li>✓ Hosted by {c.agency?.name}</li>
             {c.host && <li>✓ You&apos;ll meet: {c.host}</li>}
+            {c.fresh?.score !== null && c.fresh?.score !== undefined && (
+              <li>🏅 {c.agency?.name} · {c.fresh.badge} ({c.fresh.viewings} viewings counted)</li>
+            )}
+            {c.fresh && (c.fresh.score === null || c.fresh.score === undefined) && (
+              <li>🌱 {c.agency?.name} is new here — {c.fresh.badge}</li>
+            )}
             {c.photographedAt && (
               <li>✓ Pictures taken: {new Date(c.photographedAt).toDateString()}</li>
             )}
@@ -101,6 +108,7 @@ export default async function ViewingCardPage({
           >
             Something looks wrong? Tell us
           </a>
+          <AskBox slug={c.slug} />
           <HelpFooter contact={c.agency?.contact} />
         </div>
       </div>

@@ -7,6 +7,8 @@ const base = {
   bookings: { Completed: 9, Confirmed: 3, Requested: 1 },
   issues: {},
   attendance: [{ agent: "Emeka", assigned: 6, attended: 5 }],
+  stalePaused: 4,
+  newMismatches: 1,
 };
 
 describe("formatWeeklyText", () => {
@@ -20,5 +22,9 @@ describe("formatWeeklyText", () => {
   it("flags open issues plainly", () => {
     const t = formatWeeklyText("B", { ...base, issues: { price: 2 } });
     expect(t).toMatch(/2 buyer issue\(s\) need your eyes/);
+  });
+  it("counts wasted trips saved", () => {
+    const t = formatWeeklyText("B", base);
+    expect(t).toMatch(/5 wasted trip\(s\)/);
   });
 });

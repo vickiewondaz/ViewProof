@@ -41,6 +41,12 @@ export default function BookingsPage() {
       <p className="mt-1 max-w-2xl text-[16px]">
         Everyone coming, when, with whom — and the buyer&apos;s number when you need it.
       </p>
+      <div className="mt-3">
+        <a href="/api/ledger?format=csv" className="glass-soft inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
+          📜 Export commission evidence (CSV)
+        </a>
+        <p className="mt-1 text-[14px] text-slate-500">Settles “whose buyer was this?” — every past viewing with agent, time, and outcome.</p>
+      </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {bookings.map((b) => {
