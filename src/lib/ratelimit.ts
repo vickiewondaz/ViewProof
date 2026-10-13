@@ -1,13 +1,19 @@
-// Simple in-memory sliding-window limiter for public POST routes.
-// Per-instance only — put a proper store (Upstash/Neon) behind this before scale.
-const hits = new Map<string, number[]>();
+import { rateLimitMem } from "./ratelimit-mem";
+import { rateLimitRedis } from "./ratelimit-redis";
 
-export function rateLimit(key: string, max = 20, windowMs = 60_000): boolean {
-  const now = Date.now();
-  const arr = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
-  arr.push(now);
-  hits.set(key, arr);
-  return arr.length <= max;
+// Shared rate limiting across serverless instances (async).
+// - No Redis configured → memory (pilot default).
+// - UPSTASH_REDIS_REST_URL + TOKEN set → shared counters; any Redis
+//   failure falls back to memory so limiting never breaks booking.
+export async function rateLimit(key: string, max = 20, windowMs = 60_000): Promise<boolean> {
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      return await rateLimitRedis(key, max, windowMs);
+    } catch (e) {
+      console.warn("[ratelimit] redis failed, memory fallback", (e as Error).message);
+    }
+  }
+  return rateLimitMem(key, max, windowMs);
 }
 
 export function clientKey(req: Request): string {

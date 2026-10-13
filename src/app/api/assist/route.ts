@@ -13,7 +13,7 @@ const Ask = z.object({
 // POST /api/assist — guided answers about ONE card, grounded in its record.
 // Public + rate-limited. Never invents; unknown → human handoff.
 export async function POST(req: Request) {
-  if (!rateLimit(`assist:${clientKey(req)}`, 30))
+  if (!(await rateLimit(`assist:${clientKey(req)}`, 30)))
     return NextResponse.json({ ok: false, error: "Slow down a little — ask again in a minute." }, { status: 429 });
   const parsed = Ask.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success)

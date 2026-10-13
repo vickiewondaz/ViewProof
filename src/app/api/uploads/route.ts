@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (!u) {
     if (kind !== "issues")
       return NextResponse.json({ ok: false }, { status: 401 });
-    if (!rateLimit(`uploads:${clientKey(req)}`, 10))
+    if (!(await rateLimit(`uploads:${clientKey(req)}`, 10)))
       return NextResponse.json({ ok: false, error: "Too many photos — try later." }, { status: 429 });
   }
   if (!(file instanceof Blob))

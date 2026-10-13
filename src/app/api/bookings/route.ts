@@ -94,7 +94,7 @@ export async function GET(req: Request) {
 // POST /api/bookings — public, rate-limited upstream. Creates Requested,
 // locks slot capacity in a transaction, mints OTP, sends booking_confirm.
 export async function POST(req: Request) {
-  if (!rateLimit(`bookings:${clientKey(req)}`, 20))
+  if (!(await rateLimit(`bookings:${clientKey(req)}`, 20)))
     return NextResponse.json({ ok: false, error: "Too many requests — try later" }, { status: 429 });
   const parsed = BookingInput.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success)
