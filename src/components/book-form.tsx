@@ -26,6 +26,7 @@ export default function BookForm({
   const [consent, setConsent] = useState(false);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [won, setWon] = useState<{ id: string; code?: string; codeExpires?: string } | null>(null);
 
   if (!slots.length) return <EmptySlots contact={contact} />;
 
@@ -50,11 +51,35 @@ export default function BookForm({
     const j = await res.json().catch(() => ({}));
     setBusy(false);
     if (j.ok) {
-      router.push(`/b/${j.booking.id}`);
+      // Fresh bookings carry the meeting code once (WhatsApp may be delayed
+      // pre-template-approval). Show it for screenshot — the pass page never
+      // renders it again, so don't navigate past this until they tap through.
+      if (j.booking?.code) setWon({ id: j.booking.id, code: j.booking.code, codeExpires: j.booking.codeExpires });
+      else router.push(`/b/${j.booking.id}`);
     } else {
       setMsg(j.error ?? "That didn't go through — check your network and try again.");
     }
   };
+
+  if (won) {
+    return (
+      <div className="glass mt-5 rounded-2xl p-5 text-center md:p-8">
+        <p className="text-[14px] font-bold tracking-wide text-proof-600">YOU&apos;RE BOOKED ✓</p>
+        <h2 className="mt-1 text-[22px] font-bold">Your meeting code</h2>
+        <p className="tabular mt-3 text-[44px] font-bold tracking-[0.3em] text-proof-700" aria-label={`Meeting code ${won.code}`}>
+          {won.code}
+        </p>
+        <p className="mx-auto mt-2 max-w-sm text-[16px]">
+          Screenshot this now. Your host asks for it at the gate.
+          {won.codeExpires ? ` It expires ${new Date(won.codeExpires).toLocaleString()}.` : ""}
+        </p>
+        <p className="mt-1 text-[16px] text-slate-500">It also arrives on WhatsApp when messaging is approved.</p>
+        <Button size="lg" className="mt-4 w-full" onClick={() => router.push(`/b/${won.id}`)}>
+          Open my viewing pass →
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>

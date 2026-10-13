@@ -133,7 +133,10 @@ export async function POST(req: Request) {
   });
   if (recent) return NextResponse.json({ ok: true, booking: serialize(recent), deduped: true });
 
-    // The plain code goes to the buyer over WhatsApp only — never logs/responses.
+    // The plain code goes to the buyer over WhatsApp only — never logs.
+    // No-WA fallback: returned ONCE on fresh creation so the confirmation
+    // screen can show it ("screenshot this"). Never on dedup (repeat caller
+    // may not be the booker) and never stored client-side beyond that screen.
     const { code, hash, expires } = generateOtp();
 
   try {
@@ -205,7 +208,10 @@ export async function POST(req: Request) {
       await notifyAgency(full.agencyId, `New viewing request: ${full.title} — ${when}`);
     })();
 
-    return NextResponse.json({ ok: true, booking: serialize(booking) }, { status: 201 });
+    return NextResponse.json(
+      { ok: true, booking: { ...serialize(booking), code, codeExpires: expires } },
+      { status: 201 }
+    );
   } catch (e) {
     if ((e as Error).message === "Slot full")
       return NextResponse.json({ ok: false, error: "Slot just filled — pick another" }, { status: 409 });

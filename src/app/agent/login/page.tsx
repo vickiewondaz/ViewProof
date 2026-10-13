@@ -40,6 +40,9 @@ export default function AgentLoginPage() {
       <p className="mt-1 text-[16px]">
         Type your WhatsApp number. We&apos;ll message you 6 numbers there.
       </p>
+      <p className="mt-1 text-[14px] text-slate-500">
+        No WhatsApp message yet? Tap the button anyway, then ask your manager to read you the code from the team desk.
+      </p>
       <label className="mt-4 block text-[16px] font-semibold" htmlFor="phone">WhatsApp number</label>
       <input
         id="phone"

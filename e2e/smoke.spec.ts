@@ -35,6 +35,17 @@ test("auth gates render one obvious action", async ({ page }) => {
   await expect(page.getByRole("button", { name: /send my code/i })).toBeVisible();
   await page.goto("/agent/login");
   await expect(page.getByRole("button", { name: /whatsapp me the code/i })).toBeVisible();
+  await expect(page.getByText(/ask your manager/i)).toBeVisible();
+});
+
+test("team desk stays shut without sign-in", async ({ page }) => {
+  await page.goto("/dashboard/team");
+  await expect(page.getByText(/sign in as owner/i)).toBeVisible();
+});
+
+test("relay endpoint refuses strangers", async ({ request }) => {
+  const res = await request.get("/api/agents/pending-code?phone=08031234567");
+  expect(res.status()).toBe(401);
 });
 
 test("report page loads the calm form", async ({ page }) => {

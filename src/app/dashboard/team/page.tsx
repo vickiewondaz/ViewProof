@@ -8,6 +8,7 @@ type Agent = { id: string; fullName: string; publicName: string; phone: string; 
 export default function TeamPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [msg, setMsg] = useState("");
+  const [relay, setRelay] = useState<Record<string, { code: string; name: string; expiresAt: string } | { error: string }>>({});
   const [f, setF] = useState({ fullName: "", publicName: "", phone: "" });
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -21,6 +22,14 @@ export default function TeamPage() {
   useEffect(() => {
     load();
   }, []);
+
+  // Pre-WhatsApp-approval: read the agent's pending login code aloud/by SMS.
+  // Every read is audited server-side; codes expire in minutes.
+  const readCode = async (a: Agent) => {
+    const r = await fetch(`/api/agents/pending-code?phone=${encodeURIComponent(a.phone)}`).then((x) => x.json()).catch(() => ({}));
+    if (r.ok) setRelay((m) => ({ ...m, [a.id]: { code: r.code, name: r.name, expiresAt: r.expiresAt } }));
+    else setRelay((m) => ({ ...m, [a.id]: { error: r.error ?? "Couldn't read a code." } }));
+  };
 
   const add = async () => {
     if (f.fullName.trim().length < 2) return setMsg("What is their full name?");
@@ -76,6 +85,22 @@ export default function TeamPage() {
             <p className="text-[18px] font-bold">{a.publicName} <span className="font-normal text-slate-500">({a.fullName})</span></p>
             <p className="tabular mt-1 text-[16px]">{a.phone}</p>
             <p className="mt-1 text-[14px]">{a.active ? "Active ✓" : "Inactive"}</p>
+            <Button variant="secondary" size="sm" className="mt-3" onClick={() => readCode(a)}>
+              Read login code
+            </Button>
+            {relay[a.id] && "code" in relay[a.id] && (
+              <p className="tabular mt-2 text-[16px]" role="status">
+                { (relay[a.id] as { name: string }).name }’s code:{" "}
+                <strong className="text-[20px] tracking-[0.25em]">{ (relay[a.id] as { code: string }).code }</strong>
+                <br />
+                <span className="text-[14px] text-slate-500">
+                  Expires {new Date((relay[a.id] as { expiresAt: string }).expiresAt).toLocaleTimeString()} — read it to them now, don’t screenshot it around.
+                </span>
+              </p>
+            )}
+            {relay[a.id] && "error" in relay[a.id] && (
+              <p className="mt-2 text-[16px]" role="status">{ (relay[a.id] as { error: string }).error }</p>
+            )}
           </div>
         ))}
       </div>
