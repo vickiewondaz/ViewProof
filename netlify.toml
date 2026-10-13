@@ -8,7 +8,10 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Cron: call GET /api/jobs/stale-sweep every 6h with header x-cron-secret=$CRON_SECRET.
-# Netlify Scheduled Functions v2 example (uncomment when @netlify/functions added):
-# [[functions."scheduled-stale"]]
-#   schedule = "0 */6 * * *"
+# Cron: Netlify Scheduled Functions in netlify/functions/ (auto-discovered).
+#   stale-sweep  "0 */6 * * *"  → GET /api/jobs/stale-sweep
+#   reminders    "0 * * * *"    → GET /api/jobs/reminders
+#   weekly-report "0 7 * * 1"   → GET /api/jobs/weekly-report  (Mon 08:00 Lagos)
+# Each call sends header x-cron-secret=$CRON_SECRET; the endpoints fail
+# closed (401) when CRON_SECRET is unset, so set it in the Netlify env before
+# trusting the schedule. SITE_URL (or Netlify's URL) supplies the base URL.
