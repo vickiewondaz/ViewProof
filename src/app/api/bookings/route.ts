@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { getStaffUser, agencyScope, findRosterAgent } from "@/lib/session";
-import { generateOtp } from "@/lib/otp";
+import { generateOtp, meetingCodeExpiry } from "@/lib/otp";
 import { sendWhatsApp, fmtDateTime, siteUrl } from "@/lib/whatsapp";
 import { rateLimit, clientKey } from "@/lib/ratelimit";
 import { notifyAgency } from "@/lib/push";
@@ -140,7 +140,11 @@ export async function POST(req: Request) {
     // No-WA fallback: returned ONCE on fresh creation so the confirmation
     // screen can show it ("screenshot this"). Never on dedup (repeat caller
     // may not be the booker) and never stored client-side beyond that screen.
-    const { code, hash, expires } = generateOtp();
+    // The plain code goes to the buyer over WhatsApp only — never logs.
+    // Validity follows the slot (until 3h after start), NOT 10 minutes —
+    // a Monday booking for Saturday must still check in.
+    const { code, hash } = generateOtp();
+    const expires = meetingCodeExpiry(slot.startsAt);
 
   try {
     const booking = await prisma.$transaction(async (tx) => {
