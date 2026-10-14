@@ -12,6 +12,7 @@ type Agency = {
 export default function AdminPage() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [msg, setMsg] = useState("");
+  const [wa, setWa] = useState<{ token: string; number?: string; detail?: string; templates?: { name: string; status: string }[] } | null>(null);
   const [banEmail, setBanEmail] = useState("");
   const [banReason, setBanReason] = useState("");
 
@@ -19,6 +20,8 @@ export default function AdminPage() {
     const r = await fetch("/api/admin/agencies").then((x) => x.json()).catch(() => ({}));
     if (r.ok) setAgencies(r.agencies);
     else setMsg(r.status === 403 || !r.ok ? "Landlord only — this page needs an admin sign-in." : "Failed to load.");
+    const w = await fetch("/api/admin/whatsapp-status").then((x) => x.json()).catch(() => ({}));
+    if (w.ok) setWa(w);
   };
   useEffect(() => {
     load();
@@ -59,6 +62,34 @@ export default function AdminPage() {
         All shops, one screen. Lock doors, keep records.
       </p>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
+
+      {wa && (
+        <section className="glass mt-4 p-5" aria-label="WhatsApp health">
+          <p className="eyebrow">WhatsApp health</p>
+          {wa.token === "live" ? (
+            <p className="mt-1 text-[18px] font-bold">● Live {wa.number ? `· ${wa.number}` : ""}</p>
+          ) : (
+            <>
+              <p className="mt-1 text-[18px] font-bold">
+                ● {wa.token === "expired" ? "Token expired — nothing sends" : "Not connected"}
+              </p>
+              {wa.detail && <p className="mt-1 text-[16px] text-clay">{wa.detail}</p>}
+            </>
+          )}
+          {!!wa.templates?.length && (
+            <ul className="mt-3 grid gap-1.5 text-[16px]">
+              {wa.templates.map((t) => (
+                <li key={t.name} className="flex items-center justify-between gap-2">
+                  <span className="tabular">{t.name}</span>
+                  <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[14px] font-bold ${t.status === "APPROVED" ? "bg-proof-100" : t.status === "not-submitted" ? "bg-cream-deep" : "bg-coral-100"}`}>
+                    {t.status === "APPROVED" ? "approved ✓" : t.status.replace(/_/g, " ")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {agencies.map((a) => (
