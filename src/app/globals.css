@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ---- ViewProof Prestige system ----
    Pine + brass + ivory. Serif display, grotesque body. Solid surfaces,
    hairline borders, warm shadows. No blur, no blobs, no gradients-shouting. */
