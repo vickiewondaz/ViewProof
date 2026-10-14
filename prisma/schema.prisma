@@ -89,8 +89,24 @@ model Agent {
   createdAt  DateTime  @default(now())
   listings   Listing[]
   bookings   Booking[]
+  agreements CommissionAgreement[]
 
   @@index([agencyId, active])
+}
+
+// Commission agreement: agent taps "I agree" on a listing's terms BEFORE
+// hosting. Snapshot stored — later term edits don't rewrite history.
+// ViewProof records the agreement; money still moves off-platform.
+model CommissionAgreement {
+  id        String   @id @default(cuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  listingId String
+  terms     String
+  agreedAt  DateTime @default(now())
+
+  @@unique([agentId, listingId])
+  @@index([listingId])
 }
 
 model Listing {

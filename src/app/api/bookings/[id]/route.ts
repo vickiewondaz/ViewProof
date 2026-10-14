@@ -140,7 +140,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         where: { id: b.id },
         include: {
           listing: { select: { title: true, currency: true } },
-          agent: { select: { publicName: true, fullName: true } },
+          agent: { select: { publicName: true, fullName: true, phone: true } },
         },
       });
       if (!full) return;
@@ -154,6 +154,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         await prisma.waMessage.create({ data: { bookingId: b.id, template: "deal_closed", status: "sent" } });
       } catch {
         await prisma.waMessage.create({ data: { bookingId: b.id, template: "deal_closed", status: "failed" } });
+      }
+      // Hosting agent hears it by SMS: deal closed, cut pending owner payout.
+      if (full.agent?.phone) {
+        const { sendSms } = await import("@/lib/sms");
+        await sendSms(
+          full.agent.phone,
+          `ViewProof: deal closed for ${full.listing.title} at ${full.listing.currency} ${Number(price).toLocaleString()}. Your cut is pending — terms you agreed apply.`
+        );
       }
     })();
     return NextResponse.json({ ok: true, booking: { id: updated.id, closedPrice: updated.closedPrice } });
@@ -170,6 +178,23 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       data: { payoutStatus: "Paid", paidAt: new Date() },
     });
     await audit({ actor: u.id, entity: "booking", entityId: b.id, action: "payout", diff: {} });
+    // Agent hears it by SMS: their cut moved. WhatsApp receipt follows when live.
+    void (async () => {
+      const full = await prisma.booking.findUnique({
+        where: { id: b.id },
+        include: {
+          listing: { select: { title: true, currency: true } },
+          agent: { select: { phone: true, publicName: true } },
+        },
+      });
+      if (full?.agent?.phone && full.closedPrice) {
+        const { sendSms } = await import("@/lib/sms");
+        await sendSms(
+          full.agent.phone,
+          `ViewProof: your cut for ${full.listing.title} (closed at ${full.listing.currency} ${Number(full.closedPrice).toLocaleString()}) is marked PAID. Confirm with your owner when received.`
+        );
+      }
+    })();
     return NextResponse.json({ ok: true, booking: { id: updated.id, payoutStatus: updated.payoutStatus } });
   }
 

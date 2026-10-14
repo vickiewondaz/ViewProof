@@ -58,7 +58,10 @@ export async function GET(req: Request) {
             }
           : { slot: { startsAt: { gte: from, lt: end } } }),
     },
-    include: {
+    select: {
+      id: true, buyerName: true, buyerPhone: true, status: true, prequal: true,
+      listingId: true, agentId: true, createdAt: true,
+      closedPrice: true, closedAt: true, payoutStatus: true, paidAt: true,
       listing: { select: { title: true, area: true, commissionTerms: true } },
       slot: { select: { startsAt: true } },
       agent: { select: { publicName: true, fullName: true } },

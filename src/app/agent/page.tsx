@@ -4,9 +4,14 @@ import { CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type DayBooking = {
-  id: string; buyerName: string; buyerPhone: string; status: string;
+  id: string; buyerName: string; buyerPhone: string; status: string; listingId: string;
   listing: { title: string; area: string; commissionTerms?: string | null }; slot: { startsAt: string };
   reliability?: { attended: number; total: number; label: string };
+};
+
+type Deal = {
+  id: string; buyer: string; listing: string; area: string; price: string;
+  terms: string; payout: string; paidAt: string | null; closedAt: string | null; agreed: boolean;
 };
 
 // Agent check-in — big-text sunlight mode. Works online; PWA queues offline
@@ -21,6 +26,9 @@ export default function AgentPage() {
   const [today, setToday] = useState<DayBooking[]>([]);
   const [dayMsg, setDayMsg] = useState("");
   const [dayLoaded, setDayLoaded] = useState(false);
+  const [agreedIds, setAgreedIds] = useState<string[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [dealsMsg, setDealsMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/bookings?day=today")
@@ -38,6 +46,32 @@ export default function AgentPage() {
       .catch(() => null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    fetch("/api/agreements")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) setAgreedIds((j.agreements as { listingId: string }[]).map((a) => a.listingId));
+      })
+      .catch(() => null);
+    fetch("/api/agents/earnings")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) setDeals(j.deals);
+        else setDealsMsg(j.error ?? "");
+      })
+      .catch(() => null);
+  }, []);
+
+  const agree = async (listingId: string) => {
+    const res = await fetch("/api/agreements", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (j.ok) setAgreedIds((ids) => [...ids, listingId]);
+    else setMsg(j.error ?? "Couldn't record that — try again.");
+  };
 
   const submit = async (action: string) => {
     setMsg("");
@@ -87,7 +121,19 @@ export default function AgentPage() {
                   <><br /><span className="text-[14px]">🤝 {b.reliability.label}</span></>
                 )}
                 {b.listing.commissionTerms && (
-                  <><br /><span className="text-[14px]">✍ Your cut: {b.listing.commissionTerms}</span></>
+                  <><br /><span className="text-[14px]">✍ Your cut: {b.listing.commissionTerms}</span>
+                  <br />
+                  {agreedIds.includes(b.listingId) ? (
+                    <span className="text-[14px] font-bold">Agreed ✓ on record</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); agree(b.listingId); }}
+                      className="mt-1 min-h-[44px] rounded-full bg-pine-900 px-4 text-[14px] font-bold text-white"
+                    >
+                      I agree to this cut
+                    </button>
+                  )}</>
                 )}
               </button>
             ))}
@@ -141,6 +187,35 @@ export default function AgentPage() {
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       {receipt && <p className="mt-3 rounded-xl bg-proof-100 p-4 text-[16px]" role="status">🎉 {receipt}</p>}
+
+      <section className="glass mt-6 p-5" aria-label="My earnings">
+        <p className="eyebrow">My earnings</p>
+        <h2 className="font-display text-[22px] font-bold">Closed deals, on record</h2>
+        {deals.length === 0 && (
+          <p className="mt-2 text-[16px] text-clay">
+            {dealsMsg || "Nothing closed yet — attended viewings that close appear here with price, terms, and payout."}
+          </p>
+        )}
+        <div className="mt-3 grid gap-2">
+          {deals.map((d) => (
+            <div key={d.id} className="rounded-2xl border border-line bg-white p-4">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-[16px] font-bold leading-snug">{d.listing}</p>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[14px] font-bold ${d.payout === "Paid" ? "bg-proof-100" : "bg-brass-100"}`}>
+                  {d.payout === "Paid" ? "Paid ✓" : "Pending"}
+                </span>
+              </div>
+              <p className="tabular mt-1 text-[18px] font-bold">{d.price}</p>
+              <p className="mt-1 text-[14px] text-clay">
+                {d.buyer} · closed {d.closedAt ? new Date(d.closedAt).toLocaleDateString() : "—"}
+                {d.payout === "Paid" && d.paidAt ? ` · paid ${new Date(d.paidAt).toLocaleDateString()}` : ""}
+              </p>
+              <p className="mt-1 text-[14px]">✍ {d.terms || "No terms recorded"} {d.agreed ? "· agreed ✓" : "· not agreed"}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-[14px] text-clay">ViewProof keeps the record. Money moves between you and your owner — chase the Pending ones there.</p>
+      </section>
       <Button variant="ghost" className="mt-3 w-full">
         Something wrong? Report it
       </Button>
