@@ -12,7 +12,7 @@ import { reliability } from "@/lib/reliability";
 const Prequal = z.object({
   budgetBand: z.string().max(60).optional(),
   moveDate: z.string().max(40).optional(),
-  consent: z.literal(true, { message: "Privacy + viewing policy consent required" }),
+  consent: z.boolean().optional(),
 });
 
 const BookingInput = z.object({

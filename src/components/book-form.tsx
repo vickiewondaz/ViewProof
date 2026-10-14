@@ -23,7 +23,6 @@ export default function BookForm({
   const [phone, setPhone] = useState("");
   const [budget, setBudget] = useState("");
   const [move, setMove] = useState("");
-  const [consent, setConsent] = useState(false);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [won, setWon] = useState<{ id: string; code?: string; codeExpires?: string } | null>(null);
@@ -34,7 +33,6 @@ export default function BookForm({
     if (!slotId) return setMsg("Pick a time above first.");
     if (name.trim().length < 2) return setMsg("Tell us your name so the host knows who to expect.");
     if (phone.trim().length < 7) return setMsg("Add your WhatsApp number — your code arrives there.");
-    if (!consent) return setMsg("Please accept the viewing arrangement so we can book you.");
     setBusy(true);
     setMsg("");
     const res = await fetch("/api/bookings", {
@@ -45,7 +43,7 @@ export default function BookForm({
         slotId,
         buyerName: name.trim(),
         buyerPhone: phone.trim(),
-        prequal: { budgetBand: budget || undefined, moveDate: move || undefined, consent },
+        prequal: { budgetBand: budget || undefined, moveDate: move || undefined, consent: true },
       }),
     });
     const j = await res.json().catch(() => ({}));
@@ -83,7 +81,7 @@ export default function BookForm({
 
   return (
     <div>
-      <h2 className="mt-5 text-[18px] font-bold">Pick a time</h2>
+      <h2 className="mt-5 text-[18px] font-bold">1 · Pick a time</h2>
       <div className="mt-2 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2" role="radiogroup" aria-label="Viewing times">
         {slots.slice(0, 6).map((s) => (
           <label
@@ -104,7 +102,7 @@ export default function BookForm({
         ))}
       </div>
 
-      <h2 className="mt-5 text-[18px] font-bold">Who&apos;s coming?</h2>
+      <h2 className="mt-5 text-[18px] font-bold">2 · Who&apos;s coming?</h2>
       <label className="mt-2 block text-[16px] font-semibold" htmlFor="bk-name">Your name</label>
       <input
         id="bk-name"
@@ -126,40 +124,33 @@ export default function BookForm({
       />
       <p className="mt-1 text-[14px] text-clay">Code arrives here. Never shared.</p>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <div>
-          <label className="block text-[16px] font-semibold" htmlFor="bk-budget">Budget <span className="font-normal">(optional)</span></label>
-          <input
-            id="bk-budget"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            placeholder="e.g. ₦3–4m yearly"
-            className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
-          />
+      <details className="mt-3">
+        <summary className="min-h-[48px] cursor-pointer py-2 text-[16px] font-semibold text-pine-900">
+          Anything we should know? (optional)
+        </summary>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="block text-[16px] font-semibold" htmlFor="bk-budget">Budget</label>
+            <input
+              id="bk-budget"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              placeholder="e.g. ₦3–4m yearly"
+              className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
+            />
+          </div>
+          <div>
+            <label className="block text-[16px] font-semibold" htmlFor="bk-move">Moving when?</label>
+            <input
+              id="bk-move"
+              value={move}
+              onChange={(e) => setMove(e.target.value)}
+              placeholder="e.g. December"
+              className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-[16px] font-semibold" htmlFor="bk-move">Moving when? <span className="font-normal">(optional)</span></label>
-          <input
-            id="bk-move"
-            value={move}
-            onChange={(e) => setMove(e.target.value)}
-            placeholder="e.g. December"
-            className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
-          />
-        </div>
-      </div>
-
-      <label className="mt-4 flex min-h-[56px] cursor-pointer items-start gap-3 rounded-xl bg-sand-100 px-4 py-3">
-        <input
-          type="checkbox"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-6 w-6 accent-[#177E5C]"
-        />
-        <span className="text-[16px]">
-          Yes — WhatsApp me about this viewing. Free, no payment before we meet.
-        </span>
-      </label>
+      </details>
 
       <div className="sticky-cta mt-3 md:static md:bg-none md:pb-0">
         <Button
@@ -168,8 +159,11 @@ export default function BookForm({
           size="lg"
           className="w-full"
         >
-          {busy ? "Booking you in…" : "Book my free viewing"}
+          {busy ? "Booking you in…" : "3 · Book my free viewing"}
         </Button>
+        <p className="mt-2 text-center text-[14px] text-clay">
+          Tapping Book means: WhatsApp me about this viewing. Free. No payment before we meet.
+        </p>
       </div>
       {msg && <p className="mt-2 text-[16px]" role="status">{msg}</p>}
     </div>
