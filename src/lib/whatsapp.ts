@@ -97,39 +97,40 @@ export async function sendWhatsApp({ to, template, params }: SendArgs) {
 // Authentication-category template for agent login codes (Better Auth phoneNumber).
 // Create in Meta as Authentication type with code delivery setup; the code goes
 // in the body {{1}}. Name configurable via WHATSAPP_AUTH_TEMPLATE.
+// WhatsApp first (free); SMS fallback so agents always get in during pilot.
 export async function sendAuthCode(to: string, code: string) {
-  const token = process.env.WHATSAPP_TOKEN;
-  const phoneId = process.env.PHONE_NUMBER_ID;
-  const name = process.env.WHATSAPP_AUTH_TEMPLATE ?? "agent_login_code";
-  if (!token || !phoneId) {
-    console.warn("[whatsapp] missing credentials, skipping auth code");
-    return { skipped: true as const };
-  }
-  const res = await fetch(
-    `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to,
-        type: "template",
-        template: {
-          name,
-          language: { code: "en" },
-          components: bodyParams([code]),
+  try {
+    const token = process.env.WHATSAPP_TOKEN;
+    const phoneId = process.env.PHONE_NUMBER_ID;
+    const name = process.env.WHATSAPP_AUTH_TEMPLATE ?? "agent_login_code";
+    if (!token || !phoneId) throw new Error("whatsapp not configured");
+    const res = await fetch(
+      `https://graph.facebook.com/${API_VERSION}/${phoneId}/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      }),
-    }
-  );
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`WhatsApp auth-code send failed: ${res.status} ${text}`);
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to,
+          type: "template",
+          template: {
+            name,
+            language: { code: "en" },
+            components: bodyParams([code]),
+          },
+        }),
+      }
+    );
+    if (!res.ok) throw new Error(`wa ${res.status}`);
+    return res.json();
+  } catch (e) {
+    console.warn("[auth-code] whatsapp failed, SMS fallback", (e as Error).message);
+    const { sendSms } = await import("./sms");
+    return sendSms(to, `Your ViewProof code is ${code}. It expires in 10 minutes. Never share it.`);
   }
-  return res.json();
 }
 
 export function fmtDateTime(d: Date): string {

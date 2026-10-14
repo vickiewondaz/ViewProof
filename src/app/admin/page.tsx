@@ -12,7 +12,7 @@ type Agency = {
 export default function AdminPage() {
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [msg, setMsg] = useState("");
-  const [wa, setWa] = useState<{ token: string; number?: string; detail?: string; templates?: { name: string; status: string }[] } | null>(null);
+  const [wa, setWa] = useState<{ token: string; number?: string; detail?: string; smsBalance?: number | null; templates?: { name: string; status: string }[] } | null>(null);
   const [banEmail, setBanEmail] = useState("");
   const [banReason, setBanReason] = useState("");
 
@@ -76,6 +76,14 @@ export default function AdminPage() {
               {wa.detail && <p className="mt-1 text-[16px] text-clay">{wa.detail}</p>}
             </>
           )}
+          <p className="tabular mt-2 text-[16px]">
+            SMS balance:{" "}
+            {wa.smsBalance == null ? (
+              <span className="text-clay">no Termii key — codes fall back to screen only</span>
+            ) : (
+              <strong>₦{wa.smsBalance.toLocaleString()}</strong>
+            )}
+          </p>
           {!!wa.templates?.length && (
             <ul className="mt-3 grid gap-1.5 text-[16px]">
               {wa.templates.map((t) => (

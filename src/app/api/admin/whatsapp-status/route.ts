@@ -22,8 +22,10 @@ export async function GET() {
 
   const token = process.env.WHATSAPP_TOKEN;
   const phoneId = process.env.PHONE_NUMBER_ID;
+  const { smsBalance } = await import("@/lib/sms");
+  const balance = await smsBalance();
   if (!token || !phoneId)
-    return NextResponse.json({ ok: true, token: "missing", templates: [] });
+    return NextResponse.json({ ok: true, token: "missing", templates: [], smsBalance: balance });
 
   const phone = await fetch(
     `${API}/${phoneId}?fields=display_phone_number,verified_name&access_token=${token}`
@@ -37,6 +39,7 @@ export async function GET() {
       token: expired ? "expired" : "error",
       detail: expired ? "Token expired — paste a fresh one in Netlify env." : phone.error.message,
       templates: [],
+      smsBalance: balance,
     });
   }
 
@@ -54,5 +57,6 @@ export async function GET() {
     number: phone?.display_phone_number,
     name: phone?.verified_name,
     templates: WANT.map((n) => ({ name: n, status: byName.get(n) ?? "not-submitted" })),
+    smsBalance: balance,
   });
 }

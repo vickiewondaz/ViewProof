@@ -181,10 +181,17 @@ export async function POST(req: Request) {
           data: { bookingId: booking.id, template: "booking_confirm", wamid: "skipped" in res ? undefined : res.messages?.[0]?.id, status: "skipped" in res ? "skipped" : "sent" },
         });
       } catch (e) {
+        // WhatsApp dead (no approved templates yet)? SMS the code instead —
+        // same words, plain text. Buyer still gets in.
+        const { sendSms } = await import("@/lib/sms");
+        const sms = await sendSms(
+          d.buyerPhone,
+          `ViewProof: your viewing for ${full.title} on ${when} is requested. Host: ${hostName}. Meeting code: ${code}. ViewProof does not verify title.`
+        );
         await prisma.waMessage.create({
-          data: { bookingId: booking.id, template: "booking_confirm", status: "failed" },
+          data: { bookingId: booking.id, template: "booking_confirm", status: sms.delivered ? "sent-sms" : "failed" },
         });
-        console.warn("[booking_confirm] send failed", e);
+        console.warn("[booking_confirm] whatsapp failed, sms:", sms.delivered ? "sent" : "failed", e);
       }
       // 2. Assigned agent: 1-tap confirm link (correct recipient — was buyer before).
       if (full.agent?.phone) {
@@ -198,10 +205,15 @@ export async function POST(req: Request) {
             data: { bookingId: booking.id, template: "agent_alert", status: "sent" },
           });
         } catch (e) {
+          const { sendSms } = await import("@/lib/sms");
+          const sms = await sendSms(
+            full.agent.phone,
+            `ViewProof: new viewing request ${booking.id.slice(-6)}: ${d.buyerName} (${d.buyerPhone}) for ${full.title} at ${when}. Open your agent page to confirm.`
+          );
           await prisma.waMessage.create({
-            data: { bookingId: booking.id, template: "agent_alert", status: "failed" },
+            data: { bookingId: booking.id, template: "agent_alert", status: sms.delivered ? "sent-sms" : "failed" },
           });
-          console.warn("[agent_alert] send failed", e);
+          console.warn("[agent_alert] whatsapp failed, sms:", sms.delivered ? "sent" : "failed", e);
         }
       }
       // 3. Web Push to agency devices (WhatsApp stays primary).
