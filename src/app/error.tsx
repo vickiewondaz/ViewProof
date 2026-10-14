@@ -8,7 +8,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
     <main className="mx-auto w-full max-w-md px-4 py-10 md:max-w-lg">
       <div className="glass rounded-2xl p-6 text-center">
         <p className="text-[48px]">🛠</p>
-        <h1 className="mt-2 text-[26px] font-bold">That hiccuped</h1>
+        <h1 className="font-display mt-2 text-[32px] font-bold">That hiccuped</h1>
         <p className="mt-2 text-[16px]">
           Something glitched on our side. Nothing you did was lost — bookings and codes are safe.
         </p>

@@ -52,7 +52,7 @@ export default function TeamPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
-      <h1 className="text-[26px] font-bold md:text-[32px]">Your team</h1>
+      <h1 className="font-display text-[32px] font-bold md:text-[32px]">Your team</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
         Use the exact WhatsApp number they sign in with.
       </p>
@@ -82,7 +82,7 @@ export default function TeamPage() {
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {agents.map((a) => (
           <div key={a.id} className="glass rounded-2xl p-4">
-            <p className="text-[18px] font-bold">{a.publicName} <span className="font-normal text-slate-500">({a.fullName})</span></p>
+            <p className="text-[18px] font-bold">{a.publicName} <span className="font-normal text-clay">({a.fullName})</span></p>
             <p className="tabular mt-1 text-[16px]">{a.phone}</p>
             <p className="mt-1 text-[14px]">{a.active ? "Active ✓" : "Inactive"}</p>
             <Button variant="secondary" size="sm" className="mt-3" onClick={() => readCode(a)}>
@@ -93,7 +93,7 @@ export default function TeamPage() {
                 { (relay[a.id] as { name: string }).name }’s code:{" "}
                 <strong className="text-[20px] tracking-[0.25em]">{ (relay[a.id] as { code: string }).code }</strong>
                 <br />
-                <span className="text-[14px] text-slate-500">
+                <span className="text-[14px] text-clay">
                   Expires {new Date((relay[a.id] as { expiresAt: string }).expiresAt).toLocaleTimeString()} — read it to them now, don’t screenshot it around.
                 </span>
               </p>

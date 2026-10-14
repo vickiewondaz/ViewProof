@@ -38,15 +38,15 @@ export default function OnboardPage() {
 
   return (
     <main className="mx-auto max-w-md px-4 pb-10 pt-6 md:max-w-lg">
-      <h1 className="text-[26px] font-bold">Set up your agency 🏠</h1>
+      <h1 className="font-display text-[32px] font-bold">Set up your agency 🏠</h1>
       <p className="mt-1 text-[16px]">Two minutes, then add places.</p>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       <label className="mt-4 block text-[16px] font-semibold" htmlFor="ag-name">Agency name</label>
-      <input id="ag-name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="e.g. BrightHomes Agency" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+      <input id="ag-name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="e.g. BrightHomes Agency" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="ag-contact">Public WhatsApp number</label>
-      <input id="ag-contact" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} placeholder="+234 800 000 0000" inputMode="tel" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+      <input id="ag-contact" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} placeholder="+234 800 000 0000" inputMode="tel" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="ag-areas">Areas you cover <span className="font-normal">(comma separated)</span></label>
-      <input id="ag-areas" value={f.areas} onChange={(e) => setF({ ...f, areas: e.target.value })} placeholder="Gwarinpa, Lekki" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+      <input id="ag-areas" value={f.areas} onChange={(e) => setF({ ...f, areas: e.target.value })} placeholder="Gwarinpa, Lekki" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
       <Button onClick={create} disabled={busy} size="lg" className="mt-4 w-full">
         {busy ? "Creating…" : "Create my agency"}
       </Button>

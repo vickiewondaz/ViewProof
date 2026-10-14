@@ -10,31 +10,51 @@ const STEPS = [
 export default function Home() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-10">
-      {/* Hero: stacked on phones, two columns on desktop. */}
-      <section className="grid items-center gap-6 py-8 md:grid-cols-2 md:py-14">
+      {/* Hero: estate-kit split — serif promise left, featured card right. */}
+      <section className="grid items-center gap-8 py-10 md:grid-cols-2 md:py-16">
         <div>
-          <p className="text-[14px] font-bold tracking-wide text-proof-600">VIEWPROOF</p>
-          <h1 className="mt-2 text-[34px] font-bold leading-tight md:text-[48px]">
+          <p className="eyebrow">ViewProof · Lagos & Abuja</p>
+          <h1 className="font-display mt-3 text-[38px] font-bold leading-[1.05] md:text-[56px]">
             See a place you trust, with someone you know
           </h1>
-          <p className="mt-3 text-[18px]">Fresh cards. Named hosts. Free WhatsApp booking.</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <p className="mt-4 text-[18px] text-clay">Fresh cards. Named hosts. Free WhatsApp booking.</p>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg"><Link href="/dashboard">I run an agency</Link></Button>
             <Button asChild size="lg" variant="secondary"><Link href="/agent">I&apos;m hosting viewings</Link></Button>
           </div>
+          <dl className="mt-8 flex gap-8">
+            <div>
+              <dt className="eyebrow">Booking fee</dt>
+              <dd className="font-display text-[28px] font-bold">₦0</dd>
+            </div>
+            <div>
+              <dt className="eyebrow">Code check-in</dt>
+              <dd className="font-display text-[28px] font-bold">6 digits</dd>
+            </div>
+            <div>
+              <dt className="eyebrow">Title verified</dt>
+              <dd className="font-display text-[28px] font-bold">Never*</dd>
+            </div>
+          </dl>
         </div>
-        <div className="glass rounded-2xl p-5 md:p-8">
-          <p className="text-[14px] font-bold text-proof-600">EXAMPLE CARD</p>
-          <p className="mt-1 text-[22px] font-bold">3-bedroom · Gwarinpa, Abuja</p>
-          <p className="tabular mt-1 text-[18px]">₦4,000,000 yearly</p>
-          <ul className="mt-3 grid gap-2 text-[16px]">
+        <div className="glass overflow-hidden">
+          <div className="photo-fallback relative flex min-h-[240px] items-end p-5 md:min-h-[300px]">
+            <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[14px] font-bold text-pine-950">
+              Featured · Gwarinpa
+            </span>
+            <div>
+              <p className="font-display text-[30px] font-bold leading-tight">3-bedroom · Gwarinpa, Abuja</p>
+              <p className="tabular mt-1 text-[22px] font-bold text-brass-100">₦4,000,000 <span className="text-[16px] font-normal opacity-80">yearly</span></p>
+            </div>
+          </div>
+          <ul className="grid gap-2 p-5 text-[16px] md:p-6">
             <li>✓ Confirmed fresh: 10 October</li>
             <li>✓ Hosted by BrightHomes · you&apos;ll meet Emeka</li>
             <li>ⓘ Title not checked — ask the agency how they confirm it</li>
           </ul>
-          <span className="mt-4 block rounded-xl bg-proof-600 px-4 py-4 text-center text-[18px] font-bold text-white">
-            Book a free viewing
-          </span>
+          <div className="px-5 pb-5 md:px-6 md:pb-6">
+            <Button asChild size="lg" className="w-full"><Link href="/c/3-bedroom-apartment-gwarinpa-demo1">Book a free viewing</Link></Button>
+          </div>
         </div>
       </section>
 
@@ -48,7 +68,7 @@ export default function Home() {
         ))}
       </section>
 
-      <p className="mx-auto mt-8 max-w-2xl text-center text-[16px] text-slate-500">
+      <p className="mx-auto mt-8 max-w-2xl text-center text-[16px] text-clay">
         We don&apos;t verify title. We show what the agency confirmed — and who&apos;ll meet you.
       </p>
     </main>

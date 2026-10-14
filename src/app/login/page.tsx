@@ -30,7 +30,7 @@ export default function OwnerLoginPage() {
 
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
-      <h1 className="text-[26px] font-bold">Welcome back 👋</h1>
+      <h1 className="font-display text-[32px] font-bold">Welcome back 👋</h1>
       <p className="mt-1 text-[16px]">
         Type your work email. We&apos;ll send 6 numbers — no password needed.
       </p>
@@ -42,7 +42,7 @@ export default function OwnerLoginPage() {
         placeholder="you@youragency.com"
         inputMode="email"
         autoComplete="email"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
       />
       <Button onClick={send} size="lg" className="mt-3 w-full">
         Send my code
@@ -57,7 +57,7 @@ export default function OwnerLoginPage() {
             placeholder="··· ···"
             inputMode="numeric"
             autoComplete="one-time-code"
-            className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-center text-2xl tracking-[0.4em]"
+            className="tabular mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-center text-2xl tracking-[0.4em]"
           />
           <Button onClick={verify} variant="secondary" size="lg" className="mt-3 w-full">
             Verify — let me in

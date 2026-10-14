@@ -30,7 +30,7 @@ export default function AskBox({ slug }: { slug: string }) {
   return (
     <div className="mt-5 rounded-2xl bg-sand-100 p-4">
       <p className="text-[18px] font-bold">Questions? Ask me 🙂</p>
-      <p className="text-[14px] text-slate-500">I answer from this card only — I never guess.</p>
+      <p className="text-[14px] text-clay">I answer from this card only — I never guess.</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {CHIPS.map((c) => (
           <button key={c} onClick={() => ask(c)} className="glass-soft min-h-[44px] rounded-full px-3 text-[14px] font-semibold">

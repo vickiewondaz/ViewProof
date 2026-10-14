@@ -1,60 +1,54 @@
+/* ---- ViewProof Prestige system ----
+   Pine + brass + ivory. Serif display, grotesque body. Solid surfaces,
+   hairline borders, warm shadows. No blur, no blobs, no gradients-shouting. */
+
 :root {
-  --ink-900: #14213d;
-  --proof-600: #177e5c;
-  --proof-100: #dcf5e8;
-  --sun-500: #f6b844;
-  --sun-100: #fff2cf;
-  --coral-500: #e66d5a;
-  --coral-100: #fde5e0;
-  --sky-500: #327ccb;
-  --sky-100: #e1f0ff;
-  --sand-100: #f7f3ec;
+  --ink-900: #141a15;
+  --proof-600: #0c3b2e;
+  --proof-100: #e6eee6;
+  --sun-500: #b9862f;
+  --sun-100: #f5ead0;
+  --coral-500: #b3402e;
+  --coral-100: #f7e3dc;
+  --sky-500: #0c3b2e;
+  --sky-100: #e6eee6;
+  --sand-100: #faf6ec;
   --white: #ffffff;
-  --slate-500: #62708a;
-  --slate-200: #d9e0e8;
+  --slate-500: #5f6e64;
+  --slate-200: #e3ddcc;
 
-  /* ---- Glass material (from Glass System, retinted to ViewProof brand) ----
-     Blobs use brand hues (proof green, sun, sky) — never the demo palette.
-     Fills stay white-based so ink text keeps ≥4.5:1 on fillStrong. */
-  --glass-blur-sm: 10px;
-  --glass-blur-md: 18px;
-  --glass-blur-lg: 28px;
-  --glass-saturation: 1.4;
-  --glass-fill: rgba(255, 255, 255, 0.55);
-  --glass-fill-strong: rgba(255, 255, 255, 0.78);
-  --glass-border: rgba(255, 255, 255, 0.70);
-  --glass-border-edge: rgba(20, 33, 61, 0.10);
-  --glass-shadow: 0 8px 32px rgba(8, 12, 32, 0.16);
-  --glass-shadow-raised: 0 18px 50px rgba(8, 12, 32, 0.28);
-  --glass-blob-a: rgba(23, 126, 92, 0.20);
-  --glass-blob-b: rgba(246, 184, 68, 0.22);
-  --glass-blob-c: rgba(50, 124, 203, 0.18);
-  --glass-motion: 220ms;
-  --glass-easing: cubic-bezier(0.22, 1, 0.36, 1);
-}
+  --pine-950: #06231b;
+  --pine-900: #0c3b2e;
+  --pine-700: #14503d;
+  --brass-600: #a97828;
+  --brass-500: #b9862f;
+  --brass-100: #f5ead0;
+  --cream: #faf6ec;
+  --cream-deep: #f2ecdc;
+  --ink: #141a15;
+  --clay: #5f6e64;
+  --line: #e3ddcc;
 
-/* ---- shadcn theme, mapped to ViewProof brand (light only, per design system) ---- */
-:root {
-  --background: #f7f3ec;
-  --foreground: #14213d;
-  --card: rgba(255, 255, 255, 0.78);
-  --card-foreground: #14213d;
-  --popover: #ffffff;
-  --popover-foreground: #14213d;
-  --primary: #177e5c;
+  --card: #ffffff;
+  --card-foreground: #141a15;
+  --primary: #0c3b2e;
   --primary-foreground: #ffffff;
-  --secondary: #e1f0ff;
-  --secondary-foreground: #14213d;
-  --muted: #f7f3ec;
-  --muted-foreground: #62708a;
-  --accent: #fff2cf;
-  --accent-foreground: #14213d;
-  --destructive: #e66d5a;
+  --secondary: #e6eee6;
+  --secondary-foreground: #141a15;
+  --muted: #faf6ec;
+  --muted-foreground: #5f6e64;
+  --accent: #f5ead0;
+  --accent-foreground: #141a15;
+  --destructive: #b3402e;
   --destructive-foreground: #ffffff;
-  --border: rgba(20, 33, 61, 0.1);
-  --input: rgba(20, 33, 61, 0.16);
-  --ring: #327ccb;
-  --radius: 0.75rem;
+  --border: #e3ddcc;
+  --input: #d8d2bd;
+  --ring: #b9862f;
+
+  --shadow-card: 0 1px 2px rgba(20, 26, 21, 0.05), 0 12px 32px -12px rgba(20, 26, 21, 0.18);
+  --shadow-raised: 0 2px 4px rgba(20, 26, 21, 0.06), 0 24px 48px -16px rgba(20, 26, 21, 0.28);
+  --motion: 220ms;
+  --easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
@@ -63,47 +57,15 @@ html {
 }
 
 body {
-  background: var(--sand-100);
-  color: var(--ink-900);
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Nigerian-morning canvas: soft brand blobs fixed behind everything.
-   Kept faint — the blur should read, never shout. */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  width: 60vmax;
-  height: 60vmax;
-  border-radius: 50%;
-  filter: blur(24px);
-  pointer-events: none;
-  z-index: 0;
-}
-body::before {
-  background:
-    radial-gradient(circle at 30% 30%, var(--glass-blob-a), transparent 60%),
-    radial-gradient(circle at 70% 40%, var(--glass-blob-b), transparent 60%);
-  top: -22vmax;
-  left: -14vmax;
-}
-body::after {
-  background:
-    radial-gradient(circle at 60% 70%, var(--glass-blob-c), transparent 60%),
-    radial-gradient(circle at 30% 80%, var(--glass-blob-b), transparent 60%);
-  bottom: -24vmax;
-  right: -16vmax;
-}
-body > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* Human-first: every tap target ≥ 44px, generous by default. */
@@ -128,9 +90,9 @@ textarea {
   font-size: 16px;
 }
 
-/* Visible focus for outdoor + low-vision users. */
+/* Visible focus: brass ring, always. */
 :focus-visible {
-  outline: 3px solid var(--sky-500);
+  outline: 3px solid var(--brass-500);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -139,103 +101,83 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Glass surfaces ----
-   .glass      : primary reading cards (strong fill → contrast holds)
-   .glass-soft : nested/secondary panels
-   .glass-pill : floating header / toolbars
-   Primary CTAs stay SOLID proof-green; status banners stay solid pastels.
-   Glass is depth, never a substitute for color + label + words. */
+.font-display {
+  font-family: var(--font-display), Fraunces, Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Prestige surfaces (same class names, new material) ----
+   .glass      : primary reading cards — solid white, hairline, warm shadow
+   .glass-soft : nested panels — deep cream fill
+   .glass-pill : floating header / toolbars — solid white pill
+   Primary CTAs stay SOLID pine; gold is earned, never decoration. */
 .glass {
-  background: var(--glass-fill-strong);
-  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturation));
-  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturation));
-  border: 1px solid var(--glass-border);
-  outline: 1px solid var(--glass-border-edge);
-  outline-offset: -1px;
-  box-shadow: var(--glass-shadow);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow-card);
 }
 .glass-soft {
-  background: var(--glass-fill);
-  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturation));
-  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturation));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  background: var(--cream-deep);
+  border: 1px solid var(--line);
+  border-radius: 18px;
 }
 .glass-pill {
-  background: var(--glass-fill-strong);
-  -webkit-backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturation));
-  backdrop-filter: blur(var(--glass-blur-md)) saturate(var(--glass-saturation));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
   border-radius: 999px;
 }
 .glass-input {
-  background: var(--glass-fill-strong);
-  -webkit-backdrop-filter: blur(var(--glass-blur-sm));
-  backdrop-filter: blur(var(--glass-blur-sm));
-  border: 2px solid var(--glass-border-edge);
+  background: var(--card);
+  border: 2px solid var(--input);
+  border-radius: 14px;
 }
 .glass-input:focus {
-  border-color: var(--proof-600);
+  border-color: var(--pine-900);
 }
 .glass-lift {
-  transition: transform var(--glass-motion) var(--glass-easing),
-    box-shadow var(--glass-motion) var(--glass-easing);
+  transition: transform var(--motion) var(--easing), box-shadow var(--motion) var(--easing);
 }
 .glass-lift:hover {
   transform: translateY(-2px);
-  box-shadow: var(--glass-shadow-raised);
+  box-shadow: var(--shadow-raised);
 }
 .glass-lift:active {
   transform: translateY(0);
 }
-/* Tactile secondary controls: gentle lift on precise pointers only. */
 @media (hover: hover) {
   a.glass-soft:hover,
   button.glass-soft:hover {
     transform: translateY(-1px);
-    box-shadow: var(--glass-shadow-raised);
+    box-shadow: var(--shadow-raised);
   }
 }
 a.glass-soft,
 button.glass-soft {
-  transition: transform var(--glass-motion) var(--glass-easing),
-    box-shadow var(--glass-motion) var(--glass-easing);
+  transition: transform var(--motion) var(--easing), box-shadow var(--motion) var(--easing);
 }
 
-/* Weak-transparency fallback: calm opacity + no blur, keep borders. */
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass-soft,
-  .glass-pill,
-  .glass-input {
-    background: rgba(255, 255, 255, 0.97);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  body::before,
-  body::after {
-    display: none;
-  }
+/* Eyebrow label: brass, tracked, always above display headlines. */
+.eyebrow {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-600);
 }
 
-/* Sticky bottom action bar on phones (card / pass pages). */
-.sticky-cta {
-  position: sticky;
-  bottom: 0;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, var(--sand-100) 40%);
+/* Dark pine band: footers, ticket stubs, premium headers. */
+.pine-band {
+  background: var(--pine-950);
+  color: #f4efe1;
+}
+.pine-band .eyebrow {
+  color: var(--brass-500);
 }
 
-/* Calm motion only; respect reduced-motion. */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+/* Photo placeholder: deep pine with brass monogram — never grey boxes. */
+.photo-fallback {
+  background: linear-gradient(135deg, var(--pine-900) 0%, var(--pine-950) 100%);
+  color: var(--brass-100);
 }

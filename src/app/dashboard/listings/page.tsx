@@ -202,7 +202,7 @@ export default function ListingsPage() {
       <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-[26px] font-bold md:text-[32px]">Your listings</h1>
+          <h1 className="font-display text-[32px] font-bold md:text-[32px]">Your listings</h1>
           <p className="mt-1 text-[16px]">Fresh cards get bookings. Stale ones pause themselves.</p>
         </div>
         <div className="flex gap-2">
@@ -256,11 +256,11 @@ export default function ListingsPage() {
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             <div>
               <label className="block text-[16px] font-semibold" htmlFor="nl-title">Title</label>
-              <input id="nl-title" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. 3-bedroom apartment" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+              <input id="nl-title" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. 3-bedroom apartment" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
             </div>
             <div>
               <label className="block text-[16px] font-semibold" htmlFor="nl-type">Type</label>
-              <select id="nl-type" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]">
+              <select id="nl-type" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]">
                 <option value="rent">Rent</option>
                 <option value="sale">Sale</option>
                 <option value="land">Land</option>
@@ -270,15 +270,15 @@ export default function ListingsPage() {
             </div>
             <div>
               <label className="block text-[16px] font-semibold" htmlFor="nl-area">Area</label>
-              <input id="nl-area" value={f.area} onChange={(e) => setF({ ...f, area: e.target.value })} placeholder="e.g. Gwarinpa, Abuja" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+              <input id="nl-area" value={f.area} onChange={(e) => setF({ ...f, area: e.target.value })} placeholder="e.g. Gwarinpa, Abuja" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
             </div>
             <div>
               <label className="block text-[16px] font-semibold" htmlFor="nl-price">Price (₦)</label>
-              <input id="nl-price" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, "") })} placeholder="e.g. 4000000" inputMode="numeric" className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+              <input id="nl-price" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, "") })} placeholder="e.g. 4000000" inputMode="numeric" className="tabular mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-[16px] font-semibold" htmlFor="nl-agent">Who hosts viewings?</label>
-              <select id="nl-agent" value={f.agentId} onChange={(e) => setF({ ...f, agentId: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]">
+              <select id="nl-agent" value={f.agentId} onChange={(e) => setF({ ...f, agentId: e.target.value })} className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]">
                 <option value="">Choose later</option>
                 {agents.map((a) => <option key={a.id} value={a.id}>{a.publicName} ({a.fullName})</option>)}
               </select>
@@ -303,7 +303,7 @@ export default function ListingsPage() {
               </span>
             </div>
             <p className="tabular mt-1 text-[16px] font-semibold">{l.currency} {Number(l.price).toLocaleString()}</p>
-            <p className="mt-1 text-[14px] text-slate-500">
+            <p className="mt-1 text-[14px] text-clay">
               Confirmed {new Date(l.lastConfirmedAt).toDateString()}
               {l.agent ? ` · ${l.agent.publicName}` : " · no host yet"}
               {l.commissionTerms ? ` · ✍ ${l.commissionTerms}` : ""}
@@ -326,22 +326,22 @@ export default function ListingsPage() {
                     </div>
                   ))}
                 </div>
-                <label className="mt-2 block rounded-xl border-2 border-dashed border-slate-200 px-4 py-4 text-center text-[16px] font-semibold">
+                <label className="mt-2 block rounded-xl border-2 border-dashed border-line px-4 py-4 text-center text-[16px] font-semibold">
                   {uploading ? "Shrinking…" : "+ Add photo (camera)"}
                   <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => onPhoto(e.target.files?.[0])} />
                 </label>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <div>
                     <label className="block text-[16px] font-semibold">Photo taken on</label>
-                    <input type="date" value={ef.photographedAt} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setEf({ ...ef, photographedAt: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]" />
+                    <input type="date" value={ef.photographedAt} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setEf({ ...ef, photographedAt: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-line bg-white px-3 text-[16px]" />
                   </div>
                   <div>
                     <label className="block text-[16px] font-semibold">Price (₦)</label>
-                    <input value={ef.price} onChange={(e) => setEf({ ...ef, price: e.target.value.replace(/\D/g, "") })} inputMode="numeric" className="tabular mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]" />
+                    <input value={ef.price} onChange={(e) => setEf({ ...ef, price: e.target.value.replace(/\D/g, "") })} inputMode="numeric" className="tabular mt-1 min-h-[48px] w-full rounded-xl border border-line bg-white px-3 text-[16px]" />
                   </div>
                 </div>
                 <label className="mt-3 block text-[16px] font-semibold">Host</label>
-                <select value={ef.agentId} onChange={(e) => setEf({ ...ef, agentId: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]">
+                <select value={ef.agentId} onChange={(e) => setEf({ ...ef, agentId: e.target.value })} className="mt-1 min-h-[48px] w-full rounded-xl border border-line bg-white px-3 text-[16px]">
                   <option value="">No host yet</option>
                   {agents.map((a) => <option key={a.id} value={a.id}>{a.publicName} ({a.fullName})</option>)}
                 </select>
@@ -353,7 +353,7 @@ export default function ListingsPage() {
                   value={ef.commissionTerms}
                   onChange={(e) => setEf({ ...ef, commissionTerms: e.target.value })}
                   placeholder="e.g. 10% of agency fee on close"
-                  className="mt-1 min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+                  className="mt-1 min-h-[48px] w-full rounded-xl border border-line bg-white px-3 text-[16px]"
                 />
                 <Button onClick={() => saveEdit(l.id)} size="lg" className="mt-3 w-full">
                   Save details
@@ -398,7 +398,7 @@ export default function ListingsPage() {
                     value={newSlot}
                     onChange={(e) => setNewSlot(e.target.value)}
                     aria-label="New viewing time"
-                    className="min-h-[48px] w-full rounded-xl border border-slate-200 glass-soft glass-input px-3 text-[16px]"
+                    className="min-h-[48px] w-full rounded-xl border border-line glass-soft glass-input px-3 text-[16px]"
                   />
                   <Button onClick={() => addSlot(l.id)} className="shrink-0">
                     Add

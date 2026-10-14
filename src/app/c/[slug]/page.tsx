@@ -46,7 +46,7 @@ export default async function ViewingCardPage({
       <main className="mx-auto max-w-md px-4 py-10">
         <Card>
           <CardContent className="text-center">
-            <h1 className="text-[26px] font-bold">Hmm, this card is gone</h1>
+            <h1 className="font-display text-[32px] font-bold">Hmm, this card is gone</h1>
             <p className="mt-2 text-[16px]">
               The agency may have paused or removed this listing. Nothing was taken
               from you — bookings here are always free.
@@ -70,12 +70,15 @@ export default async function ViewingCardPage({
             <img
               src={c.images[0]}
               alt={`${c.title}, ${c.area}`}
-              className="h-52 w-full object-cover md:h-full md:min-h-[420px]"
+              className="h-64 w-full object-cover md:h-full md:min-h-[480px]"
               loading="eager"
             />
           ) : (
-            <div className="flex h-40 items-center justify-center bg-sand-100 px-4 text-center text-[16px] md:h-full md:min-h-[420px]">
-              Photos coming — the agency hasn&apos;t added clear pictures yet.
+            <div className="photo-fallback flex h-56 flex-col items-center justify-center gap-2 px-6 text-center md:h-full md:min-h-[480px]">
+              <span className="font-display text-[54px] font-bold leading-none">{c.title.charAt(0)}</span>
+              <p className="max-w-[26ch] text-[16px] opacity-90">
+                Photos coming — the agency hasn&apos;t added clear pictures yet.
+              </p>
             </div>
           )}
           <div className="absolute left-3 top-3 flex flex-wrap gap-2">
@@ -87,10 +90,11 @@ export default async function ViewingCardPage({
           </div>
         </div>
         <CardContent>
-          <h1 className="text-[26px] font-bold leading-tight tracking-tight">{c.title}</h1>
-          <p className="mt-1 text-[16px] text-slate-500">{c.area}</p>
-          <p className="tabular mt-2 text-[24px] font-bold tracking-tight">
+          <p className="eyebrow">{c.area}</p>
+          <h1 className="font-display mt-1 text-[30px] font-bold leading-[1.05] md:text-[36px]">{c.title}</h1>
+          <p className="tabular mt-2 text-[26px] font-bold tracking-tight">
             {c.currency} {Number(c.price).toLocaleString()}
+            <span className="ml-2 inline-block h-[3px] w-10 translate-y-[-6px] rounded-full bg-brass-500" aria-hidden="true" />
           </p>
           <div className="mt-3 flex flex-wrap gap-2" aria-label="Evidence status">
             <Badge variant="confirmed">
@@ -115,7 +119,7 @@ export default async function ViewingCardPage({
               </Badge>
             )}
           </div>
-          <details className="mt-2 text-[14px] text-slate-500">
+          <details className="mt-2 text-[14px] text-clay">
             <summary className="min-h-[44px] cursor-pointer py-2 text-[16px] font-semibold">More about this card</summary>
             <ul className="grid gap-1 pb-2">
               {c.photographedAt && (

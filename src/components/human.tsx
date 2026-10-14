@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 
 export function HelpFooter({ contact }: { contact?: string | null }) {
   return (
-    <p className="mt-4 text-center text-[16px] text-slate-500">
+    <p className="mt-4 text-center text-[16px] text-clay">
       Need help?{" "}
       {contact ? (
         <span>

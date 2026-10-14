@@ -69,7 +69,7 @@ export default function BookingsPage() {
             placeholder="Closed price ₦"
             inputMode="numeric"
             aria-label="Closed price in naira"
-            className="tabular min-h-[48px] w-full rounded-xl border border-slate-200 bg-white px-3 text-[16px]"
+            className="tabular min-h-[48px] w-full rounded-xl border border-line bg-white px-3 text-[16px]"
           />
           <Button
             onClick={() => {
@@ -88,7 +88,7 @@ export default function BookingsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
-      <h1 className="text-[26px] font-bold md:text-[32px]">Upcoming viewings</h1>
+      <h1 className="font-display text-[32px] font-bold md:text-[32px]">Upcoming viewings</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
         Everyone coming, when, and how to reach them.
       </p>
@@ -96,7 +96,7 @@ export default function BookingsPage() {
         <a href="/api/ledger?format=csv" className="glass-soft inline-block rounded-xl px-4 py-3 text-[16px] font-semibold">
           📜 Export commission evidence (CSV)
         </a>
-        <p className="mt-1 text-[14px] text-slate-500">Settles “whose buyer?” — every viewing, agent, outcome.</p>
+        <p className="mt-1 text-[14px] text-clay">Settles “whose buyer?” — every viewing, agent, outcome.</p>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -119,7 +119,7 @@ export default function BookingsPage() {
               {b.reliability && b.reliability.total > 0 && (
                 <p className="mt-1 text-[14px]">🤝 Buyer: {b.reliability.label}</p>
               )}
-              <p className="mt-1 text-[14px] text-slate-500">
+              <p className="mt-1 text-[14px] text-clay">
                 {b.listing.area}{b.agent ? ` · host ${b.agent.publicName}` : ""}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
@@ -149,7 +149,7 @@ export default function BookingsPage() {
           <article key={b.id} className="glass rounded-2xl p-4">
             <p className="text-[18px] font-bold leading-snug">{b.listing.title}</p>
             <p className="mt-1 text-[16px]">{b.buyerName} · host {b.agent?.publicName ?? "—"}</p>
-            <p className="tabular mt-1 text-[14px] text-slate-500">{new Date(b.slot.startsAt).toLocaleString()}</p>
+            <p className="tabular mt-1 text-[14px] text-clay">{new Date(b.slot.startsAt).toLocaleString()}</p>
             {closeCard(b)}
           </article>
         ))}

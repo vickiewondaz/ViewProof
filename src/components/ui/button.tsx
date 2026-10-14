@@ -3,18 +3,17 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// shadcn Button, skinned to ViewProof: solid proof-green primary,
-// frosted secondary, coral destructive. 48px minimum always.
+// Prestige Button: solid pine primary, cream secondary, brass focus. 48px minimum always.
 const buttonVariants = cva(
-  "inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 text-[16px] font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-sky-500 disabled:pointer-events-none disabled:opacity-60 [&_svg]:size-5 [&_svg]:shrink-0",
+  "inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-2xl px-5 py-3 text-[16px] font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brass-500 disabled:pointer-events-none disabled:opacity-60 [&_svg]:size-5 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-proof-600 text-white shadow hover:-translate-y-[1px] hover:shadow-lg",
+        default: "bg-pine-900 text-white shadow-card hover:-translate-y-[1px] hover:bg-pine-950 hover:shadow-raised",
         secondary:
-          "glass-soft text-ink-900 hover:-translate-y-[1px] hover:shadow-lg",
-        destructive: "bg-coral-500 text-white shadow hover:-translate-y-[1px]",
-        ghost: "text-sky-500 hover:bg-white/60",
+          "border border-line bg-white text-ink-900 shadow-card hover:-translate-y-[1px] hover:shadow-raised",
+        destructive: "bg-coral-500 text-white shadow-card hover:-translate-y-[1px]",
+        ghost: "text-pine-900 underline-offset-4 hover:underline",
       },
       size: {
         default: "py-3",

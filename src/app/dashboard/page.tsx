@@ -27,7 +27,10 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-[26px] font-bold md:text-[32px]">Owner dashboard</h1>
+        <div>
+          <p className="eyebrow">This week</p>
+          <h1 className="font-display text-[32px] font-bold md:text-[32px]">Owner dashboard</h1>
+        </div>
         <Button asChild variant="secondary" size="sm"><a href="/api/reports/weekly?format=csv">Export CSV</a></Button>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -48,26 +51,32 @@ export default function DashboardPage() {
                   ? { n: "Step 3 of 3", text: "Share a card on WhatsApp — bookings land here by themselves.", href: "/dashboard/listings", cta: "Open listings →" }
                   : null;
           return step ? (
-            <div className="rounded-2xl bg-proof-100 p-4 md:col-span-2 xl:col-span-3">
-              <p className="text-[14px] font-bold text-proof-600">{step.n}</p>
-              <p className="mt-1 text-[18px] font-bold">{step.text}</p>
-              <a href={step.href} className="mt-2 inline-block rounded-xl bg-proof-600 px-5 py-3 text-[16px] font-bold text-white">
-                {step.cta}
-              </a>
+            <div className="pine-band rounded-[22px] p-5 md:col-span-2 md:p-6 xl:col-span-3">
+              <p className="eyebrow">{step.n}</p>
+              <p className="font-display mt-1 text-[22px] font-bold">{step.text}</p>
+              <Button asChild size="sm" className="mt-3 !bg-brass-500 !text-pine-950 hover:!bg-brass-600"><a href={step.href}>{step.cta}</a></Button>
             </div>
           ) : null;
         })()}
-        <section className="glass rounded-2xl p-4">
-          <h2 className="text-base font-semibold">Listings · {s.listings.total}</h2>
-          <p className="text-[16px]">
+        <section className="glass p-5">
+          <p className="eyebrow">Listings</p>
+          <p className="font-display tabular text-[40px] font-bold leading-none">{s.listings.total}</p>
+          <p className="mt-1 text-[16px] text-clay">
             {Object.entries(s.listings.byStatus).map(([k, v]) => `${k}: ${v}`).join(" · ")}
           </p>
-          <Button asChild variant="secondary" size="sm" className="mt-2"><a href="/dashboard/listings">Manage listings →</a></Button>
+          <Button asChild variant="secondary" size="sm" className="mt-3"><a href="/dashboard/listings">Manage listings →</a></Button>
           {s.listings.staleLive > 0 && (
-            <p className="mt-1 rounded-xl bg-coral-100 p-2 text-[16px]">
+            <p className="mt-2 rounded-xl bg-coral-100 p-2 text-[16px]">
               ⚠ {s.listings.staleLive} active look stale — reconfirm to unpause booking.
             </p>
           )}
+        </section>
+        <section className="glass p-5">
+          <p className="eyebrow">Today&apos;s viewings</p>
+          <p className="mt-1 text-[16px]">
+            {Object.entries(s.bookingsToday).map(([k, v]) => `${k}: ${v}`).join(" · ") || "No activity yet."}
+          </p>
+          <Button asChild variant="secondary" size="sm" className="mt-3"><a href="/dashboard/bookings">Open bookings →</a></Button>
         </section>
         <section className="glass rounded-2xl p-4">
           <h2 className="text-base font-semibold">Today&apos;s viewings</h2>

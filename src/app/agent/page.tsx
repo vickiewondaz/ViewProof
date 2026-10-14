@@ -59,8 +59,9 @@ export default function AgentPage() {
 
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 py-6">
-      <h1 className="text-[26px] font-bold">You met? Confirm it ✅</h1>
-      <p className="mt-1 text-[16px]">
+      <p className="eyebrow">Agent check-in</p>
+      <h1 className="font-display text-[32px] font-bold">You met? Confirm it ✅</h1>
+      <p className="mt-1 text-[16px] text-clay">
         Get the buyer&apos;s 6 numbers, type them, tap confirm.
       </p>
 
@@ -76,7 +77,7 @@ export default function AgentPage() {
                   setReceipt(null);
                   document.getElementById("code")?.focus();
                 }}
-                className={`rounded-xl border-2 px-4 py-3 text-left text-[16px] ${bookingId === b.id ? "border-proof-600 bg-proof-100" : "border-slate-200 glass-soft glass-input"}`}
+                className={`rounded-xl border-2 px-4 py-3 text-left text-[16px] ${bookingId === b.id ? "border-pine-900 bg-pine-100" : "border-line glass-soft glass-input"}`}
               >
                 <span className="font-bold">{new Date(b.slot.startsAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
                 {" · "}{b.listing.title} · {b.buyerName}
@@ -109,7 +110,7 @@ export default function AgentPage() {
         onChange={(e) => setBookingId(e.target.value)}
         placeholder="Paste booking ID here"
         autoComplete="off"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
       />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="code">
         Buyer&apos;s 6-digit code
@@ -123,7 +124,7 @@ export default function AgentPage() {
         maxLength={6}
         placeholder="··· ···"
         aria-label="Buyer's six digit code"
-        className="tabular mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-5 text-center text-3xl tracking-[0.4em]"
+        className="tabular mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-5 text-center text-3xl tracking-[0.4em]"
       />
       <Button
         onClick={() => submit("checkin")}

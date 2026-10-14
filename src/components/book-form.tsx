@@ -73,7 +73,7 @@ export default function BookForm({
           Screenshot this now. Your host asks for it at the gate.
           {won.codeExpires ? ` It expires ${new Date(won.codeExpires).toLocaleString()}.` : ""}
         </p>
-        <p className="mt-1 text-[16px] text-slate-500">It also arrives on WhatsApp when messaging is approved.</p>
+        <p className="mt-1 text-[16px] text-clay">It also arrives on WhatsApp when messaging is approved.</p>
         <Button size="lg" className="mt-4 w-full" onClick={() => router.push(`/b/${won.id}`)}>
           Open my viewing pass →
         </Button>
@@ -88,7 +88,7 @@ export default function BookForm({
         {slots.slice(0, 6).map((s) => (
           <label
             key={s.id}
-            className={`min-h-[56px] cursor-pointer rounded-xl border-2 px-4 py-3 text-[16px] ${slotId === s.id ? "border-proof-600 bg-proof-100" : "border-slate-200"} ${s.left <= 0 ? "opacity-50" : ""}`}
+            className={`min-h-[56px] cursor-pointer rounded-xl border-2 px-4 py-3 text-[16px] ${slotId === s.id ? "border-proof-600 bg-proof-100" : "border-line"} ${s.left <= 0 ? "opacity-50" : ""}`}
           >
             <input
               type="radio"
@@ -112,7 +112,7 @@ export default function BookForm({
         onChange={(e) => setName(e.target.value)}
         placeholder="e.g. Funke Ade"
         autoComplete="name"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
       />
       <label className="mt-3 block text-[16px] font-semibold" htmlFor="bk-phone">WhatsApp number</label>
       <input
@@ -122,9 +122,9 @@ export default function BookForm({
         placeholder="+234 800 000 0000"
         inputMode="tel"
         autoComplete="tel"
-        className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+        className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
       />
-      <p className="mt-1 text-[14px] text-slate-500">Code arrives here. Never shared.</p>
+      <p className="mt-1 text-[14px] text-clay">Code arrives here. Never shared.</p>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
@@ -134,7 +134,7 @@ export default function BookForm({
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
             placeholder="e.g. ₦3–4m yearly"
-            className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+            className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
           />
         </div>
         <div>
@@ -144,7 +144,7 @@ export default function BookForm({
             value={move}
             onChange={(e) => setMove(e.target.value)}
             placeholder="e.g. December"
-            className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+            className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
           />
         </div>
       </div>

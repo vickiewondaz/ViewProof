@@ -6,7 +6,7 @@ export default function NotFound() {
     <main className="mx-auto w-full max-w-md px-4 py-10 md:max-w-lg">
       <div className="glass rounded-2xl p-6 text-center">
         <p className="text-[48px]">🧭</p>
-        <h1 className="mt-2 text-[26px] font-bold">Lost your way?</h1>
+        <h1 className="font-display mt-2 text-[32px] font-bold">Lost your way?</h1>
         <p className="mt-2 text-[16px]">
           This page moved or never existed. Your bookings are safe — nothing
           was cancelled.

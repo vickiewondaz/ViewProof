@@ -1,7 +1,11 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import SiteHeader from "@/components/site-header";
 import InstallPrompt from "@/components/install-prompt";
+
+const display = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "ViewProof — Accountable property viewings",
@@ -20,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#177E5C",
+  themeColor: "#0c3b2e",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -33,14 +37,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
+      <body className={`min-h-screen antialiased ${display.variable} ${sans.variable}`}>
         <SiteHeader />
         <div className="px-3 pt-3">
           <InstallPrompt />
         </div>
         {children}
-        <footer className="mx-auto w-full max-w-6xl px-4 pb-10 pt-6 text-center text-[14px] text-slate-500">
-          ViewProof · honest viewings · we don&apos;t verify title or ownership
+        <footer className="pine-band mt-10 px-4 py-10 text-center">
+          <p className="eyebrow">ViewProof</p>
+          <p className="font-display mx-auto mt-2 max-w-md text-[24px] leading-snug">
+            Honest viewings, kept on record.
+          </p>
+          <p className="mx-auto mt-2 max-w-md text-[14px] opacity-80">
+            We don&apos;t verify title or ownership — we show what the agency confirmed, and who&apos;ll meet you.
+          </p>
         </footer>
       </body>
     </html>

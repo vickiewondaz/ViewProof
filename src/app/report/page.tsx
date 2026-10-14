@@ -79,16 +79,16 @@ function ReportForm() {
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
       <div className="glass rounded-2xl p-5">
-        <h1 className="text-[24px] font-bold">What went wrong?</h1>
+        <h1 className="font-display text-[32px] font-bold">What went wrong?</h1>
         <p className="mt-1 text-[16px]">Tap what happened — a real person reads it.</p>
         {linked ? (
           <p className="mt-3 rounded-xl bg-proof-100 p-3 text-[16px]">Linked to your viewing ✓ — just tell us what happened below.</p>
         ) : (
           <>
             <label className="mt-4 block text-[16px] font-semibold" htmlFor="listing">Listing ID (on your card)</label>
-            <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+            <input id="listing" value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="e.g. clx…" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
             <label className="mt-3 block text-[16px] font-semibold" htmlFor="booking">Booking ID <span className="font-normal">(if you booked)</span></label>
-            <input id="booking" value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Optional" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+            <input id="booking" value={bookingId} onChange={(e) => setBookingId(e.target.value)} placeholder="Optional" autoComplete="off" className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
           </>
         )}
         <div className="mt-4 grid gap-2" role="radiogroup" aria-label="What went wrong">
@@ -103,7 +103,7 @@ function ReportForm() {
           ))}
         </div>
         <label className="mt-4 block text-[16px] font-semibold" htmlFor="detail">Anything else? <span className="font-normal">(optional)</span></label>
-        <textarea id="detail" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="In your own words…" rows={3} className="mt-1 w-full rounded-xl border-2 border-slate-200 px-4 py-4 text-[16px]" />
+        <textarea id="detail" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="In your own words…" rows={3} className="mt-1 w-full rounded-xl border-2 border-line px-4 py-4 text-[16px]" />
         <label className="mt-4 block text-[16px] font-semibold" htmlFor="photo">Photo <span className="font-normal">(optional, helps a lot)</span></label>
         <input
           id="photo"
@@ -111,7 +111,7 @@ function ReportForm() {
           accept="image/*"
           capture="environment"
           onChange={(e) => onPhoto(e.target.files?.[0])}
-          className="mt-1 w-full rounded-xl border-2 border-slate-200 glass-soft glass-input px-4 py-4 text-[16px]"
+          className="mt-1 w-full rounded-xl border-2 border-line glass-soft glass-input px-4 py-4 text-[16px]"
         />
         {photoUrl && <p className="mt-1 text-[16px]">Photo added ✓</p>}
         <div className="sticky-cta mt-3">

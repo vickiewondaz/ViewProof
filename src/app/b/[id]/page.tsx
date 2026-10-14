@@ -26,7 +26,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
       <main className="mx-auto max-w-md md:max-w-lg px-4 py-10">
         <Card>
           <CardContent className="text-center">
-            <h1 className="text-[26px] font-bold">Can&apos;t find this pass</h1>
+            <h1 className="font-display text-[32px] font-bold">Can&apos;t find this pass</h1>
             <p className="mt-2 text-[16px]">
               The link may be old. Open your WhatsApp confirmation message again —
               the newest link is the right one.
@@ -39,23 +39,25 @@ export default async function ViewingPassPage({ params }: { params: { id: string
 
   return (
     <main className="mx-auto max-w-md md:max-w-lg px-4 pb-10 pt-6">
-      <Card>
-        <CardContent className="text-center">
+      <Card className="overflow-hidden !p-0">
+        <div className="pine-band px-5 pb-5 pt-6 text-center md:px-7">
           <Badge variant={pass.status === "Confirmed" ? "confirmed" : "neutral"}>
             <PartyPopper />
             {pass.status === "Confirmed" ? "You're booked!" : `Status: ${pass.status}`}
           </Badge>
-          <h1 className="mt-3 text-[22px] font-bold leading-snug tracking-tight">{pass.listing}</h1>
-          <p className="mt-1 text-[16px] text-slate-500">{pass.area}</p>
-          <p className="tabular mt-2 text-[18px] font-semibold">
+          <h1 className="font-display font-display mt-3 text-[32px] font-bold leading-tight">{pass.listing}</h1>
+          <p className="mt-1 text-[16px] opacity-80">{pass.area}</p>
+          <p className="tabular mt-2 text-[20px] font-bold text-brass-100">
             {new Date(pass.startsAt).toLocaleString()}
           </p>
           {pass.host && (
-            <p className="mt-2 text-[16px]">
+            <p className="mt-2 text-[16px] opacity-90">
               You&apos;ll meet <span className="font-bold">{pass.host}</span> · {pass.agency}
             </p>
           )}
-          <div className="mt-4 rounded-xl bg-sun-100 p-4 text-[16px]">
+        </div>
+        <CardContent className="text-center">
+          <div className="mt-1 rounded-2xl border border-dashed border-brass-600/50 bg-brass-100 p-4 text-[16px]">
             <p className="flex items-center justify-center gap-2 font-bold">
               <KeyRound /> Code is on WhatsApp — show it at the venue.
             </p>

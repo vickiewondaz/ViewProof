@@ -35,7 +35,7 @@ export default function ReviewPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
       <a href="/dashboard" className="inline-block min-h-[44px] py-2 text-[16px] font-semibold text-sky-500">← Dashboard</a>
-      <h1 className="text-[26px] font-bold md:text-[32px]">Needs review</h1>
+      <h1 className="font-display text-[32px] font-bold md:text-[32px]">Needs review</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
         Conflicts and reports. Humans decide — nothing automatic.
       </p>
@@ -45,7 +45,7 @@ export default function ReviewPage() {
           <div key={i.id} className="glass rounded-2xl p-4 text-[16px]">
             <p className="font-semibold">{i.category} · {i.status}</p>
             <p className="mt-1 text-[16px]">{i.detail || "No detail."}</p>
-            <p className="mt-1 text-[14px] text-slate-500">{new Date(i.createdAt).toLocaleString()}</p>
+            <p className="mt-1 text-[14px] text-clay">{new Date(i.createdAt).toLocaleString()}</p>
             <div className="mt-2 grid grid-cols-1 gap-2">
               <Button onClick={() => triage(i.id, "UnderReview")} variant="secondary">I&apos;m looking into it</Button>
               <Button onClick={() => triage(i.id, "Resolved")}>Fixed ✓</Button>

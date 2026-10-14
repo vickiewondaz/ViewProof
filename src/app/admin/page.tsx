@@ -54,7 +54,7 @@ export default function AdminPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <h1 className="text-[26px] font-bold md:text-[32px]">Landlord&apos;s office 🔑</h1>
+      <h1 className="font-display text-[32px] font-bold md:text-[32px]">Landlord&apos;s office 🔑</h1>
       <p className="mt-1 max-w-2xl text-[16px]">
         All shops, one screen. Lock doors, keep records.
       </p>
@@ -70,7 +70,7 @@ export default function AdminPage() {
               </span>
             </div>
             <p className="tabular mt-1 text-[16px]">{a.contact}</p>
-            <p className="mt-1 text-[14px] text-slate-500">
+            <p className="mt-1 text-[14px] text-clay">
               {a.owner ?? "no owner login yet"} · {a.listings} listings · {a.agents} hosts · since {new Date(a.createdAt).toDateString()}
             </p>
             <Button

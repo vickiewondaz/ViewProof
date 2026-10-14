@@ -9,10 +9,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        confirmed: "border-transparent bg-proof-100 text-ink-900",
-        score: "border-transparent bg-sun-100 text-ink-900",
-        warn: "border-transparent bg-coral-100 text-ink-900",
-        neutral: "border-slate-200 bg-white/70 text-ink-900",
+        confirmed: "border-pine-900/15 bg-pine-100 text-pine-950",
+        score: "border-brass-600/25 bg-brass-100 text-ink-900",
+        warn: "border-coral-500/25 bg-coral-100 text-ink-900",
+        neutral: "border-line bg-cream text-ink-900",
       },
     },
     defaultVariants: { variant: "neutral" },
