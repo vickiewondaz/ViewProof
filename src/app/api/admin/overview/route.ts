@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requirePlatformAdmin } from "@/lib/admin";
+import { requireSuperAdmin } from "@/lib/admin";
 
 // GET /api/admin/overview — platform command numbers + latest audit trail.
 // Superadmin only. Read-only: decisions still happen on the action screens.
 export async function GET(req: Request) {
-  const gate = await requirePlatformAdmin();
+  const gate = await requireSuperAdmin();
   if (!gate.ok) return NextResponse.json({ ok: false }, { status: gate.status });
 
   const since = new URL(req.url).searchParams.get("days") === "30" ? 30 : 7;

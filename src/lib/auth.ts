@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP, phoneNumber, admin } from "better-auth/plugins";
+import { adminAc } from "better-auth/plugins/admin/access";
 import { prisma } from "./db";
 import { sendAuthCode } from "./whatsapp";
 import { sendEmailOtp } from "./email";
@@ -43,10 +44,14 @@ export const auth = betterAuth({
         getTempName: (phoneNumber) => phoneNumber,
       },
     }),
-    // Platform admin: user management (ban, roles, impersonate) for the
-    // landlord's office. First admin via: npx auth create-admin --email you@...
+    // Platform admin: user management (ban, roles, impersonate).
+    // Roles: "admin" = landlord (shops). "superadmin" = creator (platform).
+    // Superadmin is granted ONLY out-of-band (DB/CLI by the creator) —
+    // no UI anywhere may assign it; the admins API below enforces that.
     admin({
       defaultRole: "seeker",
+      adminRoles: ["admin", "superadmin"],
+      roles: { admin: adminAc, user: adminAc, superadmin: adminAc },
       bannedUserMessage: "This account is paused. Talk to ViewProof support on WhatsApp if this is a mistake.",
     }),
   ],

@@ -83,7 +83,7 @@ test("cron endpoints fail closed", async ({ request }) => {
 
 test("private screens stay shut without sign-in", async ({ page }) => {
   await page.goto("/superadmin");
-  await expect(page.getByText(/superadmin only|sign-in/i).first()).toBeVisible();
+  await expect(page.getByText(/creator only|sign-in/i).first()).toBeVisible();
   await page.goto("/dashboard/documents");
   await expect(page.getByText(/sign in/i).first()).toBeVisible();
   await page.goto("/admin");
