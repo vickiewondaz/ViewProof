@@ -65,6 +65,9 @@ jobs:
           ANDROID_VERSION_NAME: ${{ steps.ver.outputs.name }}
         run: |
           chmod +x gradlew
+          test -f "$ANDROID_KEYSTORE_FILE" || { echo "keystore missing"; exit 1; }
+          [ -n "$ANDROID_KEYSTORE_PASSWORD" ] || { echo "keystore password secret empty"; exit 1; }
+          echo "version=${ANDROID_VERSION_NAME} code=${ANDROID_VERSION_CODE} alias=${ANDROID_KEY_ALIAS}"
           ./gradlew assembleRelease bundleRelease --no-daemon
 
       - name: Collect artifacts

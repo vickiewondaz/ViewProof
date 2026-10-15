@@ -1,15 +1,23 @@
 apply plugin: 'com.android.application'
 
+def verCode = 1
+try { verCode = Integer.parseInt(System.getenv("ANDROID_VERSION_CODE") ?: "1") } catch (Exception ignored) {}
+def verName = System.getenv("ANDROID_VERSION_NAME") ?: "1.0.0"
+def ksFile = System.getenv("ANDROID_KEYSTORE_FILE") ?: "release.keystore"
+def ksPass = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+def ksAlias = System.getenv("ANDROID_KEY_ALIAS") ?: "viewproof"
+if (!ksPass) throw new GradleException("ANDROID_KEYSTORE_PASSWORD not set — add the secret.")
+
 android {
     namespace = "com.viewproof.app"
     compileSdk = rootProject.ext.compileSdkVersion
     signingConfigs {
         release {
             // CI supplies these from GitHub secrets (never committed).
-            storeFile file(System.getenv("ANDROID_KEYSTORE_FILE") ?: "release.keystore")
-            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
-            keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "viewproof"
-            keyPassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            storeFile file(ksFile)
+            storePassword ksPass
+            keyAlias ksAlias
+            keyPassword ksPass
         }
     }
     defaultConfig {
@@ -17,8 +25,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // Monotonic per CI run; versionName from package.json via env.
-        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
-        versionName System.getenv("ANDROID_VERSION_NAME") ?: "1.0.0"
+        versionCode verCode
+        versionName verName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
