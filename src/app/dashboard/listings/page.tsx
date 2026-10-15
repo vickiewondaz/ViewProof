@@ -212,6 +212,7 @@ export default function ListingsPage() {
           <Button onClick={() => setShowImport((v) => !v)} variant="secondary">
             {showImport ? "Close" : "Import CSV"}
           </Button>
+          <Button asChild variant="secondary"><Link href="/dashboard/documents">📄 Scan a document</Link></Button>
         </div>
       </div>
       {msg && <p className="mt-3 text-[16px]" role="status">{msg}</p>}
