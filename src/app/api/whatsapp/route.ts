@@ -50,7 +50,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, cancelled: null });
   }
 
-  console.log(`[whatsapp inbound] ${msg.from}: ${msg.text.body.slice(0, 200)}`);
+  // Logs carry metadata only — never message content (buyer words stay private).
+  console.log(`[whatsapp inbound] unhandled keyword, ${msg.text.body.length} chars`);
   return NextResponse.json({ ok: true });
 }
 

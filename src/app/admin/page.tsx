@@ -15,6 +15,7 @@ export default function AdminPage() {
   const [wa, setWa] = useState<{ token: string; number?: string; detail?: string; smsBalance?: number | null; templates?: { name: string; status: string }[] } | null>(null);
   const [banEmail, setBanEmail] = useState("");
   const [banReason, setBanReason] = useState("");
+  const [arming, setArming] = useState<string | null>(null);
 
   const load = async () => {
     const r = await fetch("/api/admin/agencies").then((x) => x.json()).catch(() => ({}));
@@ -29,7 +30,13 @@ export default function AdminPage() {
 
   const flip = async (a: Agency) => {
     const to = a.status === "Suspended" ? "Active" : "Suspended";
-    if (to === "Suspended" && !confirm(`Lock ${a.name}? Their cards vanish and bookings stop. Records stay.`)) return;
+    // Destructive needs two taps, not a native popup: first tap arms.
+    if (to === "Suspended" && arming !== a.id) {
+      setArming(a.id);
+      setMsg(`Tap “Lock shop” again to hide ${a.name}. Records stay.`);
+      return;
+    }
+    setArming(null);
     const res = await fetch(`/api/admin/agencies/${a.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -117,7 +124,7 @@ export default function AdminPage() {
               variant={a.status === "Suspended" ? "default" : "destructive"}
               className="mt-3 w-full"
             >
-              {a.status === "Suspended" ? "Reopen shop ✓" : "Lock shop 🔒"}
+              {a.status === "Suspended" ? "Reopen shop ✓" : arming === a.id ? "Tap again to lock 🔒" : "Lock shop 🔒"}
             </Button>
           </article>
         ))}

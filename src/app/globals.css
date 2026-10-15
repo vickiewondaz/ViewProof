@@ -162,6 +162,19 @@ button.glass-soft {
   transition: transform var(--motion) var(--easing), box-shadow var(--motion) var(--easing);
 }
 
+/* Sticky bottom action bar on phones; inline on desktop. */
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .sticky-cta {
+    position: static;
+    padding-bottom: 0;
+  }
+}
+
 /* Eyebrow label: brass, tracked, always above display headlines. */
 .eyebrow {
   font-size: 13px;
