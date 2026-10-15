@@ -25,7 +25,7 @@ export default function CalendarButton({ pass }: {
       "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Bring your viewing code",
       "END:VALARM", "END:VEVENT", "END:VCALENDAR",
     ].join("\r\n");
-    const url = URL.createObjectURL(new Blob([ics], { text: "text/calendar" }));
+    const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = "viewproof-viewing.ics";
