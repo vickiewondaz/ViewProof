@@ -70,6 +70,7 @@ export default function Home() {
 
       <p className="mx-auto mt-8 max-w-2xl text-center text-[16px] text-clay">
         We don&apos;t verify title. We show what the agency confirmed — and who&apos;ll meet you.
+        <br />*Never means never: honesty is the product.
       </p>
     </main>
   );

@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
-import { PartyPopper, KeyRound, CalendarPlus } from "lucide-react";
+import { PartyPopper, KeyRound } from "lucide-react";
 import CancelButton from "./cancel-button";
+import CalendarButton from "./calendar-button";
 import { HelpFooter, OfflineNote } from "@/components/human";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,9 +65,7 @@ export default async function ViewingPassPage({ params }: { params: { id: string
             {pass.otpExpires && <p className="mt-1">Expires ~{new Date(pass.otpExpires).toLocaleTimeString()} — come on time.</p>}
           </div>
           <div className="sticky-cta mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:static md:bg-none md:pb-0">
-            <Button variant="secondary">
-              <CalendarPlus /> Add to calendar
-            </Button>
+            <CalendarButton pass={{ id: pass.id, listing: pass.listing, area: pass.area, startsAt: pass.startsAt, agency: pass.agency, host: pass.host }} />
             <CancelButton bookingId={pass.id} />
           </div>
           <Button variant="ghost" asChild className="mt-1 w-full">

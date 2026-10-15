@@ -216,8 +216,8 @@ export default function AgentPage() {
         </div>
         <p className="mt-2 text-[14px] text-clay">ViewProof keeps the record. Money moves between you and your owner — chase the Pending ones there.</p>
       </section>
-      <Button variant="ghost" className="mt-3 w-full">
-        Something wrong? Report it
+      <Button variant="ghost" asChild className="mt-3 w-full">
+        <a href="/report">Something wrong? Report it</a>
       </Button>
       <button
         onClick={async () => {
