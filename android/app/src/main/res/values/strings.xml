@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ViewProof</string>
+    <string name="title_activity_main">ViewProof</string>
+    <string name="package_name">com.viewproof.app</string>
+    <string name="custom_url_scheme">com.viewproof.app</string>
+</resources>

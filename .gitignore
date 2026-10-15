@@ -10,7 +10,17 @@ playwright-report/
 .env.*.local
 .vercel
 .netlify
-android/
+# Android: track sources, never keystores or build output.
+android/build/
+android/.gradle/
+android/app/build/
+android/app/release.keystore
+android/*.jks
+android/*.keystore
+android/*.p12
+android/local.properties
+android/captures/
+android/keystore/
 ios/
 tsconfig.tsbuildinfo
 public/sw.js

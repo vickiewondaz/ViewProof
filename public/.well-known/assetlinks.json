@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.viewproof.app",
+      "sha256_cert_fingerprints": [
+        "28:49:7E:46:00:83:85:EC:50:04:D7:E3:1B:68:06:7F:27:C2:C7:5A:E6:C2:26:54:CD:0D:71:F2:ED:57:4D:07"
+      ]
+    }
+  }
+]
