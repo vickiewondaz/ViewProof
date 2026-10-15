@@ -32,7 +32,9 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      - uses: android-actions/setup-android@v3
+      # ubuntu runners already ship the Android SDK (ANDROID_SDK_ROOT).
+      - name: Accept SDK licenses
+        run: yes | sdkmanager --licenses > /dev/null || true
 
       - name: Web deps + Capacitor sync
         run: |
