@@ -13,7 +13,7 @@ export default function Home() {
       {/* Hero: estate-kit split — serif promise left, featured card right. */}
       <section className="grid items-center gap-8 py-10 md:grid-cols-2 md:py-16">
         <div>
-          <p className="eyebrow">ViewProof · Lagos & Abuja</p>
+          <p className="eyebrow">ViewProof · Abuja first — spreading across Nigeria</p>
           <h1 className="font-display mt-3 text-[38px] font-bold leading-[1.05] md:text-[56px]">
             See a place you trust, with someone you know
           </h1>
