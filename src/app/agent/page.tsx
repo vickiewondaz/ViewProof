@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { CheckCheck } from "lucide-react";
+import { useOnline, loadOutbox, queueCheckin, dropQueued } from "@/components/offline";
 import { Button } from "@/components/ui/button";
 
 type DayBooking = {
@@ -29,8 +30,10 @@ export default function AgentPage() {
   const [agreedIds, setAgreedIds] = useState<string[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealsMsg, setDealsMsg] = useState("");
+  const [pending, setPending] = useState(0);
+  const online = useOnline();
 
-  useEffect(() => {
+  const loadDay = () => {
     fetch("/api/bookings?day=today")
       .then((r) => r.json())
       .then((j) => {
@@ -44,6 +47,40 @@ export default function AgentPage() {
         setDayLoaded(true);
       })
       .catch(() => null);
+  };
+
+  // Flush the outbox on reconnect, in order. 409 = already recorded
+  // elsewhere → reconcile against the diary, never duplicate.
+  const flush = async () => {
+    const box = loadOutbox();
+    if (!box.length) return;
+    let synced = 0;
+    for (const q of box) {
+      try {
+        const res = await fetch("/api/checkin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: q.bookingId, code: q.code || undefined, action: q.action }),
+        });
+        if (res.ok || res.status === 409) {
+          dropQueued(q.bookingId, q.action);
+          synced++;
+        }
+      } catch { /* stays queued for next time */ }
+    }
+    setPending(loadOutbox().length);
+    if (synced) {
+      setMsg(`Synced ${synced} queued check-in${synced > 1 ? "s" : ""} ✓`);
+      loadDay();
+    }
+  };
+
+  useEffect(() => {
+    loadDay();
+    setPending(loadOutbox().length);
+    const onBack = () => flush();
+    window.addEventListener("online", onBack);
+    return () => window.removeEventListener("online", onBack);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
@@ -76,18 +113,32 @@ export default function AgentPage() {
   const submit = async (action: string) => {
     setMsg("");
     setReceipt(null);
-    const res = await fetch("/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingId, code: code || undefined, action }),
-    });
-    const j = await res.json().catch(() => ({}));
-    if (j.ok && j.receipt) {
-      setReceipt(`Checked in ${new Date(j.receipt.checkin).toLocaleString()}. Receipt sent on WhatsApp.`);
-    } else if (j.ok) {
-      setMsg(`Recorded: ${j.booking?.status ?? action}.`);
-    } else {
-      setMsg(j.error ?? "Hmm, that didn't work — double-check the booking ID and the 6 numbers, then try again.");
+    // Offline: queue it, say so plainly, sync on reconnect.
+    if (!navigator.onLine) {
+      if (!bookingId) return setMsg("Pick a viewing first — then it queues.");
+      queueCheckin({ bookingId, code: code || undefined, action, at: Date.now() });
+      setPending((p) => p + 1);
+      return setMsg("Saved offline ✓ — it syncs when you're back online. Don't clear this browser.");
+    }
+    try {
+      const res = await fetch("/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId, code: code || undefined, action }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (j.ok && j.receipt) {
+        setReceipt(`Checked in ${new Date(j.receipt.checkin).toLocaleString()}. Receipt sent on WhatsApp.`);
+      } else if (j.ok) {
+        setMsg(`Recorded: ${j.booking?.status ?? action}.`);
+      } else {
+        setMsg(j.error ?? "Hmm, that didn't work — double-check the booking ID and the 6 numbers, then try again.");
+      }
+    } catch {
+      if (!bookingId) return setMsg("Pick a viewing first — then it queues.");
+      queueCheckin({ bookingId, code: code || undefined, action, at: Date.now() });
+      setPending((p) => p + 1);
+      setMsg("Network dropped — saved offline ✓, syncs on reconnect.");
     }
   };
 
@@ -98,6 +149,21 @@ export default function AgentPage() {
       <p className="mt-1 text-[16px] text-clay">
         Get the buyer&apos;s 6 numbers, type them, tap confirm.
       </p>
+      {!online && (
+        <p className="mt-3 rounded-2xl bg-pine-950 p-3 text-center text-[16px] font-semibold text-brass-100" role="status">
+          Offline — check-ins save here and sync on reconnect.
+        </p>
+      )}
+      {pending > 0 && (
+        <div className="mt-3 rounded-2xl bg-brass-100 p-3 text-center" role="status">
+          <p className="tabular text-[16px] font-bold">{pending} check-in{pending > 1 ? "s" : ""} waiting to sync</p>
+          {online && (
+            <Button size="sm" className="mt-2" onClick={() => flush()}>
+              Sync now
+            </Button>
+          )}
+        </div>
+      )}
 
       {today.length > 0 && (
         <>

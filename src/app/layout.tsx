@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import SiteHeader from "@/components/site-header";
 import InstallPrompt from "@/components/install-prompt";
+import SWRegister from "@/components/sw-register";
+import { OfflineBanner } from "@/components/offline";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -38,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`min-h-screen antialiased ${display.variable} ${sans.variable}`}>
+        <SWRegister />
         <SiteHeader />
+        <OfflineBanner />
         <div className="px-3 pt-3">
           <InstallPrompt />
         </div>

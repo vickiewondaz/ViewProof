@@ -33,6 +33,8 @@ export default function BookForm({
     if (!slotId) return setMsg("Pick a time above first.");
     if (name.trim().length < 2) return setMsg("Tell us your name so the host knows who to expect.");
     if (phone.trim().length < 7) return setMsg("Add your WhatsApp number — your code arrives there.");
+    // Booking needs the server (slot lock) — say so instead of failing.
+    if (!navigator.onLine) return setMsg("You're offline — reconnect to book. Your picks stay filled.");
     setBusy(true);
     setMsg("");
     const res = await fetch("/api/bookings", {

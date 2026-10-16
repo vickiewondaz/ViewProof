@@ -6,6 +6,11 @@ export default defineConfig({
   retries: 1,
   use: {
     baseURL: process.env.E2E_BASE ?? "http://localhost:4100",
+    launchOptions: {
+      // Plain-http localhost must still count as a secure context,
+      // or service workers (offline support) stay disabled in tests.
+      args: ["--unsafely-treat-insecure-origin-as-secure=http://localhost:4100"],
+    },
   },
   webServer: process.env.E2E_BASE
     ? undefined
